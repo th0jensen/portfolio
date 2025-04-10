@@ -1,129 +1,146 @@
-import { h } from 'preact'
 import { ArrowRight, Github, Linkedin } from 'lucide-preact'
 import { Button } from '~/components/ui/button.tsx'
-import { Card } from '~/components/ui/card.tsx'
 import Layout from '~/components/ComponentLayout.tsx'
 import type { Data } from '~/lib/data/types.ts'
 
-function calculateAge(birthday: string): number {
-    const [month, day, year] = birthday.split('-').map(Number)
-    const birthDate = new Date(year, month - 1, day)
-    const today = new Date()
-    let age = today.getFullYear() - birthDate.getFullYear()
-    const monthDiff = today.getMonth() - birthDate.getMonth()
+const calculateAge = (birthday: string): number => {
+	const [month, day, year] = birthday.split('-').map(Number)
+	const birthDate = new Date(year, month - 1, day)
+	const today = new Date()
+	let age = today.getFullYear() - birthDate.getFullYear()
+	const monthDiff = today.getMonth() - birthDate.getMonth()
 
-    if (
-        monthDiff < 0 ||
-        (monthDiff === 0 && today.getDate() < birthDate.getDate())
-    ) {
-        age--
-    }
-    return age
+	if (
+		monthDiff < 0 ||
+		(monthDiff === 0 && today.getDate() < birthDate.getDate())
+	) {
+		age--
+	}
+	return age
 }
 
 export default function Hero({ about }: { about: Data['about'] }) {
-    const age = calculateAge(about.birthday)
+	const age = calculateAge(about.birthday)
 
-    return (
-        <Layout
-            id={'hero'}
-        >
-            <style>
-                {`
-        @keyframes fadeInUp {
-          from {
-            opacity: 0;
-            transform: translateY(20px);
-          }
-          to {
-            opacity: 1;
-            transform: translateY(0);
-          }
+	return (
+		<Layout id='hero'>
+			<style>
+				{`
+        @keyframes fadeIn {
+          from { opacity: 0; }
+          to { opacity: 1; }
         }
 
-        @keyframes fadeInScale {
-          from {
-            opacity: 0;
-            transform: scale(0.9);
-          }
-          to {
-            opacity: 1;
-            transform: scale(1);
-          }
+        @keyframes slideUp {
+          from { transform: translateY(30px); opacity: 0; }
+          to { transform: translateY(0); opacity: 1; }
         }
 
-        .animate-fadeInUp {
-          animation: fadeInUp 0.5s ease-out forwards;
+        .animate-fade-in {
+          animation: fadeIn 0.8s ease-out forwards;
         }
 
-        .animate-fadeInScale {
-          animation: fadeInScale 0.5s ease-out forwards;
+        .animate-slide-up {
+          animation: slideUp 0.8s ease-out forwards;
+        }
+
+        .animate-delay-1 {
+          animation-delay: 0.1s;
+        }
+
+        .animate-delay-2 {
+          animation-delay: 0.3s;
+        }
+
+        .animate-delay-3 {
+          animation-delay: 0.5s;
         }
       `}
-            </style>
+			</style>
 
-            <div className='absolute inset-0 bg-gradient-to-br from-zinc-50 via-zinc-100/50 to-zinc-200/50 dark:from-zinc-950 dark:via-zinc-900/50 dark:to-zinc-800/50' />
+			{/* Subtle gradient background */}
+			<div className='absolute inset-0 bg-gradient-to-b from-background to-background/60 dark:from-background dark:to-background/80' />
 
-            {/* Animated background shapes */}
-            <div className='absolute inset-0 overflow-hidden'>
-                <div className='absolute -left-4 top-1/4 h-72 w-72 rounded-full bg-primary/10 blur-3xl' />
-                <div className='absolute right-0 top-1/2 h-96 w-96 rounded-full bg-secondary/10 blur-3xl' />
-            </div>
+			{/* Minimal shapes for visual interest */}
+			<div className='absolute inset-0 overflow-hidden'>
+				<div className='absolute left-[10%] top-[30%] h-64 w-64 rounded-full bg-primary/5 blur-3xl' />
+				<div className='absolute right-[15%] top-[60%] h-80 w-80 rounded-full bg-secondary/5 blur-3xl' />
+			</div>
 
-            <div className='z-10 container relative mx-auto px-4 py-20 lg:py-32'>
-                <div className='flex flex-col-reverse items-center gap-12 lg:flex-row lg:items-center lg:justify-between'>
-                    {/* Info Card */}
-                    <div className='w-full lg:w-1/2 animate-fadeInUp'>
-                        <div className='overflow-hidden p-8 backdrop-blur-sm'>
-                            <h1 className='mb-4 bg-gradient-to-r from-primary to-secondary bg-clip-text text-4xl md:text-5xl lg:text-6xl noto-serif font-black'>
-                                {about.firstName}
-                            </h1>
-                            <h1 className='mb-4 bg-gradient-to-r from-primary to-secondary bg-clip-text text-4xl md:text-5xl lg:text-6xl noto-serif font-black'>
-                                {about.lastName}
-                            </h1>
+			<div className='container relative z-10 mx-auto max-w-6xl px-4 flex flex-col h-[calc(100vh-64px)]'>
+				<div className='grid items-center flex-grow grid-cols-1 lg:grid-cols-5 gap-8 lg:gap-16'>
+					{/* Mobile Headshot (shown only on mobile) */}
+					<div className='lg:hidden relative overflow-hidden flex justify-center -mt-4 mb-4'>
+						<div className='relative w-48 md:w-64'>
+							<img
+								src='/headshot.png'
+								alt='Profile'
+								className='w-full h-auto object-contain animate-fade-in'
+							/>
+						</div>
+					</div>
+				
+					{/* Content */}
+					<div className='space-y-6 lg:space-y-8 lg:col-span-3'>
+						<div className='space-y-2 animate-slide-up animate-delay-1'>
+							<p className='text-sm font-medium tracking-wider text-muted-foreground uppercase'>
+								Full Stack Software Developer
+							</p>
+							<h1 className='text-4xl font-bold tracking-tight md:text-5xl lg:text-6xl'>
+								{about.firstName} {about.lastName}
+							</h1>
+						</div>
 
-                            <p className='mb-6 text-xl text-muted-foreground md:text-2xl'>
-                                {age} year old Software Developer
-                            </p>
+						<p className='max-w-2xl text-lg text-muted-foreground animate-slide-up animate-delay-2'>
+							{age} year old developer focused on creating elegant solutions through clean code.
+							 Passionate about backend services, optimization, and creating seamless user experiences.
+						</p>
 
-                            <p className='mb-8 text-lg text-foreground/80 md:text-xl'>
-                                Passionate about backend, services, and
-                                optimisation.
-                            </p>
+						<div className='flex flex-wrap gap-4 animate-slide-up animate-delay-3'>
+							<Button className='group' size='lg'>
+								<a href='#work' className='flex items-center'>
+									Explore my work
+									<ArrowRight className='ml-2 h-4 w-4 transition-transform duration-300 group-hover:translate-x-1' />
+								</a>
+							</Button>
 
-                            <div className='flex flex-col gap-4 sm:flex-row sm:items-center'>
-                                <Button className='group' size='lg'>
-                                    View My Work
-                                    <ArrowRight className='ml-2 h-4 w-4 transition-transform group-hover:translate-x-1' />
-                                </Button>
+							<Button variant='secondary' size='lg'>
+								<a
+									href='https://github.com/th0jensen'
+									target='_blank'
+									rel='noopener noreferrer'
+									className='flex items-center gap-2'
+								>
+									<Github className='h-5 w-5' />
+									GitHub
+								</a>
+							</Button>
+							<Button variant='secondary' size='lg'>
+								<a
+									href='https://www.linkedin.com/in/thomas-jensen-75a488208/'
+									target='_blank'
+									rel='noopener noreferrer'
+									className='flex items-center gap-2'
+								>
+									<Linkedin className='h-5 w-5' />
+									LinkedIn
+								</a>
+							</Button>
+						</div>
+					</div>
 
-                                <div className='flex gap-2'>
-                                    <Button variant='outline' size='lg'>
-                                        <Github className='mr-2 h-5 w-5' />
-                                        Github
-                                    </Button>
-                                    <Button variant='outline' size='lg'>
-                                        <Linkedin className='mr-2 h-5 w-5' />
-                                        LinkedIn
-                                    </Button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    {/* Profile Image */}
-                    <div className='w-full lg:w-1/2 animate-fadeInScale'>
-                        <div className='relative mx-auto w-72 md:w-96'>
-                            {/* <div className='absolute -inset-1.5 rounded-2xl bg-gradient-to-r from-primary to-secondary opacity-30 blur' /> */}
-                            <img
-                                src='/headshot.png'
-                                alt='Profile'
-                                className='relative rounded-2xl object-cover'
-                            />
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </Layout>
-    )
+					{/* Desktop Profile Image (hidden on mobile) */}
+					<div className='hidden lg:flex justify-center items-center lg:col-span-2'>
+						<div className='relative animate-fade-in'>
+							<img
+								src='/headshot.png'
+								alt='Profile'
+								className='h-auto max-h-[calc(100vh-140px)] w-auto object-contain'
+							/>
+						</div>
+					</div>
+				</div>
+			</div>
+		</Layout>
+	)
 }

@@ -11,6 +11,7 @@ export default function App({ Component }: PageProps) {
 				<script type='text/javascript' src='/darkMode.js' />
 				<title>Thomas Jensen</title>
 				<link rel='stylesheet' href='/styles.css' />
+				<link rel='icon' type='image/svg+xml' href='/favicon.svg' />
 			</head>
 			<body>
 				<Component />
