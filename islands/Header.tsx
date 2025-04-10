@@ -1,15 +1,16 @@
-import { useEffect, useState } from 'preact/hooks'
+import { useEffect } from 'preact/hooks'
 import { Button, Link } from '~/components/ui/button.tsx'
 import { Menu, Moon, Sun, X } from 'lucide-preact'
+import { useSignal } from "@preact/signals"
 
 export default function Header() {
-    const [displayNav, setDisplayNav] = useState<boolean>(false)
-    const [theme, setTheme] = useState<'light' | 'dark'>('light')
+    const displayNav = useSignal<boolean>(false)
+    const theme = useSignal<'light' | 'dark'>('light')
 
     useEffect(() => {
         // Check initial theme preference
         if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
-            setTheme('dark')
+            theme.value = 'dark'
             document.documentElement.classList.add('dark')
         }
 
@@ -18,7 +19,7 @@ export default function Header() {
             'change',
             (event) => {
                 const newTheme = event.matches ? 'dark' : 'light'
-                setTheme(newTheme)
+                theme.value = newTheme
                 if (event.matches) {
                     document.documentElement.classList.add('dark')
                 } else {
@@ -29,8 +30,8 @@ export default function Header() {
     }, [])
 
     const toggleTheme = () => {
-        const newTheme = theme === 'light' ? 'dark' : 'light'
-        setTheme(newTheme)
+        const newTheme = theme.value === 'light' ? 'dark' : 'light'
+        theme.value = newTheme
         if (newTheme === 'dark') {
             document.documentElement.classList.add('dark')
         } else {
@@ -58,11 +59,11 @@ export default function Header() {
                     <Button
                         variant='ghost'
                         size='sm'
-                        onClick={() => setDisplayNav(!displayNav)}
+                        onClick={() => displayNav.value = !displayNav.value}
                         className='focus:ring-0'
-                        aria-label={displayNav ? 'Close menu' : 'Open menu'}
+                        aria-label={displayNav.value ? 'Close menu' : 'Open menu'}
                     >
-                        {!displayNav ? <Menu className='h-5 w-5' /> : <X className='h-5 w-5' />}
+                        {!displayNav.value ? <Menu className='h-5 w-5' /> : <X className='h-5 w-5' />}
                     </Button>
                 </div>
 
@@ -90,9 +91,9 @@ export default function Header() {
                         size='icon'
                         onClick={toggleTheme}
                         className='ml-2 h-9 w-9 rounded-full'
-                        aria-label={`Switch to ${theme === 'light' ? 'dark' : 'light'} mode`}
+                        aria-label={`Switch to ${theme.value === 'light' ? 'dark' : 'light'} mode`}
                     >
-                        {theme === 'light' ? (
+                        {theme.value === 'light' ? (
                             <Moon className='h-4 w-4' />
                         ) : (
                             <Sun className='h-4 w-4' />
@@ -101,55 +102,59 @@ export default function Header() {
                 </nav>
 
                 {/* Mobile Navigation Menu */}
-                {displayNav && (
+                {displayNav.value && (
                     <div className='absolute inset-x-0 top-16 z-50 bg-background/95 p-4 backdrop-blur-md shadow-lg border-b border-border/10 md:hidden'>
                         <nav className='flex flex-col space-y-4'>
-                            <Link 
-                                variant='ghost' 
-                                href={'#work'} 
-                                className='w-full px-4 py-2 text-left text-sm font-medium'
-                                onClick={() => setDisplayNav(false)}
-                            >
-                                Work
-                            </Link>
-                            <Link 
-                                variant='ghost' 
-                                href={'#experience'} 
-                                className='w-full px-4 py-2 text-left text-sm font-medium'
-                                onClick={() => setDisplayNav(false)}
-                            >
-                                Experience
-                            </Link>
-                            <Link 
-                                variant='ghost' 
-                                href={'#projects'} 
-                                className='w-full px-4 py-2 text-left text-sm font-medium'
-                                onClick={() => setDisplayNav(false)}
-                            >
-                                Projects
-                            </Link>
-                            <Link 
-                                variant='ghost' 
-                                href={'mailto:thomas.jensen_@outlook.com'} 
-                                className='w-full px-4 py-2 text-left text-sm font-medium'
-                                onClick={() => setDisplayNav(false)}
-                            >
-                                Contact
-                            </Link>
-                            <div className='border-t border-border/10 pt-4 flex justify-between items-center'>
-                                <span className='text-sm text-muted-foreground'>Switch theme</span>
-                                <Button
-                                    variant='ghost'
-                                    size='icon'
-                                    onClick={toggleTheme}
-                                    className='h-8 w-8 rounded-full'
+                            <div className='flex flex-col items-center gap-4'>
+                                <Link 
+                                    variant='ghost' 
+                                    href={'#work'} 
+                                    className='flex items-center justify-center h-10 w-36 text-sm font-medium'
+                                    onClick={() => displayNav.value = false}
                                 >
-                                    {theme === 'light' ? (
-                                        <Moon className='h-4 w-4' />
-                                    ) : (
-                                        <Sun className='h-4 w-4' />
-                                    )}
-                                </Button>
+                                    Work
+                                </Link>
+                                <Link 
+                                    variant='ghost' 
+                                    href={'#experience'} 
+                                    className='flex items-center justify-center h-10 w-36 text-sm font-medium'
+                                    onClick={() => displayNav.value = false}
+                                >
+                                    Experience
+                                </Link>
+                                <Link 
+                                    variant='ghost' 
+                                    href={'#projects'} 
+                                    className='flex items-center justify-center h-10 w-36 text-sm font-medium'
+                                    onClick={() => displayNav.value = false}
+                                >
+                                    Projects
+                                </Link>
+                                <Link 
+                                    variant='ghost' 
+                                    href={'mailto:thomas.jensen_@outlook.com'} 
+                                    className='flex items-center justify-center h-10 w-36 text-sm font-medium'
+                                    onClick={() => displayNav.value = false}
+                                >
+                                    Contact
+                                </Link>
+                            </div>
+                            <div className='border-t border-border/10 pt-4 flex items-center justify-end'>
+                                <div className='flex items-center'>
+                                    <span className='text-sm text-muted-foreground mr-2'>Switch theme</span>
+                                    <Button
+                                        variant='ghost'
+                                        size='icon'
+                                        onClick={toggleTheme}
+                                        className='h-10 w-10 rounded-full'
+                                    >
+                                        {theme.value === 'light' ? (
+                                            <Moon className='h-4 w-4' />
+                                        ) : (
+                                            <Sun className='h-4 w-4' />
+                                        )}
+                                    </Button>
+                                </div>
                             </div>
                         </nav>
                     </div>
