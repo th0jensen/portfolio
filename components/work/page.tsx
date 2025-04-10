@@ -23,27 +23,25 @@ export default function WorkPage({ projects }: { projects: Project[] }) {
 }
 
 const ProjectCard = ({ project }: { project: Project }) => (
-	<div className='group'>
+	<div className='group bg-foreground/5 overflow-hidden rounded-xl'>
 		{/* Project Image */}
-		<div className='relative flex justify-center items-center bg-foreground/5 h-[200px] overflow-hidden'>
+		<div className='relative flex justify-center items-center h-[200px] overflow-hidden'>
 			{/* App Store overlay */}
 			{project.source?.type === 'appstore' && (
-				<div className='absolute inset-0 z-10 flex items-center justify-center opacity-0 transition-all duration-300 group-hover:opacity-100 bg-black/30 backdrop-blur-sm'>
-					<div className='flex flex-col items-center gap-3'>
-						<a
-							href={project.source.link}
-							className='relative shadow-lg shadow-black/20 hover:scale-105 transition-transform duration-300 p-1 rounded-md'
-							target='_blank'
-							rel='noopener noreferrer'
-							aria-label='Download on App Store'
-						>
-							<img
-								src='/appstore.svg'
-								alt='App Store'
-								className='h-12 w-auto'
-							/>
-						</a>
-					</div>
+				<div className='absolute inset-0 z-10 flex items-center justify-center opacity-0 transition-all duration-300 group-hover:opacity-100 bg-gradient-to-b from-black/30 via-black/15 to-foreground/0'>
+					<a
+						href={project.source.link}
+						className='hover:scale-105 transition-transform duration-300'
+						target='_blank'
+						rel='noopener noreferrer'
+						aria-label='Download on App Store'
+					>
+						<img
+							src='/appstore.svg'
+							alt='App Store'
+							className='h-12 w-auto drop-shadow-md'
+						/>
+					</a>
 				</div>
 			)}
 			<img
@@ -61,7 +59,7 @@ const ProjectCard = ({ project }: { project: Project }) => (
 		</div>
 
 		{/* Project Details */}
-		<div className='pt-5 space-y-4'>
+		<div className='p-5 space-y-4'>
 			<ProjectTitle project={project} />
 
 			<ProjectDescription description={project.description} />
@@ -115,7 +113,7 @@ const ProjectTitle = ({ project }: { project: Project }) => {
 	return (
 		<a
 			href={project.source?.link}
-			className='group inline-flex items-center gap-1 text-lg font-semibold transition-colors hover:text-primary/80'
+			className='group inline-flex items-center gap-1 text-lg font-semibold transition-colors hover:text-primary/80 hover:underline'
 			target='_blank'
 			rel='noopener noreferrer'
 			aria-label={`Visit ${project.name} project`}

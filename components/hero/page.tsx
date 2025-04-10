@@ -1,8 +1,8 @@
-import { Button } from '~/components/ui/button.tsx'
 import Layout from '~/components/ComponentLayout.tsx'
 import type { Data } from '~/lib/data/types.ts'
 import { calculateAge } from '~/components/hero/index.ts'
 import SmoothScrollButton from '~/islands/SmoothScrollButton.tsx'
+import ExternalLink from '~/islands/ExternalLink.tsx'
 
 export default function Hero({ about }: { about: Data['about'] }) {
 	const age = calculateAge(about.birthday)
@@ -96,28 +96,29 @@ export default function Hero({ about }: { about: Data['about'] }) {
 								</span>
 							</SmoothScrollButton>
 
-							<Button variant='secondary' size='lg'>
-								<a
-									href='https://github.com/th0jensen'
-									target='_blank'
-									rel='noopener noreferrer'
-									className='flex items-center gap-2'
-								>
+							<ExternalLink
+								href='https://github.com/th0jensen'
+								variant='secondary'
+								size='lg'
+								ariaLabel='GitHub profile'
+							>
+								<span className='flex items-center gap-2'>
 									{/* <Github className='h-5 w-5' /> */}
 									GitHub
-								</a>
-							</Button>
-							<Button variant='secondary' size='lg'>
-								<a
-									href='https://www.linkedin.com/in/thomas-jensen-75a488208/'
-									target='_blank'
-									rel='noopener noreferrer'
-									className='flex items-center gap-2'
-								>
+								</span>
+							</ExternalLink>
+							
+							<ExternalLink
+								href='https://www.linkedin.com/in/thomas-jensen-75a488208/'
+								variant='secondary'
+								size='lg'
+								ariaLabel='LinkedIn profile'
+							>
+								<span className='flex items-center gap-2'>
 									{/* <Linkedin className='h-5 w-5' /> */}
 									LinkedIn
-								</a>
-							</Button>
+								</span>
+							</ExternalLink>
 						</div>
 					</div>
 

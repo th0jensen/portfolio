@@ -75,7 +75,7 @@ export default function Header() {
 							? 'Close menu'
 							: 'Open menu'}
 					>
-						{!displayNav.value ? <p>Hamburger</p> : <p>X</p>}
+						{!displayNav.value ? <p>🍔</p> : <p>❌</p>}
 					</Button>
 				</div>
 
@@ -150,7 +150,7 @@ function ThemeToggle({ onClick, theme, className }: ThemeToggleProps) {
 				theme === 'light' ? 'dark' : 'light'
 			} mode`}
 		>
-			{theme === 'light' ? <p>Moon</p> : <p>Sun</p>}
+			{theme === 'light' ? <p>🌚</p> : <p>🌞</p>}
 		</Button>
 	)
 }
