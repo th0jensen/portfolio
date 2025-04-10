@@ -1,23 +1,8 @@
-import { ArrowRight, Github, Linkedin } from 'lucide-preact'
 import { Button } from '~/components/ui/button.tsx'
 import Layout from '~/components/ComponentLayout.tsx'
 import type { Data } from '~/lib/data/types.ts'
-
-const calculateAge = (birthday: string): number => {
-	const [month, day, year] = birthday.split('-').map(Number)
-	const birthDate = new Date(year, month - 1, day)
-	const today = new Date()
-	let age = today.getFullYear() - birthDate.getFullYear()
-	const monthDiff = today.getMonth() - birthDate.getMonth()
-
-	if (
-		monthDiff < 0 ||
-		(monthDiff === 0 && today.getDate() < birthDate.getDate())
-	) {
-		age--
-	}
-	return age
-}
+import { calculateAge } from '~/components/hero/index.ts'
+import SmoothScrollButton from '~/islands/SmoothScrollButton.tsx'
 
 export default function Hero({ about }: { about: Data['about'] }) {
 	const age = calculateAge(about.birthday)
@@ -79,7 +64,7 @@ export default function Hero({ about }: { about: Data['about'] }) {
 							/>
 						</div>
 					</div>
-				
+
 					{/* Content */}
 					<div className='space-y-6 lg:space-y-8 lg:col-span-3'>
 						<div className='space-y-2 animate-slide-up animate-delay-1'>
@@ -92,17 +77,24 @@ export default function Hero({ about }: { about: Data['about'] }) {
 						</div>
 
 						<p className='max-w-2xl text-lg text-muted-foreground animate-slide-up animate-delay-2'>
-							{age} year old developer focused on creating elegant solutions through clean code.
-							 Passionate about backend services, optimization, and creating seamless user experiences.
+							{age}{' '}
+							year old developer focused on creating elegant
+							solutions through clean code. Passionate about
+							backend services, optimization, and creating
+							seamless user experiences.
 						</p>
 
 						<div className='flex flex-wrap gap-4 animate-slide-up animate-delay-3'>
-							<Button className='group' size='lg'>
-								<a href='#work' className='flex items-center'>
+							<SmoothScrollButton
+								targetId='work'
+								className='group'
+								size='lg'
+							>
+								<span className='flex items-center'>
 									Explore my work
-									<ArrowRight className='ml-2 h-4 w-4 transition-transform duration-300 group-hover:translate-x-1' />
-								</a>
-							</Button>
+									{/* <ArrowRight className='ml-2 h-4 w-4 transition-transform duration-300 group-hover:translate-x-1' /> */}
+								</span>
+							</SmoothScrollButton>
 
 							<Button variant='secondary' size='lg'>
 								<a
@@ -111,7 +103,7 @@ export default function Hero({ about }: { about: Data['about'] }) {
 									rel='noopener noreferrer'
 									className='flex items-center gap-2'
 								>
-									<Github className='h-5 w-5' />
+									{/* <Github className='h-5 w-5' /> */}
 									GitHub
 								</a>
 							</Button>
@@ -122,7 +114,7 @@ export default function Hero({ about }: { about: Data['about'] }) {
 									rel='noopener noreferrer'
 									className='flex items-center gap-2'
 								>
-									<Linkedin className='h-5 w-5' />
+									{/* <Linkedin className='h-5 w-5' /> */}
 									LinkedIn
 								</a>
 							</Button>

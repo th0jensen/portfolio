@@ -1,9 +1,8 @@
 import type { Experience } from '~/lib/data/types.ts'
 import { useState } from 'preact/hooks'
 
-const Entry = ({ entry }: { entry: Experience }) => {
-	// Note: The expanded state is preserved even though it's not currently used
-	const [expanded, setExpanded] = useState<boolean>(entry.expanded)
+export default function Entry({ entry }: { entry: Experience }) {
+	const [_expanded, _setExpanded] = useState<boolean>(entry.expanded)
 
 	return (
 		<div className='mb-8 flex'>
@@ -25,5 +24,3 @@ const Entry = ({ entry }: { entry: Experience }) => {
 		</div>
 	)
 }
-
-export default Entry

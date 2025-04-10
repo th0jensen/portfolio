@@ -1,11 +1,4 @@
 import Layout from '~/components/ComponentLayout.tsx'
-import {
-	Card,
-	CardContent,
-	CardHeader,
-	CardTitle,
-} from '~/components/ui/card.tsx'
-import { HardHat } from 'lucide-preact'
 
 export default function Projects() {
 	return (
@@ -25,10 +18,10 @@ function ConstructionCard() {
 	return (
 		<div className='max-w-md mx-auto'>
 			<div className='mb-6 flex items-center gap-3'>
-				<div className='bg-foreground p-3 flex items-center justify-center'>
+				{/* <div className='bg-foreground p-3 flex items-center justify-center'>
 					<HardHat className='h-5 w-5 text-background' />
-				</div>
-				<h2 className='text-xl font-medium'>Under Construction</h2>
+				</div> */}
+				<h2 className='text-xl font-medium'>🚧 Under Construction</h2>
 			</div>
 			<div className='py-4'>
 				<p className='mb-8 text-muted-foreground'>

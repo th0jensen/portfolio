@@ -7,7 +7,10 @@ import * as $_app from './routes/_app.tsx'
 import * as $_layout from './routes/_layout.tsx'
 import * as $index from './routes/index.tsx'
 import * as $Entry from './islands/Entry.tsx'
+import * as $ExternalLink from './islands/ExternalLink.tsx'
 import * as $Header from './islands/Header.tsx'
+import * as $NavItem from './islands/NavItem.tsx'
+import * as $SmoothScrollButton from './islands/SmoothScrollButton.tsx'
 import type { Manifest } from '$fresh/server.ts'
 
 const manifest = {
@@ -19,7 +22,10 @@ const manifest = {
 	},
 	islands: {
 		'./islands/Entry.tsx': $Entry,
+		'./islands/ExternalLink.tsx': $ExternalLink,
 		'./islands/Header.tsx': $Header,
+		'./islands/NavItem.tsx': $NavItem,
+		'./islands/SmoothScrollButton.tsx': $SmoothScrollButton,
 	},
 	baseUrl: import.meta.url,
 } satisfies Manifest

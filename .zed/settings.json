@@ -22,12 +22,5 @@
     "YAML": {
       "enable_language_server": false
     }
-  },
-  "lsp": {
-    "deno": {
-      "binary": {
-        "path": "/Users/thomas/.deno/bin/deno"
-      }
-    }
   }
 }
