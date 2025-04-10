@@ -48,7 +48,7 @@ export default function Header() {
 	const navLinks = [
 		{ id: 'work', label: 'Work' },
 		{ id: 'experience', label: 'Experience' },
-		{ id: 'projects', label: 'Projects' },
+		// { id: 'projects', label: 'Projects' },
 		{ href: 'mailto:thomas.jensen_@outlook.com', label: 'Contact' },
 	]
 
