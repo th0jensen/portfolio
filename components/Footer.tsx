@@ -1,8 +1,10 @@
 export default function Footer() {
+  const date = new Date().getFullYear()
+
 	return (
 		<footer class='footer text-center justify-center p-4'>
 			<p class='font-medium text-sm'>
-				{'Made with ❤️ by Thomas Jensen and 🦕 + 🍋'}
+				{`© ${date} Thomas Jensen`}
 			</p>
 		</footer>
 	)
