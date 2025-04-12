@@ -96,6 +96,7 @@ export default function Header() {
 					<ThemeToggle
 						onClick={toggleTheme}
 						theme={theme.value}
+						showText={false}
 						className='ml-2 h-9 rounded-full w-auto'
 					/>
 				</nav>
@@ -120,6 +121,7 @@ export default function Header() {
 								<ThemeToggle
 									onClick={toggleTheme}
 									theme={theme.value}
+									showText
 									className='h-10 rounded-full w-auto'
 								/>
 							</div>

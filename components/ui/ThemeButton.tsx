@@ -6,9 +6,10 @@ interface ThemeToggleProps {
 	onClick: () => void
 	theme: 'light' | 'dark'
 	className?: string
+	showText?: boolean
 }
 
-export default function ThemeToggle({ onClick, theme, className }: ThemeToggleProps) {
+export default function ThemeToggle({ onClick, theme, className, showText = false }: ThemeToggleProps) {
 	return (
 		<Button
 			variant='ghost'
@@ -19,7 +20,7 @@ export default function ThemeToggle({ onClick, theme, className }: ThemeTogglePr
 				theme === 'light' ? 'dark' : 'light'
 			} mode`}
 		>
-			<span className="whitespace-nowrap">Switch to {theme === 'light' ? 'dark' : 'light'} mode</span>
+			{showText && <span className="whitespace-nowrap">Switch to {theme === 'light' ? 'dark' : 'light'} mode</span>}
 			{theme === 'light' ? <MoonIcon /> : <SunIcon />}
 		</Button>
 	)
