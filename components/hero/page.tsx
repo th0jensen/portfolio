@@ -2,7 +2,8 @@ import Layout from '~/components/ComponentLayout.tsx'
 import type { Data } from '~/lib/data/types.ts'
 import { calculateAge } from '~/components/hero/index.ts'
 import SmoothScrollButton from '~/islands/SmoothScrollButton.tsx'
-import ExternalLink from '~/islands/ExternalLink.tsx'
+import GitHubButton from '~/components/ui/GitHubButton.tsx'
+import LinkedInButton from '~/components/ui/LinkedInButton.tsx'
 
 export default function Hero({ about }: { about: Data['about'] }) {
 	const age = calculateAge(about.birthday)
@@ -52,8 +53,8 @@ export default function Hero({ about }: { about: Data['about'] }) {
 				<div className='absolute right-[15%] top-[60%] h-80 w-80 rounded-full bg-secondary/5 blur-3xl' />
 			</div>
 
-			<div className='container relative z-10 mx-auto max-w-6xl px-4 flex flex-col h-[calc(100vh-64px)]'>
-				<div className='grid items-center flex-grow grid-cols-1 lg:grid-cols-5 gap-8 lg:gap-16'>
+			<div className='container relative z-10 mx-auto max-w-6xl px-4 flex flex-col h-[calc(100vh-64px)] justify-between'>
+				<div className='grid items-start lg:items-center flex-grow grid-cols-1 lg:grid-cols-5 gap-8 lg:gap-16 pt-4 lg:pt-0'>
 					{/* Mobile Headshot (shown only on mobile) */}
 					<div className='lg:hidden relative overflow-hidden flex justify-center -mt-4 mb-4'>
 						<div className='relative w-48 md:w-64'>
@@ -84,7 +85,8 @@ export default function Hero({ about }: { about: Data['about'] }) {
 							seamless user experiences.
 						</p>
 
-						<div className='flex flex-wrap gap-4 animate-slide-up animate-delay-3'>
+						{/* Button section - Desktop only */}
+						<div className='hidden lg:flex flex-wrap gap-4 animate-slide-up animate-delay-3'>
 							<SmoothScrollButton
 								targetId='work'
 								className='group'
@@ -92,33 +94,30 @@ export default function Hero({ about }: { about: Data['about'] }) {
 							>
 								<span className='flex items-center'>
 									Explore my work
-									{/* <ArrowRight className='ml-2 h-4 w-4 transition-transform duration-300 group-hover:translate-x-1' /> */}
 								</span>
 							</SmoothScrollButton>
 
-							<ExternalLink
-								href='https://github.com/th0jensen'
-								variant='secondary'
-								size='lg'
-								ariaLabel='GitHub profile'
-							>
-								<span className='flex items-center gap-2'>
-									{/* <Github className='h-5 w-5' /> */}
-									GitHub
-								</span>
-							</ExternalLink>
-							
-							<ExternalLink
-								href='https://www.linkedin.com/in/thomas-jensen-75a488208/'
-								variant='secondary'
-								size='lg'
-								ariaLabel='LinkedIn profile'
-							>
-								<span className='flex items-center gap-2'>
-									{/* <Linkedin className='h-5 w-5' /> */}
-									LinkedIn
-								</span>
-							</ExternalLink>
+							<GitHubButton />
+							<LinkedInButton />
+						</div>
+
+						{/* Mobile buttons - Shown below content on mobile and aligned to the right */}
+						<div className='lg:hidden flex flex-col space-y-4 animate-slide-up animate-delay-3 mt-6 mb-6 items-end'>
+							<div className='flex space-x-3'>
+								<GitHubButton />
+								<LinkedInButton />
+							</div>
+							<div className='inline-block'>
+								<SmoothScrollButton
+									targetId='work'
+									className='group inline-flex'
+									size='lg'
+								>
+									<span className='flex items-center'>
+										Explore my work
+									</span>
+								</SmoothScrollButton>
+							</div>
 						</div>
 					</div>
 
@@ -132,6 +131,7 @@ export default function Hero({ about }: { about: Data['about'] }) {
 							/>
 						</div>
 					</div>
+
 				</div>
 			</div>
 		</Layout>

@@ -93,6 +93,22 @@ const data: Data = {
 		// 		'A personalised trading platform built for the future with AI and security in mind.',
 		// },
 		{
+			name: 'zed-industries/zed contributions',
+			imageURL: '/images/zed.jpeg',
+			technologies: {
+				'Rust': '#000000',
+				'GPUI': '#3178C6',
+				'JSON': '#ffffff',
+			},
+			description: `- PR #26211: Implement Extended Terminal Option
+			- Gruber Darker Theme Extension
+			`,
+			source: {
+				type: 'github',
+				link: 'https://github.com/zed-industries/zed/pull/26211',
+			},
+		},
+		{
 			name: 'Appleosophy',
 			imageURL: '/images/appleosophy.png',
 			technologies: {
@@ -108,22 +124,22 @@ const data: Data = {
 				link: 'https://apps.apple.com/us/app/appleosophy/id1635844078',
 			},
 		},
-		{
-			name: 'Flavorelle',
-			imageURL: '/images/flavorelle.png',
-			technologies: {
-				'Next.js': '#000000',
-				'TypeScript': '#3178C6',
-				'tRPC': '#2596BE', // Note: Not an official color
-				'Zod': '#00BFA5', // Note: Not an official color
-			},
-			description:
-				'A self-hostable recipe manager app, made with simplicity and fun in mind!',
-			source: {
-				type: 'github',
-				link: 'https://github.com/th0jensen/flavorelle',
-			},
-		},
+		// {
+		// 	name: 'Flavorelle',
+		// 	imageURL: '/images/flavorelle.png',
+		// 	technologies: {
+		// 		'Next.js': '#000000',
+		// 		'TypeScript': '#3178C6',
+		// 		'tRPC': '#2596BE', // Note: Not an official color
+		// 		'Zod': '#00BFA5', // Note: Not an official color
+		// 	},
+		// 	description:
+		// 		'A self-hostable recipe manager app, made with simplicity and fun in mind!',
+		// 	source: {
+		// 		type: 'github',
+		// 		link: 'https://github.com/th0jensen/flavorelle',
+		// 	},
+		// },
 	],
 }
 

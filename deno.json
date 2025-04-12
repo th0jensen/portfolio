@@ -1,79 +1,63 @@
 {
-	"lock": false,
-	"tasks": {
-		"cli": "echo \"import '\\$fresh/src/dev/cli.ts'\" | deno run --unstable -A -",
-		"manifest": "deno task cli manifest $(pwd)",
-		"start": "deno run -A --watch=static/,routes/ dev.ts",
-		"build": "deno run -A dev.ts build",
-		"preview": "deno run -A main.ts",
-		"update": "deno run -A -r https://fresh.deno.dev/update .",
-		"wasmbuild": "cd rs_lib && wasm-pack build --target web --out-dir ../static/wasm"
-	},
-	"fmt": {
-		"useTabs": true,
-		"lineWidth": 80,
-		"indentWidth": 4,
-		"semiColons": false,
-		"singleQuote": true,
-		"proseWrap": "preserve",
-		"exclude": [
-			"generated",
-			"node_modules",
-			".*"
-		]
-	},
-	"lint": {
-		"rules": {
-			"tags": [
-				"fresh",
-				"recommended"
-			]
-		}
-	},
-	"exclude": [
-		"**/_fresh/*",
-		"components/ui"
-	],
-	"imports": {
-		"$fresh/": "https://deno.land/x/fresh@1.7.3/",
-		"$std/": "https://deno.land/std@0.216.0/",
-		"@preact/signals": "https://esm.sh/*@preact/signals@1.2.2",
-		"@preact/signals-core": "https://esm.sh/*@preact/signals-core@1.5.1",
-		"@radix-ui/react-slot": "npm:@radix-ui/react-slot@^1.1.0",
-		"@std/dotenv": "jsr:@std/dotenv@^0.225.2",
-		"class-variance-authority": "npm:class-variance-authority@^0.7.0",
-		"clsx": "npm:clsx@^2.1.1",
-		"daisyui": "npm:daisyui@^4.12.13",
-		"dotenv": "npm:dotenv@^16.4.5",
-		"framer-motion": "npm:framer-motion@^11.11.11",
-		"lucide-preact": "npm:lucide-preact@^0.453.0",
-		"preact": "https://esm.sh/preact@10.22.0",
-		"preact/": "https://esm.sh/preact@10.22.0/",
-		"react": "npm:@preact/compat",
-		"react-dom": "npm:@preact/compat",
-		"react-mobile-app-button": "npm:react-mobile-app-button@^1.2.18",
-		"tailwind-merge": "npm:tailwind-merge@^2.5.4",
-		"tailwindcss": "npm:tailwindcss@3.4.1",
-		"tailwindcss-animate": "npm:tailwindcss-animate@^1.0.7",
-		"tailwindcss/": "npm:/tailwindcss@3.4.1/",
-		"tailwindcss/plugin": "npm:/tailwindcss@3.4.1/plugin.js",
-		"wasmModule": "./lib/wasm/rs_lib.js",
-		"~/": "./"
-	},
-	"compilerOptions": {
-		"jsx": "react-jsx",
-		"jsxImportSource": "preact"
-	},
-	"nodeModulesDir": "none",
-	"deploy": {
-		"project": "02d1034b-faed-4eb9-b436-d9b02655537a",
-		"exclude": [
-			"**/node_modules"
-		],
-		"include": [
-			"./static",
-			"./static/wasm"
-		],
-		"entrypoint": "main.ts"
-	}
+  "lock": false,
+  "tasks": {
+    "cli": "echo \"import '\\$fresh/src/dev/cli.ts'\" | deno run --unstable -A -",
+    "manifest": "deno task cli manifest $(pwd)",
+    "start": "deno run -A --watch=static/,routes/ dev.ts",
+    "build": "deno run -A dev.ts build",
+    "preview": "deno run -A main.ts",
+    "update": "deno run -A -r https://fresh.deno.dev/update .",
+    "wasmbuild": "cd rs_lib && wasm-pack build --target web --out-dir ../static/wasm"
+  },
+  "fmt": {
+    "useTabs": true,
+    "lineWidth": 80,
+    "indentWidth": 4,
+    "semiColons": false,
+    "singleQuote": true,
+    "proseWrap": "preserve",
+    "exclude": ["generated", "node_modules", ".*"]
+  },
+  "lint": {
+    "rules": {
+      "tags": ["fresh", "recommended"]
+    }
+  },
+  "exclude": ["**/_fresh/*", "components/ui"],
+  "imports": {
+    "$fresh/": "https://deno.land/x/fresh@1.7.3/",
+    "$std/": "https://deno.land/std@0.216.0/",
+    "@preact/signals": "https://esm.sh/*@preact/signals@1.2.2",
+    "@preact/signals-core": "https://esm.sh/*@preact/signals-core@1.5.1",
+    "@radix-ui/react-slot": "npm:@radix-ui/react-slot@^1.1.0",
+    "@std/dotenv": "jsr:@std/dotenv@^0.225.2",
+    "class-variance-authority": "npm:class-variance-authority@^0.7.0",
+    "clsx": "npm:clsx@^2.1.1",
+    "daisyui": "npm:daisyui@^4.12.13",
+    "dotenv": "npm:dotenv@^16.4.5",
+    "framer-motion": "npm:framer-motion@^11.11.11",
+    "lucide-preact": "npm:lucide-preact@^0.453.0",
+    "preact": "https://esm.sh/preact@10.22.0",
+    "preact/": "https://esm.sh/preact@10.22.0/",
+    "react": "npm:@preact/compat",
+    "react-dom": "npm:@preact/compat",
+    "react-mobile-app-button": "npm:react-mobile-app-button@^1.2.18",
+    "tailwind-merge": "npm:tailwind-merge@^2.5.4",
+    "tailwindcss": "npm:tailwindcss@3.4.1",
+    "tailwindcss-animate": "npm:tailwindcss-animate@^1.0.7",
+    "tailwindcss/": "npm:/tailwindcss@3.4.1/",
+    "tailwindcss/plugin": "npm:/tailwindcss@3.4.1/plugin.js",
+    "~/": "./"
+  },
+  "compilerOptions": {
+    "jsx": "react-jsx",
+    "jsxImportSource": "preact"
+  },
+  "nodeModulesDir": "none",
+  "deploy": {
+    "project": "02d1034b-faed-4eb9-b436-d9b02655537a",
+    "exclude": ["**/node_modules"],
+    "include": ["./static", "./static/wasm"],
+    "entrypoint": "main.ts"
+  }
 }

@@ -2,6 +2,9 @@ import { useEffect } from 'preact/hooks'
 import { Button } from '~/components/ui/button.tsx'
 import { useSignal } from '@preact/signals'
 import NavItem from '~/islands/NavItem.tsx'
+import ThemeToggle from '~/components/ui/ThemeButton.tsx'
+import HamburgerIcon from '~/components/ui/icons/HamburgerIcon.tsx'
+import CloseIcon from '~/components/ui/icons/CloseIcon.tsx'
 
 export default function Header() {
 	const displayNav = useSignal<boolean>(false)
@@ -75,7 +78,7 @@ export default function Header() {
 							? 'Close menu'
 							: 'Open menu'}
 					>
-						{!displayNav.value ? <p>🍔</p> : <p>❌</p>}
+						{!displayNav.value ? <HamburgerIcon /> : <CloseIcon />}
 					</Button>
 				</div>
 
@@ -93,7 +96,7 @@ export default function Header() {
 					<ThemeToggle
 						onClick={toggleTheme}
 						theme={theme.value}
-						className='ml-2 h-9 w-9 rounded-full'
+						className='ml-2 h-9 rounded-full w-auto'
 					/>
 				</nav>
 
@@ -114,43 +117,16 @@ export default function Header() {
 								))}
 							</div>
 							<div className='border-t border-border/10 pt-4 flex items-center justify-end'>
-								<div className='flex items-center'>
-									<span className='text-sm text-muted-foreground mr-2'>
-										Switch theme
-									</span>
-									<ThemeToggle
-										onClick={toggleTheme}
-										theme={theme.value}
-										className='h-10 w-10 rounded-full'
-									/>
-								</div>
+								<ThemeToggle
+									onClick={toggleTheme}
+									theme={theme.value}
+									className='h-10 rounded-full w-auto'
+								/>
 							</div>
 						</nav>
 					</div>
 				)}
 			</div>
 		</header>
-	)
-}
-
-interface ThemeToggleProps {
-	onClick: () => void
-	theme: 'light' | 'dark'
-	className?: string
-}
-
-function ThemeToggle({ onClick, theme, className }: ThemeToggleProps) {
-	return (
-		<Button
-			variant='ghost'
-			size='icon'
-			onClick={onClick}
-			className={className}
-			aria-label={`Switch to ${
-				theme === 'light' ? 'dark' : 'light'
-			} mode`}
-		>
-			{theme === 'light' ? <p>🌚</p> : <p>🌞</p>}
-		</Button>
 	)
 }

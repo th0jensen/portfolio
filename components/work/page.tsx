@@ -44,10 +44,18 @@ const ProjectCard = ({ project }: { project: Project }) => (
 					</a>
 				</div>
 			)}
+			{project.source?.type === 'github' && (
+				<div className='absolute inset-0 z-10 flex items-center justify-center opacity-0 transition-all duration-300 group-hover:opacity-100 bg-gradient-to-b from-black/30 via-black/15 to-foreground/0'>
+				</div>
+			)}
 			<img
 				src={project.imageURL}
 				alt={project.name}
-				className='max-h-[180px] max-w-full object-contain transition-transform duration-500 group-hover:scale-105'
+				className={`${
+					project.imageURL === '/images/zed.jpeg'
+						? 'h-[150px] rounded-xl overflow-hidden'
+						: 'h-[180px]'
+				} max-w-full object-contain transition-transform duration-500 group-hover:scale-105`}
 			/>
 			{project.status && (
 				<div className='absolute top-0 right-0 m-3'>
@@ -87,6 +95,7 @@ const ProjectDescription = ({ description }: { description: string }) => {
 	return (
 		<div>
 			<div
+				style='white-space: pre-line'
 				className={`text-sm text-muted-foreground h-[40px] overflow-hidden`}
 			>
 				{expanded.value ? description : shortDescription}
