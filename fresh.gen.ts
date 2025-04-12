@@ -10,6 +10,8 @@ import * as $Entry from './islands/Entry.tsx'
 import * as $ExternalLink from './islands/ExternalLink.tsx'
 import * as $Header from './islands/Header.tsx'
 import * as $NavItem from './islands/NavItem.tsx'
+import * as $ProjectCard from './islands/ProjectCard.tsx'
+import * as $ProjectCardExpander from './islands/ProjectCardExpander.tsx'
 import * as $SmoothScrollButton from './islands/SmoothScrollButton.tsx'
 import type { Manifest } from '$fresh/server.ts'
 
@@ -25,6 +27,8 @@ const manifest = {
 		'./islands/ExternalLink.tsx': $ExternalLink,
 		'./islands/Header.tsx': $Header,
 		'./islands/NavItem.tsx': $NavItem,
+		'./islands/ProjectCard.tsx': $ProjectCard,
+		'./islands/ProjectCardExpander.tsx': $ProjectCardExpander,
 		'./islands/SmoothScrollButton.tsx': $SmoothScrollButton,
 	},
 	baseUrl: import.meta.url,
