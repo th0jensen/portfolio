@@ -4,6 +4,7 @@ import { calculateAge } from '~/components/hero/index.ts'
 import SmoothScrollButton from '~/islands/SmoothScrollButton.tsx'
 import GitHubButton from '~/components/ui/GitHubButton.tsx'
 import LinkedInButton from '~/components/ui/LinkedInButton.tsx'
+import OptimizedImage from '~/islands/OptimizedImage.tsx'
 
 interface HeroProps {
 	about: Data['about']
@@ -28,13 +29,15 @@ export default function Hero({ about, t }: HeroProps) {
 			<div className='container relative z-10 mx-auto max-w-6xl px-4 flex flex-col h-[calc(100vh-64px)] justify-between'>
 				<div className='grid items-start lg:items-center flex-grow grid-cols-1 lg:grid-cols-5 gap-8 lg:gap-16 pt-4 lg:pt-0'>
 					{/* Mobile Headshot (shown only on mobile) */}
-					<div className='lg:hidden relative overflow-hidden flex justify-center -mt-4 mb-4'>
-						<div className='relative w-48 md:w-64'>
-							<img
+					<div className='lg:hidden flex justify-center -mt-4 mb-4'>
+						<div className='rounded-xl overflow-hidden'>
+							<OptimizedImage
 								src='/headshot.png'
 								alt='Profile'
-								fetchpriority="high"
-								className='w-full h-auto object-contain rounded-xl'
+								width={360}
+								height={540}
+								className='w-36 sm:w-48 md:w-48 h-auto'
+								priority={true}
 							/>
 						</div>
 					</div>
@@ -42,15 +45,15 @@ export default function Hero({ about, t }: HeroProps) {
 					{/* Content */}
 					<div className='space-y-4 lg:space-y-5 lg:col-span-3'>
 						<div className='space-y-2'>
-							<p className='text-xs font-semibold tracking-widest text-muted-foreground uppercase opacity-80'>
+							<p className='text-xs font-semibold tracking-widest text-muted-foreground uppercase'>
 								{t('common.hero.role')}
 							</p>
-							<h1 className='text-4xl font-bold tracking-tight md:text-5xl lg:text-6xl bg-gradient-to-r from-foreground to-foreground/70 bg-clip-text text-transparent leading-relaxed pb-2'>
+							<h1 className='text-4xl font-bold tracking-tight lg:text-6xl bg-gradient-to-r from-foreground to-foreground/70 bg-clip-text text-transparent leading-relaxed pb-2'>
 								{about.firstName} {about.lastName}
 							</h1>
 						</div>
 
-						<p className='max-w-2xl text-base lg:text-lg leading-relaxed text-muted-foreground/90'>
+						<p className='max-w-2xl text-base lg:text-lg leading-relaxed text-muted-foreground'>
 							{description}
 						</p>
 
@@ -102,12 +105,14 @@ export default function Hero({ about, t }: HeroProps) {
 
 					{/* Desktop Profile Image (hidden on mobile) */}
 					<div className='hidden lg:flex justify-center items-center lg:col-span-2'>
-						<div className='relative'>
-							<img
+						<div className='max-h-[calc(100vh-140px)] rounded-xl overflow-hidden'>
+							<OptimizedImage
 								src='/headshot.png'
 								alt='Profile'
-								fetchpriority="high"
-								className='h-auto max-h-[calc(100vh-140px)] w-auto object-contain rounded-xl'
+								width={360}
+								height={540}
+								className='w-auto h-full max-h-[calc(100vh-140px)] object-contain'
+								priority={true}
 							/>
 						</div>
 					</div>

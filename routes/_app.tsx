@@ -17,7 +17,16 @@ export default define.page(function App({ Component, state }) {
 					content='width=device-width, initial-scale=1.0'
 				/>
 				<title>{title}</title>
+				<meta name='description' content={t('common.meta.description')} />
 				<link rel='icon' type='image/svg+xml' href='/favicon.svg' />
+				{/* Preconnect to Google Fonts for faster font loading */}
+				<link rel='preconnect' href='https://fonts.googleapis.com' />
+				<link rel='preconnect' href='https://fonts.gstatic.com' crossOrigin='anonymous' />
+				{/* Load fonts directly in head to avoid chaining through CSS */}
+				<link
+					rel='stylesheet'
+					href='https://fonts.googleapis.com/css2?family=Alef:wght@400;700&display=swap'
+				/>
 				<script dangerouslySetInnerHTML={{
 					__html: `
 						(function() {

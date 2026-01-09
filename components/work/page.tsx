@@ -13,7 +13,7 @@ export default function WorkPage({ projects, t, locale }: WorkPageProps) {
 		<Layout id='work'>
 			<div className='container mx-auto max-w-6xl px-4 py-20 flex flex-col items-center'>
 				<div className='w-full mb-12 flex flex-col'>
-					<h2 className='text-xs font-semibold tracking-widest text-muted-foreground uppercase mb-3 opacity-80'>
+					<h2 className='text-xs font-semibold tracking-widest text-muted-foreground uppercase mb-3'>
 						{t('common.work.subtitle')}
 					</h2>
 					<h3 className='text-3xl font-bold tracking-tight'>
