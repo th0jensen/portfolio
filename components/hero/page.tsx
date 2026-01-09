@@ -78,19 +78,18 @@ export default function Hero({ about, t }: HeroProps) {
 					</div>
 
 					{/* Content */}
-					<div className='space-y-6 lg:space-y-8 lg:col-span-3'>
-						<div className='space-y-3 animate-slide-up animate-delay-1'>
+					<div className='space-y-4 lg:space-y-6 lg:col-span-3'>
+						<div className='space-y-2 animate-slide-up animate-delay-1'>
 							<p className='text-xs font-semibold tracking-widest text-muted-foreground uppercase opacity-80'>
 								{t('common.hero.role')}
 							</p>
-							<h1 className='text-4xl font-bold tracking-tight md:text-5xl lg:text-6xl bg-gradient-to-r from-foreground to-foreground/70 bg-clip-text text-transparent'>
+							<h1 className='text-4xl font-bold tracking-tight md:text-5xl lg:text-6xl bg-gradient-to-r from-foreground to-foreground/70 bg-clip-text text-transparent leading-tight pb-1'>
 								{about.firstName} {about.lastName}
 							</h1>
 						</div>
 
 						<p className='max-w-2xl text-lg leading-relaxed text-muted-foreground/90 animate-slide-up animate-delay-2'>
-							{age}{' '}
-							{t('common.hero.description')}
+							{age} {t('common.hero.description')}
 						</p>
 
 						{/* Button section - Desktop only */}
@@ -105,15 +104,27 @@ export default function Hero({ about, t }: HeroProps) {
 								</span>
 							</SmoothScrollButton>
 
-							<GitHubButton ariaLabel={t('common.hero.github')} buttonText={t('common.buttons.github')} />
-							<LinkedInButton ariaLabel={t('common.hero.linkedin')} buttonText={t('common.buttons.linkedin')} />
+							<GitHubButton
+								ariaLabel={t('common.hero.github')}
+								buttonText={t('common.buttons.github')}
+							/>
+							<LinkedInButton
+								ariaLabel={t('common.hero.linkedin')}
+								buttonText={t('common.buttons.linkedin')}
+							/>
 						</div>
 
 						{/* Mobile buttons - Shown below content on mobile and aligned to the right */}
 						<div className='lg:hidden flex flex-col space-y-4 animate-slide-up animate-delay-3 mt-6 mb-6 items-end'>
 							<div className='flex space-x-3'>
-								<GitHubButton ariaLabel={t('common.hero.github')} buttonText={t('common.buttons.github')} />
-								<LinkedInButton ariaLabel={t('common.hero.linkedin')} buttonText={t('common.buttons.linkedin')} />
+								<GitHubButton
+									ariaLabel={t('common.hero.github')}
+									buttonText={t('common.buttons.github')}
+								/>
+								<LinkedInButton
+									ariaLabel={t('common.hero.linkedin')}
+									buttonText={t('common.buttons.linkedin')}
+								/>
 							</div>
 							<div className='inline-block'>
 								<SmoothScrollButton
