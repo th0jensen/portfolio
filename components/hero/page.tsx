@@ -5,7 +5,12 @@ import SmoothScrollButton from '~/islands/SmoothScrollButton.tsx'
 import GitHubButton from '~/components/ui/GitHubButton.tsx'
 import LinkedInButton from '~/components/ui/LinkedInButton.tsx'
 
-export default function Hero({ about }: { about: Data['about'] }) {
+interface HeroProps {
+	about: Data['about']
+	t: (key: string, params?: Record<string, string>) => string
+}
+
+export default function Hero({ about, t }: HeroProps) {
 	const age = calculateAge(about.birthday)
 
 	return (
@@ -44,13 +49,19 @@ export default function Hero({ about }: { about: Data['about'] }) {
       `}
 			</style>
 
-			{/* Subtle gradient background */}
-			<div className='absolute inset-0 bg-gradient-to-b from-background to-background/60 dark:from-background dark:to-background/80' />
+			{/* Comet-inspired gradient background with soft ambient lighting */}
+			<div className='absolute inset-0 bg-gradient-to-br from-background via-background to-accent/5' />
 
-			{/* Minimal shapes for visual interest */}
+			{/* Zed-inspired minimal shapes for visual depth */}
 			<div className='absolute inset-0 overflow-hidden'>
-				<div className='absolute left-[10%] top-[30%] h-64 w-64 rounded-full bg-primary/5 blur-3xl' />
-				<div className='absolute right-[15%] top-[60%] h-80 w-80 rounded-full bg-secondary/5 blur-3xl' />
+				<div
+					className='absolute left-[5%] top-[20%] h-96 w-96 rounded-full bg-primary/8 blur-3xl animate-pulse'
+					style={{ animationDuration: '8s' }}
+				/>
+				<div
+					className='absolute right-[10%] bottom-[20%] h-80 w-80 rounded-full bg-accent/10 blur-3xl animate-pulse'
+					style={{ animationDuration: '6s', animationDelay: '2s' }}
+				/>
 			</div>
 
 			<div className='container relative z-10 mx-auto max-w-6xl px-4 flex flex-col h-[calc(100vh-64px)] justify-between'>
@@ -61,28 +72,25 @@ export default function Hero({ about }: { about: Data['about'] }) {
 							<img
 								src='/headshot.png'
 								alt='Profile'
-								className='w-full h-auto object-contain animate-fade-in'
+								className='w-full h-auto object-contain animate-fade-in rounded-xl'
 							/>
 						</div>
 					</div>
 
 					{/* Content */}
 					<div className='space-y-6 lg:space-y-8 lg:col-span-3'>
-						<div className='space-y-2 animate-slide-up animate-delay-1'>
-							<p className='text-sm font-medium tracking-wider text-muted-foreground uppercase'>
-								Full Stack Software Developer
+						<div className='space-y-3 animate-slide-up animate-delay-1'>
+							<p className='text-xs font-semibold tracking-widest text-muted-foreground uppercase opacity-80'>
+								{t('common.hero.role')}
 							</p>
-							<h1 className='text-4xl font-bold tracking-tight md:text-5xl lg:text-6xl'>
+							<h1 className='text-4xl font-bold tracking-tight md:text-5xl lg:text-6xl bg-gradient-to-r from-foreground to-foreground/70 bg-clip-text text-transparent'>
 								{about.firstName} {about.lastName}
 							</h1>
 						</div>
 
-						<p className='max-w-2xl text-lg text-muted-foreground animate-slide-up animate-delay-2'>
+						<p className='max-w-2xl text-lg leading-relaxed text-muted-foreground/90 animate-slide-up animate-delay-2'>
 							{age}{' '}
-							year old developer focused on creating elegant
-							solutions through clean code. Passionate about
-							backend services, optimization, and creating
-							seamless user experiences.
+							{t('common.hero.description')}
 						</p>
 
 						{/* Button section - Desktop only */}
@@ -93,19 +101,19 @@ export default function Hero({ about }: { about: Data['about'] }) {
 								size='lg'
 							>
 								<span className='flex items-center'>
-									Explore my work
+									{t('common.hero.exploreWork')}
 								</span>
 							</SmoothScrollButton>
 
-							<GitHubButton />
-							<LinkedInButton />
+							<GitHubButton ariaLabel={t('common.hero.github')} buttonText={t('common.buttons.github')} />
+							<LinkedInButton ariaLabel={t('common.hero.linkedin')} buttonText={t('common.buttons.linkedin')} />
 						</div>
 
 						{/* Mobile buttons - Shown below content on mobile and aligned to the right */}
 						<div className='lg:hidden flex flex-col space-y-4 animate-slide-up animate-delay-3 mt-6 mb-6 items-end'>
 							<div className='flex space-x-3'>
-								<GitHubButton />
-								<LinkedInButton />
+								<GitHubButton ariaLabel={t('common.hero.github')} buttonText={t('common.buttons.github')} />
+								<LinkedInButton ariaLabel={t('common.hero.linkedin')} buttonText={t('common.buttons.linkedin')} />
 							</div>
 							<div className='inline-block'>
 								<SmoothScrollButton
@@ -114,7 +122,7 @@ export default function Hero({ about }: { about: Data['about'] }) {
 									size='lg'
 								>
 									<span className='flex items-center'>
-										Explore my work
+										{t('common.hero.exploreWork')}
 									</span>
 								</SmoothScrollButton>
 							</div>
@@ -127,11 +135,10 @@ export default function Hero({ about }: { about: Data['about'] }) {
 							<img
 								src='/headshot.png'
 								alt='Profile'
-								className='h-auto max-h-[calc(100vh-140px)] w-auto object-contain'
+								className='h-auto max-h-[calc(100vh-140px)] w-auto object-contain rounded-xl'
 							/>
 						</div>
 					</div>
-
 				</div>
 			</div>
 		</Layout>

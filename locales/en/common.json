@@ -1,0 +1,83 @@
+{
+  "nav": {
+    "work": "Work",
+    "experience": "Experience",
+    "contact": "Contact",
+    "openMenu": "Open menu",
+    "closeMenu": "Close menu"
+  },
+  "hero": {
+    "role": "Full Stack Software Developer",
+    "description": "year old developer focused on creating elegant solutions through clean code. Passionate about backend services, optimization, and creating seamless user experiences.",
+    "exploreWork": "Explore my work",
+    "github": "GitHub profile",
+    "linkedin": "LinkedIn profile"
+  },
+  "work": {
+    "subtitle": "Featured Works",
+    "title": "My Projects",
+    "showMore": "Show more",
+    "showLess": "Show less",
+    "visitProject": "Visit {name} project",
+    "downloadAppStore": "Download on App Store",
+    "viewOnGitHub": "View on GitHub"
+  },
+  "experience": {
+    "subtitle": "Career Path",
+    "title": "My Experience",
+    "description": "A chronological overview of my professional journey and key milestones."
+  },
+  "theme": {
+    "light": "Light",
+    "dark": "Dark"
+  },
+  "footer": {
+    "copyright": "{year} Thomas Jensen"
+  },
+  "buttons": {
+    "github": "GitHub",
+    "linkedin": "LinkedIn"
+  },
+  "projects": {
+    "zed": {
+      "name": "zed-industries/zed contributions",
+      "description": "- PR #26211: Implement Extended Terminal Option\n- Gruber Darker Theme Extension"
+    },
+    "appleosophy": {
+      "name": "Appleosophy",
+      "description": "The official iOS app for Applesophy, which I built and shipped as the sole developer in 6 months. I used the pre-existing WordPress REST API as a backend."
+    }
+  },
+  "experienceEntries": {
+    "joinedApplesophy": {
+      "title": "Joined Applesophy",
+      "date": "Dec 2021",
+      "description": "Wrote articles primarily about Apple, alongside reviews of different tech gadgets."
+    },
+    "learningSwift": {
+      "title": "Learning Swift",
+      "date": "June 2022",
+      "description": "Started working on the Appleosophy iOS app, an immense undertaking; especially when considering that I knew nothing about either SwiftUI, Swift or Objective-C."
+    },
+    "testflight": {
+      "title": "Appleosophy hits Testflight",
+      "date": "Sep 2022",
+      "description": "The Appleosophy app was ready for beta testers after 3 months of learning and developing in SwiftUI."
+    },
+    "released": {
+      "title": "Appleosophy 1.0 released",
+      "date": "Dec 2022",
+      "description": "My first iOS app is launched on the App Store after 3 months of internal and external beta testing."
+    },
+    "joinedBoolean": {
+      "title": "Joined Boolean UK",
+      "date": "Apr 2024",
+      "description": "Started the intensive 6-month Full Stack Software Developer course at Boolean UK."
+    },
+    "booleanAlumni": {
+      "title": "Boolean UK Alumni",
+      "date": "Oct 2024",
+      "description": "Graduated from the Full Stack Software Developer course at Boolean UK"
+    }
+  }
+}

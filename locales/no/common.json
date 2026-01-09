@@ -1,0 +1,83 @@
+{
+  "nav": {
+    "work": "Arbeid",
+    "experience": "Erfaring",
+    "contact": "Kontakt",
+    "openMenu": "Åpne meny",
+    "closeMenu": "Lukk meny"
+  },
+  "hero": {
+    "role": "Fullstack Programvareutvikler",
+    "description": "år gammel utvikler fokusert på å skape elegante løsninger gjennom ren kode. Lidenskapelig opptatt av backend-tjenester, optimalisering og sømløse brukeropplevelser.",
+    "exploreWork": "Utforsk arbeidet mitt",
+    "github": "GitHub-profil",
+    "linkedin": "LinkedIn-profil"
+  },
+  "work": {
+    "subtitle": "Utvalgte Arbeider",
+    "title": "Mine Prosjekter",
+    "showMore": "Vis mer",
+    "showLess": "Vis mindre",
+    "visitProject": "Besøk {name}-prosjektet",
+    "downloadAppStore": "Last ned fra App Store",
+    "viewOnGitHub": "Se på GitHub"
+  },
+  "experience": {
+    "subtitle": "Karrierevei",
+    "title": "Min Erfaring",
+    "description": "En kronologisk oversikt over min profesjonelle reise og viktige milepæler."
+  },
+  "theme": {
+    "light": "Lys",
+    "dark": "Mørk"
+  },
+  "footer": {
+    "copyright": "{year} Thomas Jensen"
+  },
+  "buttons": {
+    "github": "GitHub",
+    "linkedin": "LinkedIn"
+  },
+  "projects": {
+    "zed": {
+      "name": "zed-industries/zed bidrag",
+      "description": "- PR #26211: Implementer utvidet terminalalternativ\n- Gruber Darker temaforlengelse"
+    },
+    "appleosophy": {
+      "name": "Appleosophy",
+      "description": "Den offisielle iOS-appen for Applesophy, som jeg bygde og lanserte som eneutvikler på 6 måneder. Jeg brukte den eksisterende WordPress REST API som backend."
+    }
+  },
+  "experienceEntries": {
+    "joinedApplesophy": {
+      "title": "Ble med i Applesophy",
+      "date": "Des 2021",
+      "description": "Skrev artikler primært om Apple, sammen med anmeldelser av ulike teknologiprodukter."
+    },
+    "learningSwift": {
+      "title": "Lærte Swift",
+      "date": "Juni 2022",
+      "description": "Begynte å jobbe med Appleosophy iOS-appen, et enormt prosjekt; spesielt med tanke på at jeg ikke kunne noe om verken SwiftUI, Swift eller Objective-C."
+    },
+    "testflight": {
+      "title": "Appleosophy på Testflight",
+      "date": "Sep 2022",
+      "description": "Appleosophy-appen var klar for betatestere etter 3 måneder med læring og utvikling i SwiftUI."
+    },
+    "released": {
+      "title": "Appleosophy 1.0 lansert",
+      "date": "Des 2022",
+      "description": "Min første iOS-app lanseres på App Store etter 3 måneder med intern og ekstern betatesting."
+    },
+    "joinedBoolean": {
+      "title": "Ble med i Boolean UK",
+      "date": "Apr 2024",
+      "description": "Startet det intensive 6-måneders Full Stack programvareutviklerkurset hos Boolean UK."
+    },
+    "booleanAlumni": {
+      "title": "Boolean UK Alumni",
+      "date": "Okt 2024",
+      "description": "Uteksaminert fra Full Stack programvareutviklerkurset hos Boolean UK"
+    }
+  }
+}

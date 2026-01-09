@@ -1,4 +1,3 @@
-import { useEffect } from 'preact/hooks'
 import { Button } from '~/components/ui/button.tsx'
 import { useSignal } from '@preact/signals'
 import NavItem from '~/islands/NavItem.tsx'
@@ -6,32 +5,26 @@ import ThemeToggle from '~/components/ui/ThemeButton.tsx'
 import HamburgerIcon from '~/components/ui/icons/HamburgerIcon.tsx'
 import CloseIcon from '~/components/ui/icons/CloseIcon.tsx'
 
-export default function Header() {
+interface HeaderTranslations {
+	work: string
+	experience: string
+	contact: string
+	openMenu: string
+	closeMenu: string
+	themeLight: string
+	themeDark: string
+	name: string
+}
+
+interface HeaderProps {
+	translations: HeaderTranslations
+	locale: string
+}
+
+export default function Header({ translations, locale }: HeaderProps) {
 	const displayNav = useSignal<boolean>(false)
+	const displayLangMenu = useSignal<boolean>(false)
 	const theme = useSignal<'light' | 'dark'>('light')
-
-	useEffect(() => {
-		if (
-			globalThis.window.matchMedia('(prefers-color-scheme: dark)').matches
-		) {
-			theme.value = 'dark'
-			document.documentElement.classList.add('dark')
-		}
-
-		globalThis.window.matchMedia('(prefers-color-scheme: dark)')
-			.addEventListener(
-				'change',
-				(event) => {
-					const newTheme = event.matches ? 'dark' : 'light'
-					theme.value = newTheme
-					if (event.matches) {
-						document.documentElement.classList.add('dark')
-					} else {
-						document.documentElement.classList.remove('dark')
-					}
-				},
-			)
-	}, [])
 
 	const toggleTheme = () => {
 		const newTheme = theme.value === 'light' ? 'dark' : 'light'
@@ -49,20 +42,27 @@ export default function Header() {
 	}
 
 	const navLinks = [
-		{ id: 'work', label: 'Work' },
-		{ id: 'experience', label: 'Experience' },
-		// { id: 'projects', label: 'Projects' },
-		{ href: 'mailto:thomas.jensen_@outlook.com', label: 'Contact' },
+		{ id: 'work', label: translations.work },
+		{ id: 'experience', label: translations.experience },
+		{ href: 'mailto:thomas.jensen_@outlook.com', label: translations.contact },
 	]
 
+	const availableLocales = [
+		{ code: 'en', label: 'English', flag: '🇬🇧' },
+		{ code: 'no', label: 'Norsk', flag: '🇳🇴' },
+		{ code: 'he', label: 'עברית', flag: '🇮🇱' },
+	]
+
+	const currentLocale = availableLocales.find(l => l.code === locale) || availableLocales[0]
+
 	return (
-		<header className='fixed top-0 left-0 right-0 z-50 h-16 border-b border-border/5 bg-background/80 backdrop-blur-md'>
+		<header className='fixed top-0 left-0 right-0 z-50 h-16 border-b border-border/20 bg-background/70 backdrop-blur-xl'>
 			<div className='container mx-auto flex h-full max-w-6xl items-center justify-between px-4'>
 				{/* Logo/Name */}
 				<div className='flex items-center z-10'>
 					<NavItem
 						id='hero'
-						label='Thomas Jensen'
+						label={translations.name}
 						className='font-medium tracking-tight text-lg'
 					/>
 				</div>
@@ -75,8 +75,8 @@ export default function Header() {
 						onClick={() => displayNav.value = !displayNav.value}
 						className='focus:ring-0'
 						aria-label={displayNav.value
-							? 'Close menu'
-							: 'Open menu'}
+							? translations.closeMenu
+							: translations.openMenu}
 					>
 						{!displayNav.value ? <HamburgerIcon /> : <CloseIcon />}
 					</Button>
@@ -93,11 +93,45 @@ export default function Header() {
 							className='px-3 py-2 text-sm font-medium transition-colors hover:text-foreground/80'
 						/>
 					))}
+					{/* Language Switcher Dropdown */}
+					<div className='relative ml-2'>
+						<button
+							onClick={() => displayLangMenu.value = !displayLangMenu.value}
+							onBlur={() => setTimeout(() => displayLangMenu.value = false, 150)}
+							className='flex items-center gap-1.5 px-2 py-1 text-sm font-medium rounded-md transition-colors text-muted-foreground hover:text-foreground hover:bg-muted'
+						>
+							<span>{currentLocale.flag}</span>
+							<span>{currentLocale.label}</span>
+							<svg className={`w-3 h-3 transition-transform ${displayLangMenu.value ? 'rotate-180' : ''}`} fill='none' stroke='currentColor' viewBox='0 0 24 24'>
+								<path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M19 9l-7 7-7-7' />
+							</svg>
+						</button>
+						{displayLangMenu.value && (
+							<div className='absolute top-full right-0 mt-1 py-1 bg-background border border-border/20 rounded-md shadow-lg min-w-[120px]'>
+								{availableLocales.map((loc) => (
+									<a
+										key={loc.code}
+										href={`/${loc.code}`}
+										className={`flex items-center gap-2 px-3 py-2 text-sm transition-colors ${
+											locale === loc.code
+												? 'bg-primary/10 text-foreground font-medium'
+												: 'text-muted-foreground hover:text-foreground hover:bg-muted'
+										}`}
+									>
+										<span>{loc.flag}</span>
+										<span>{loc.label}</span>
+									</a>
+								))}
+							</div>
+						)}
+					</div>
 					<ThemeToggle
 						onClick={toggleTheme}
 						theme={theme.value}
 						showText={false}
 						className='ml-2 h-9 rounded-full w-auto'
+						lightText={translations.themeLight}
+						darkText={translations.themeDark}
 					/>
 				</nav>
 
@@ -117,12 +151,31 @@ export default function Header() {
 									/>
 								))}
 							</div>
+							{/* Language Switcher - Mobile */}
+							<div className='border-t border-border/10 pt-4 flex flex-col items-center gap-1'>
+								{availableLocales.map((loc) => (
+									<a
+										key={loc.code}
+										href={`/${loc.code}`}
+										className={`flex items-center gap-2 w-36 justify-center px-3 py-2 text-sm font-medium rounded-md transition-colors ${
+											locale === loc.code
+												? 'bg-primary text-primary-foreground'
+												: 'text-muted-foreground hover:text-foreground hover:bg-muted'
+										}`}
+									>
+										<span>{loc.flag}</span>
+										<span>{loc.label}</span>
+									</a>
+								))}
+							</div>
 							<div className='border-t border-border/10 pt-4 flex items-center justify-end'>
 								<ThemeToggle
 									onClick={toggleTheme}
 									theme={theme.value}
 									showText
 									className='h-10 rounded-full w-auto'
+									lightText={translations.themeLight}
+									darkText={translations.themeDark}
 								/>
 							</div>
 						</nav>

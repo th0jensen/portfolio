@@ -7,20 +7,29 @@ interface ThemeToggleProps {
 	theme: 'light' | 'dark'
 	className?: string
 	showText?: boolean
+	lightText?: string
+	darkText?: string
 }
 
-export default function ThemeToggle({ onClick, theme, className, showText = false }: ThemeToggleProps) {
+export default function ThemeToggle({
+	onClick,
+	theme,
+	className,
+	showText = false,
+	lightText = 'Light',
+	darkText = 'Dark',
+}: ThemeToggleProps) {
+	const targetMode = theme === 'light' ? darkText : lightText
+
 	return (
 		<Button
 			variant='ghost'
 			size='sm'
 			onClick={onClick}
 			className={`flex items-center justify-end gap-2 ${className}`}
-			aria-label={`Switch to ${
-				theme === 'light' ? 'dark' : 'light'
-			} mode`}
+			aria-label={`Switch to ${targetMode} mode`}
 		>
-			{showText && <span className="whitespace-nowrap">Switch to {theme === 'light' ? 'dark' : 'light'} mode</span>}
+			{showText && <span className="whitespace-nowrap">{targetMode}</span>}
 			{theme === 'light' ? <MoonIcon /> : <SunIcon />}
 		</Button>
 	)

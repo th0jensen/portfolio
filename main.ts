@@ -1,13 +1,17 @@
-/// <reference no-default-lib="true" />
-/// <reference lib="dom" />
-/// <reference lib="dom.iterable" />
-/// <reference lib="dom.asynciterable" />
-/// <reference lib="deno.ns" />
+import { App, staticFiles, trailingSlashes } from "fresh";
+import { i18nPlugin } from "fresh-i18n";
+import type { ExtendedState } from "./utils.ts";
 
-import '$std/dotenv/load.ts'
-
-import { start } from '$fresh/server.ts'
-import manifest from './fresh.gen.ts'
-import config from './fresh.config.ts'
-
-await start(manifest, config)
+export const app = new App<ExtendedState>()
+  // Add static file serving middleware
+  .use(staticFiles())
+  // Remove trailing slashes from URLs
+  .use(trailingSlashes("never"))
+  // Add i18n plugin with EN, NO (Norwegian), and HE (Hebrew) support
+  .use(i18nPlugin({
+    languages: ["en", "no", "he"],
+    defaultLanguage: "en",
+    localesDir: "./locales",
+  }))
+  // Enable file-system based routing
+  .fsRoutes();
