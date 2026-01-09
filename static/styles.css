@@ -139,6 +139,11 @@
         @apply bg-card/80 backdrop-blur-xl border border-border/50;
     }
 
+    /* Ensure backdrop-blur works in Safari */
+    .backdrop-blur-xl {
+        -webkit-backdrop-filter: blur(24px);
+    }
+
     /* Soft shadows for depth without harshness */
     .soft-shadow {
         box-shadow:

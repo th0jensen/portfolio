@@ -1,5 +1,6 @@
 import { Button } from '~/components/ui/button.tsx'
 import { useSignal } from '@preact/signals'
+import { useEffect } from 'preact/hooks'
 import NavItem from '~/islands/NavItem.tsx'
 import ThemeToggle from '~/components/ui/ThemeButton.tsx'
 import HamburgerIcon from '~/components/ui/icons/HamburgerIcon.tsx'
@@ -24,11 +25,24 @@ interface HeaderProps {
 export default function Header({ translations, locale }: HeaderProps) {
 	const displayNav = useSignal<boolean>(false)
 	const displayLangMenu = useSignal<boolean>(false)
+	const displayMobileLangMenu = useSignal<boolean>(false)
 	const theme = useSignal<'light' | 'dark'>('light')
+
+	// Load saved theme on mount
+	useEffect(() => {
+		const savedTheme = localStorage.getItem('theme') as 'light' | 'dark' | null
+		if (savedTheme) {
+			theme.value = savedTheme
+			if (savedTheme === 'dark') {
+				document.documentElement.classList.add('dark')
+			}
+		}
+	}, [])
 
 	const toggleTheme = () => {
 		const newTheme = theme.value === 'light' ? 'dark' : 'light'
 		theme.value = newTheme
+		localStorage.setItem('theme', newTheme)
 		if (newTheme === 'dark') {
 			document.documentElement.classList.add('dark')
 		} else {
@@ -60,7 +74,8 @@ export default function Header({ translations, locale }: HeaderProps) {
 		availableLocales[0]
 
 	return (
-		<header className='fixed top-0 left-0 right-0 z-50 h-16 border-b border-border/20 bg-background/70 backdrop-blur-xl'>
+		<div className={`fixed top-0 left-0 right-0 z-50 bg-background/70 backdrop-blur-xl border-b border-border/20`}>
+		<header className='h-16'>
 			<div className='container mx-auto flex h-full max-w-6xl items-center justify-between px-4'>
 				{/* Logo/Name */}
 				<div className='flex items-center z-10'>
@@ -155,53 +170,76 @@ export default function Header({ translations, locale }: HeaderProps) {
 					/>
 				</nav>
 
-				{/* Mobile Navigation Menu */}
-				{displayNav.value && (
-					<div className='absolute inset-x-0 top-16 z-50 bg-background/95 p-4 backdrop-blur-md shadow-lg border-b border-border/10 md:hidden'>
-						<nav className='flex flex-col space-y-4'>
-							<div className='flex flex-col items-center gap-4'>
-								{navLinks.map((link) => (
-									<NavItem
-										key={link.id || link.href}
-										id={link.id}
-										href={link.href}
-										label={link.label}
-										className='flex items-center justify-center h-10 w-36 text-sm font-medium'
-										onClick={handleNavLinkClick}
-									/>
-								))}
-							</div>
-							{/* Language Switcher - Mobile */}
-							<div className='border-t border-border/10 pt-4 flex flex-col items-center gap-1'>
-								{availableLocales.map((loc) => (
+			</div>
+		</header>
+
+		{/* Mobile Navigation Menu */}
+		{displayNav.value && (
+			<div className='p-4 md:hidden'>
+				<nav className='flex flex-col space-y-4'>
+					<div className='flex flex-col items-center gap-4'>
+						{navLinks.map((link) => (
+							<NavItem
+								key={link.id || link.href}
+								id={link.id}
+								href={link.href}
+								label={link.label}
+								className='flex items-center justify-center h-10 w-36 text-sm font-medium'
+								onClick={handleNavLinkClick}
+							/>
+						))}
+					</div>
+					{/* Language Switcher - Mobile (Expandable) */}
+					<div className='border-t border-border/20 pt-4 flex flex-col items-center'>
+						<button
+							type='button'
+							onClick={() => displayMobileLangMenu.value = !displayMobileLangMenu.value}
+							className='flex items-center gap-2 w-36 justify-center px-3 py-2 text-sm font-medium rounded-md transition-colors text-muted-foreground hover:text-foreground hover:bg-muted'
+						>
+							<span>{currentLocale.flag}</span>
+							<span>{currentLocale.label}</span>
+							<svg
+								className={`w-3 h-3 transition-transform ${displayMobileLangMenu.value ? 'rotate-180' : ''}`}
+								fill='none'
+								stroke='currentColor'
+								viewBox='0 0 24 24'
+							>
+								<path
+									strokeLinecap='round'
+									strokeLinejoin='round'
+									strokeWidth={2}
+									d='M19 9l-7 7-7-7'
+								/>
+							</svg>
+						</button>
+						{displayMobileLangMenu.value && (
+							<div className='flex flex-col items-center gap-1 mt-2'>
+								{availableLocales.filter(loc => loc.code !== locale).map((loc) => (
 									<a
 										key={loc.code}
 										href={`/${loc.code}`}
-										className={`flex items-center gap-2 w-36 justify-center px-3 py-2 text-sm font-medium rounded-md transition-colors ${
-											locale === loc.code
-												? 'bg-primary text-primary-foreground'
-												: 'text-muted-foreground hover:text-foreground hover:bg-muted'
-										}`}
+										className='flex items-center gap-2 w-36 justify-center px-3 py-2 text-sm font-medium rounded-md transition-colors text-muted-foreground hover:text-foreground hover:bg-muted'
 									>
 										<span>{loc.flag}</span>
 										<span>{loc.label}</span>
 									</a>
 								))}
 							</div>
-							<div className='border-t border-border/10 pt-4 flex items-center justify-end'>
-								<ThemeToggle
-									onClick={toggleTheme}
-									theme={theme.value}
-									showText
-									className='h-10 rounded-full w-auto'
-									lightText={translations.themeLight}
-									darkText={translations.themeDark}
-								/>
-							</div>
-						</nav>
+						)}
 					</div>
-				)}
+					<div className='border-t border-border/20 pt-4 flex items-center justify-center'>
+						<ThemeToggle
+							onClick={toggleTheme}
+							theme={theme.value}
+							showText
+							className='h-10 rounded-full w-auto'
+							lightText={translations.themeLight}
+							darkText={translations.themeDark}
+						/>
+					</div>
+				</nav>
 			</div>
-		</header>
+		)}
+		</div>
 	)
 }

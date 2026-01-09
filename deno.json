@@ -70,7 +70,6 @@
   "deploy": {
     "project": "02d1034b-faed-4eb9-b436-d9b02655537a",
     "exclude": ["**/node_modules"],
-    "include": ["./static", "./static/wasm"],
     "entrypoint": "main.ts"
   }
 }
