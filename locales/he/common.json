@@ -18,7 +18,7 @@
     "title": "הפרויקטים שלי",
     "showMore": "הצג עוד",
     "showLess": "הצג פחות",
-    "visitProject": "בקר בפרויקט",
+    "visitProject": "בקר בפרויקט {name}",
     "downloadAppStore": "הורד מאפ סטור",
     "viewOnGitHub": "צפה בגיטהאב"
   },

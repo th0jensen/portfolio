@@ -9,7 +9,7 @@ export default define.page(function App({ Component, state }) {
 		: 'Thomas Jensen'
 
 	return (
-		<html>
+		<html lang={locale}>
 			<head>
 				<meta charset='utf-8' />
 				<meta
