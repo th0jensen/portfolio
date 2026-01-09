@@ -66,7 +66,7 @@
     ],
     "types": ["vite/client"]
   },
-  "nodeModulesDir": "manual",
+  "nodeModulesDir": "auto",
   "deploy": {
     "project": "02d1034b-faed-4eb9-b436-d9b02655537a",
     "exclude": ["**/node_modules"],
