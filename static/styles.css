@@ -59,8 +59,8 @@
         --card: 0 0% 100%;
         --card-foreground: 220 10% 15%;
 
-        /* Zed-inspired accent - subtle blue tint */
-        --primary: 215 90% 55%;
+        /* Zed-inspired accent - darker blue for better contrast */
+        --primary: 215 90% 45%;
         --primary-foreground: 0 0% 100%;
 
         --secondary: 220 10% 95%;

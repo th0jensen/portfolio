@@ -33,6 +33,8 @@ export default function ProjectCard({
 							<img
 								src='/appstore.svg'
 								alt='App Store'
+								width={120}
+								height={40}
 								className='h-12 w-auto drop-shadow-md'
 							/>
 						</a>
@@ -45,6 +47,8 @@ export default function ProjectCard({
 				<img
 					src={project.imageURL}
 					alt={project.name}
+					width={300}
+					height={project.imageURL === '/images/zed.jpeg' ? 150 : 180}
 					className={`${
 						project.imageURL === '/images/zed.jpeg'
 							? 'h-[150px] rounded-xl overflow-hidden'
