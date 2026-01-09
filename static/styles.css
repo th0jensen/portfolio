@@ -1,16 +1,6 @@
-/* Fonts are loaded in _app.tsx head for better performance */
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
-
-.inter {
-    font-family:
-        "Inter",
-        -apple-system,
-        BlinkMacSystemFont,
-        "Segoe UI",
-        sans-serif;
-}
 
 .alef {
     font-family:
@@ -21,102 +11,54 @@
         sans-serif;
 }
 
-[dir="rtl"] {
-    font-family:
-        "Alef",
-        -apple-system,
-        BlinkMacSystemFont,
-        "Segoe UI",
-        sans-serif;
-}
-
-.invert img {
-    -webkit-filter: invert(100%);
-    filter: invert(100%);
-}
-
-.no-invert {
-    -webkit-filter: invert(0%) !important;
-    filter: invert(0%) !important;
-}
-
 @layer base {
     :root {
-        /* Perplexity Comet-inspired light mode - soft, balanced, clean */
         --background: 0 0% 99%;
         --foreground: 220 10% 15%;
-
         --muted: 220 10% 95%;
         --muted-foreground: 220 10% 38%;
-
         --popover: 0 0% 100%;
         --popover-foreground: 220 10% 15%;
-
-        /* Softer borders for that polished look */
         --border: 220 10% 88%;
         --input: 220 10% 88%;
-
         --card: 0 0% 100%;
         --card-foreground: 220 10% 15%;
-
-        /* Zed-inspired accent - darker blue for better contrast */
         --primary: 215 90% 45%;
         --primary-foreground: 0 0% 100%;
-
         --secondary: 220 10% 95%;
         --secondary-foreground: 220 10% 20%;
-
         --accent: 215 85% 96%;
         --accent-foreground: 215 90% 45%;
-
         --destructive: 0 72% 51%;
         --destructive-foreground: 0 0% 100%;
-
         --ring: 215 90% 55%;
-
-        /* Increased border radius for softer, rounded aesthetic */
         --radius: 0.75rem;
     }
-
     .dark {
-        /* Zed/Comet-inspired dark mode - deep, clean, high contrast */
         --background: 220 15% 8%;
         --foreground: 220 10% 95%;
-
         --muted: 220 12% 14%;
         --muted-foreground: 220 10% 72%;
-
         --accent: 220 12% 18%;
         --accent-foreground: 220 10% 95%;
-
         --popover: 220 15% 10%;
         --popover-foreground: 220 10% 90%;
-
         --border: 220 12% 18%;
         --input: 220 12% 18%;
-
         --card: 220 15% 10%;
         --card-foreground: 220 10% 95%;
-
-        /* Brighter accent in dark mode for better visibility */
-        --primary: 215 85% 60%;
+        --primary: 215 90% 45%;
         --primary-foreground: 0 0% 100%;
-
         --secondary: 220 12% 16%;
         --secondary-foreground: 220 10% 95%;
-
         --destructive: 0 68% 48%;
         --destructive-foreground: 0 0% 100%;
-
-        --ring: 215 85% 60%;
-
+        --ring: 215 90% 45%;
         --radius: 0.75rem;
     }
-
     * {
         @apply border-border;
     }
-
     body {
         @apply bg-background text-foreground alef;
         font-feature-settings:
@@ -128,28 +70,20 @@
 }
 
 @layer components {
-    /* Smooth transitions inspired by Perplexity's polished UI */
     .smooth-transition {
         transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
     }
-
-    /* Glassmorphism effect for modern card designs */
     .glass-card {
         @apply bg-card/80 backdrop-blur-xl border border-border/50;
     }
-
-    /* Ensure backdrop-blur works in Safari */
     .backdrop-blur-xl {
         -webkit-backdrop-filter: blur(24px);
     }
-
-    /* Soft shadows for depth without harshness */
     .soft-shadow {
         box-shadow:
             0 2px 8px -2px rgba(0, 0, 0, 0.08),
             0 4px 16px -4px rgba(0, 0, 0, 0.04);
     }
-
     .dark .soft-shadow {
         box-shadow:
             0 2px 8px -2px rgba(0, 0, 0, 0.3),

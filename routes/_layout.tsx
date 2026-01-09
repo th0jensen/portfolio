@@ -8,7 +8,6 @@ export default define.page(function Layout({ Component, state }) {
 	const locale = state.locale || 'en'
 	const isRtl = locale === 'he'
 
-	// Pre-translate strings for Header island (islands can't receive functions)
 	const headerTranslations = {
 		work: t('common.nav.work'),
 		experience: t('common.nav.experience'),
@@ -23,9 +22,7 @@ export default define.page(function Layout({ Component, state }) {
 	return (
 		<div class='flex flex-col' dir={isRtl ? 'rtl' : 'ltr'}>
 			<Header translations={headerTranslations} locale={locale} />
-			<div class='flex-1'>
-				<Component />
-			</div>
+			<div class='flex-1'><Component /></div>
 			<Footer t={t} />
 		</div>
 	)
