@@ -33,6 +33,7 @@ export default function Hero({ about, t }: HeroProps) {
 							<img
 								src='/headshot.png'
 								alt='Profile'
+								fetchpriority="high"
 								className='w-full h-auto object-contain rounded-xl'
 							/>
 						</div>
@@ -105,6 +106,7 @@ export default function Hero({ about, t }: HeroProps) {
 							<img
 								src='/headshot.png'
 								alt='Profile'
+								fetchpriority="high"
 								className='h-auto max-h-[calc(100vh-140px)] w-auto object-contain rounded-xl'
 							/>
 						</div>
