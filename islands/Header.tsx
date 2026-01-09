@@ -44,7 +44,10 @@ export default function Header({ translations, locale }: HeaderProps) {
 	const navLinks = [
 		{ id: 'work', label: translations.work },
 		{ id: 'experience', label: translations.experience },
-		{ href: 'mailto:thomas.jensen_@outlook.com', label: translations.contact },
+		{
+			href: 'mailto:thomas.jensen_@outlook.com',
+			label: translations.contact,
+		},
 	]
 
 	const availableLocales = [
@@ -53,7 +56,8 @@ export default function Header({ translations, locale }: HeaderProps) {
 		{ code: 'he', label: 'עברית', flag: '🇮🇱' },
 	]
 
-	const currentLocale = availableLocales.find(l => l.code === locale) || availableLocales[0]
+	const currentLocale = availableLocales.find((l) => l.code === locale) ||
+		availableLocales[0]
 
 	return (
 		<header className='fixed top-0 left-0 right-0 z-50 h-16 border-b border-border/20 bg-background/70 backdrop-blur-xl'>
@@ -96,14 +100,30 @@ export default function Header({ translations, locale }: HeaderProps) {
 					{/* Language Switcher Dropdown */}
 					<div className='relative ml-2'>
 						<button
-							onClick={() => displayLangMenu.value = !displayLangMenu.value}
-							onBlur={() => setTimeout(() => displayLangMenu.value = false, 150)}
+							type='button'
+							onClick={() =>
+								displayLangMenu.value = !displayLangMenu.value}
+							onBlur={() =>
+								setTimeout(() =>
+									displayLangMenu.value = false, 150)}
 							className='flex items-center gap-1.5 px-2 py-1 text-sm font-medium rounded-md transition-colors text-muted-foreground hover:text-foreground hover:bg-muted'
 						>
 							<span>{currentLocale.flag}</span>
 							<span>{currentLocale.label}</span>
-							<svg className={`w-3 h-3 transition-transform ${displayLangMenu.value ? 'rotate-180' : ''}`} fill='none' stroke='currentColor' viewBox='0 0 24 24'>
-								<path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M19 9l-7 7-7-7' />
+							<svg
+								className={`w-3 h-3 transition-transform ${
+									displayLangMenu.value ? 'rotate-180' : ''
+								}`}
+								fill='none'
+								stroke='currentColor'
+								viewBox='0 0 24 24'
+							>
+								<path
+									strokeLinecap='round'
+									strokeLinejoin='round'
+									strokeWidth={2}
+									d='M19 9l-7 7-7-7'
+								/>
 							</svg>
 						</button>
 						{displayLangMenu.value && (

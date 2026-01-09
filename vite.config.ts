@@ -1,6 +1,6 @@
 import { defineConfig } from 'vite'
-import { fresh } from 'jsr:@fresh/plugin-vite'
-import tailwindcss from 'npm:tailwindcss@3.4.1'
+import { fresh } from 'jsr:@fresh/plugin-vite@1.0.8'
+import tailwindcss from 'tailwindcss'
 import autoprefixer from 'npm:autoprefixer@10.4.20'
 
 export default defineConfig({
