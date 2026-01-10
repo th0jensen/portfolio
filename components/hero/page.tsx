@@ -5,6 +5,7 @@ import SmoothScrollButton from '~/islands/SmoothScrollButton.tsx'
 import GitHubButton from '~/components/ui/GitHubButton.tsx'
 import LinkedInButton from '~/components/ui/LinkedInButton.tsx'
 import { Image } from '@unpic/preact'
+import type { ImageProps } from '@unpic/preact'
 
 interface HeroProps {
 	about: Data['about']
@@ -29,8 +30,8 @@ export default function Hero({ about, t }: HeroProps) {
 						<div className='rounded-xl overflow-hidden'>
 							<Image
 								src='/headshot.webp'
+								alt={t('common.hero.headshotAlt')}
 								layout='constrained'
-								alt='Profile'
 								fetchpriority='high'
 								width={360}
 								height={540}
@@ -100,8 +101,8 @@ export default function Hero({ about, t }: HeroProps) {
 						<div className='max-h-[calc(100vh-140px)] rounded-xl overflow-hidden'>
 							<Image
 								src='/headshot.webp'
+								alt={t('common.hero.headshotAlt')}
 								layout='constrained'
-								alt='Profile'
 								fetchpriority='high'
 								width={360}
 								height={540}

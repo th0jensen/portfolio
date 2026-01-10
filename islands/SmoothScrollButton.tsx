@@ -1,5 +1,5 @@
 import { Button } from '~/components/ui/button.tsx'
-import { smoothScrollTo } from '~/lib/utils/smoothScroll.ts'
+import { smoothScrollTo } from '~/lib/smoothScroll.ts'
 
 interface SmoothScrollButtonProps {
 	targetId: string

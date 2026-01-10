@@ -1,6 +1,6 @@
 import Layout from '~/components/ComponentLayout.tsx'
 import type { Experience } from '~/lib/data/types.ts'
-import Entry from '~/islands/Entry.tsx'
+import Entry from '~/components/Entry.tsx'
 
 interface ExperiencePageProps {
 	experience: Experience[]

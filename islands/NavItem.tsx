@@ -1,5 +1,5 @@
 import { Button, Link } from '~/components/ui/button.tsx'
-import { smoothScrollTo } from '~/lib/utils/smoothScroll.ts'
+import { smoothScrollTo } from '~/lib/smoothScroll.ts'
 
 interface NavItemProps {
 	id?: string
@@ -9,7 +9,9 @@ interface NavItemProps {
 	onClick?: () => void
 }
 
-export default function NavItem({ id, href, label, className = '', onClick }: NavItemProps) {
+export default function NavItem(
+	{ id, href, label, className = '', onClick }: NavItemProps,
+) {
 	const handleClick = () => {
 		if (id) {
 			smoothScrollTo(id)
@@ -18,8 +20,27 @@ export default function NavItem({ id, href, label, className = '', onClick }: Na
 	}
 
 	if (id) {
-		return <Button variant='ghost' size='sm' onClick={handleClick} className={className}>{label}</Button>
+		return (
+			<Button
+				variant='ghost'
+				size='sm'
+				onClick={handleClick}
+				className={className}
+			>
+				{label}
+			</Button>
+		)
 	}
 
-	return <Link variant='ghost' size='sm' href={href || '#'} className={className} onClick={onClick}>{label}</Link>
+	return (
+		<Link
+			variant='ghost'
+			size='sm'
+			href={href || '#'}
+			className={className}
+			onClick={onClick}
+		>
+			{label}
+		</Link>
+	)
 }

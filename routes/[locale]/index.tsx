@@ -3,7 +3,7 @@ import { createTranslator } from 'fresh-i18n'
 import Hero from '~/components/hero/page.tsx'
 import Work from '~/components/work/page.tsx'
 import Experience from '~/components/experience/page.tsx'
-import type { Project, Experience as ExperienceType } from '~/lib/data/types.ts'
+import type { Experience as ExperienceType, Project } from '~/lib/data/types.ts'
 import data from '~/lib/data/en.ts'
 
 export default define.page(function Home(props) {
@@ -15,36 +15,72 @@ export default define.page(function Home(props) {
 		const translated: Record<string, string> = {}
 		for (const [key, value] of Object.entries(technologies)) {
 			const translatedKey = t(`common.technologies.${key}`)
-			translated[translatedKey !== `common.technologies.${key}` ? translatedKey : key] = value
+			translated[
+				translatedKey !== `common.technologies.${key}`
+					? translatedKey
+					: key
+			] = value
 		}
 		return translated
 	}
 
 	const translatedProjects: Project[] = data.projects.map((project) => {
 		if (project.name.includes('zed')) {
-			return { ...project, name: t('common.projects.zed.name'), description: t('common.projects.zed.description'), technologies: translateTechnologies(project.technologies) }
+			return {
+				...project,
+				name: t('common.projects.zed.name'),
+				description: t('common.projects.zed.description'),
+				technologies: translateTechnologies(project.technologies),
+			}
 		} else if (project.name === 'Appleosophy') {
-			return { ...project, name: t('common.projects.appleosophy.name'), description: t('common.projects.appleosophy.description'), technologies: translateTechnologies(project.technologies) }
+			return {
+				...project,
+				name: t('common.projects.appleosophy.name'),
+				description: t('common.projects.appleosophy.description'),
+				technologies: translateTechnologies(project.technologies),
+			}
 		}
 		return project
 	})
 
-	const experienceKeys = ['joinedApplesophy', 'learningSwift', 'testflight', 'released', 'joinedBoolean', 'booleanAlumni']
+	const experienceKeys = [
+		'joinedApplesophy',
+		'learningSwift',
+		'testflight',
+		'released',
+		'joinedBoolean',
+		'booleanAlumni',
+	]
 
-	const translatedExperience: ExperienceType[] = data.experience.map((entry, index) => {
-		const key = experienceKeys[index]
-		if (key) {
-			return { ...entry, title: t(`common.experienceEntries.${key}.title`), date: t(`common.experienceEntries.${key}.date`), description: t(`common.experienceEntries.${key}.description`) }
+	const translatedExperience: ExperienceType[] = data.experience.map(
+		(entry, index) => {
+			const key = experienceKeys[index]
+			if (key) {
+				return {
+					...entry,
+					title: t(`common.experienceEntries.${key}.title`),
+					date: t(`common.experienceEntries.${key}.date`),
+					description: t(
+						`common.experienceEntries.${key}.description`,
+					),
+				}
+			}
+			return entry
+		},
+	)
+
+	const translatedAbout = locale === 'he'
+		? {
+			...data.about,
+			firstName: t('common.about.firstName'),
+			lastName: t('common.about.lastName'),
 		}
-		return entry
-	})
-
-	const translatedAbout = locale === 'he' ? { ...data.about, firstName: t('common.about.firstName'), lastName: t('common.about.lastName') } : data.about
+		: data.about
 
 	return (
 		<div class='flex flex-col items-center justify-center overflow-x-hidden'>
 			<Hero about={translatedAbout} t={t} />
-			<Work projects={translatedProjects} t={t} locale={locale} />
+			<Work projects={translatedProjects} t={t} />
 			<Experience experience={translatedExperience} t={t} />
 		</div>
 	)
