@@ -94,7 +94,7 @@ const data: Data = {
 		// },
 		{
 			name: 'zed-industries/zed contributions',
-			imageURL: '/images/zed.jpeg',
+			imageURL: '/images/zed.webp',
 			technologies: {
 				'Rust': '#000000',
 				'GPUI': '#3178C6',
@@ -110,7 +110,7 @@ const data: Data = {
 		},
 		{
 			name: 'Appleosophy',
-			imageURL: '/images/appleosophy.png',
+			imageURL: '/images/appleosophy.webp',
 			technologies: {
 				'Swift': '#F05138',
 				'Objective-C': '#007AFF',

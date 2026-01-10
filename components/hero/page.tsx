@@ -4,7 +4,7 @@ import { calculateAge } from '~/components/hero/index.ts'
 import SmoothScrollButton from '~/islands/SmoothScrollButton.tsx'
 import GitHubButton from '~/components/ui/GitHubButton.tsx'
 import LinkedInButton from '~/components/ui/LinkedInButton.tsx'
-import OptimizedImage from '~/islands/OptimizedImage.tsx'
+import { Image } from '@unpic/preact'
 
 interface HeroProps {
 	about: Data['about']
@@ -27,13 +27,14 @@ export default function Hero({ about, t }: HeroProps) {
 				<div className='grid items-start lg:items-center flex-grow grid-cols-1 lg:grid-cols-5 gap-8 lg:gap-16 pt-4 lg:pt-0'>
 					<div className='lg:hidden flex justify-center -mt-4 mb-4'>
 						<div className='rounded-xl overflow-hidden'>
-							<OptimizedImage
-								src='/headshot.png'
+							<Image
+								src='/headshot.webp'
+								layout='constrained'
 								alt='Profile'
+								fetchpriority='high'
 								width={360}
 								height={540}
 								className='w-36 sm:w-48 md:w-48 h-auto'
-								priority={true}
 							/>
 						</div>
 					</div>
@@ -53,21 +54,41 @@ export default function Hero({ about, t }: HeroProps) {
 						</p>
 
 						<div className='hidden lg:flex flex-wrap gap-3'>
-							<SmoothScrollButton targetId='work' className='group' size='lg'>
+							<SmoothScrollButton
+								targetId='work'
+								className='group'
+								size='lg'
+							>
 								<span className='flex items-center'>
 									{t('common.hero.exploreWork')}
 								</span>
 							</SmoothScrollButton>
-							<GitHubButton ariaLabel={t('common.hero.github')} buttonText={t('common.buttons.github')} />
-							<LinkedInButton ariaLabel={t('common.hero.linkedin')} buttonText={t('common.buttons.linkedin')} />
+							<GitHubButton
+								ariaLabel={t('common.hero.github')}
+								buttonText={t('common.buttons.github')}
+							/>
+							<LinkedInButton
+								ariaLabel={t('common.hero.linkedin')}
+								buttonText={t('common.buttons.linkedin')}
+							/>
 						</div>
 
 						<div className='lg:hidden flex flex-col gap-3 mt-4 items-start'>
 							<div className='flex gap-3'>
-								<GitHubButton ariaLabel={t('common.hero.github')} buttonText={t('common.buttons.github')} />
-								<LinkedInButton ariaLabel={t('common.hero.linkedin')} buttonText={t('common.buttons.linkedin')} />
+								<GitHubButton
+									ariaLabel={t('common.hero.github')}
+									buttonText={t('common.buttons.github')}
+								/>
+								<LinkedInButton
+									ariaLabel={t('common.hero.linkedin')}
+									buttonText={t('common.buttons.linkedin')}
+								/>
 							</div>
-							<SmoothScrollButton targetId='work' className='group' size='lg'>
+							<SmoothScrollButton
+								targetId='work'
+								className='group'
+								size='lg'
+							>
 								<span className='flex items-center justify-center'>
 									{t('common.hero.exploreWork')}
 								</span>
@@ -77,13 +98,14 @@ export default function Hero({ about, t }: HeroProps) {
 
 					<div className='hidden lg:flex justify-center items-center lg:col-span-2'>
 						<div className='max-h-[calc(100vh-140px)] rounded-xl overflow-hidden'>
-							<OptimizedImage
-								src='/headshot.png'
+							<Image
+								src='/headshot.webp'
+								layout='constrained'
 								alt='Profile'
+								fetchpriority='high'
 								width={360}
 								height={540}
 								className='w-auto h-full max-h-[calc(100vh-140px)] object-contain'
-								priority={true}
 							/>
 						</div>
 					</div>
