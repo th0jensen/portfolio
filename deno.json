@@ -21,7 +21,6 @@
     "@fresh/plugin-vite": "jsr:@fresh/plugin-vite@^1.0.8",
     "@preact/signals": "npm:@preact/signals@^2.5.0",
     "@radix-ui/react-slot": "npm:@radix-ui/react-slot@^1.2.4",
-    "@unpic/preact": "npm:@unpic/preact@^1.0.0",
     "class-variance-authority": "npm:class-variance-authority@^0.7.1",
     "clsx": "npm:clsx@^2.1.1",
     "preact": "npm:preact@^10.27.2",
@@ -33,6 +32,7 @@
     "tailwindcss/": "npm:/tailwindcss@3.4.1/",
     "tailwindcss/plugin": "npm:/tailwindcss@3.4.1/plugin.js",
     "vite": "npm:vite@^7.3.1",
+    "zod": "npm:zod@^4.3.5",
     "~/": "./",
     "fresh": "jsr:@fresh/core@^2.2.0",
     "fresh-i18n": "jsr:@elsoul/fresh-i18n@^1.2.0"

@@ -9,6 +9,13 @@
     "openMenu": "Åpne meny",
     "closeMenu": "Lukk meny"
   },
+  "about": {
+    "firstName": "Thomas",
+    "lastName": "Jensen",
+    "birthday": "10-12-2003",
+    "humanLanguages": ["Engelsk", "Norsk", "Tysk", "Hebraisk"],
+    "computerLanguages": ["Typescript", "Go", "Swift", "Rust"]
+  },
   "hero": {
     "role": "Fullstack Programvareutvikler",
     "description": "{age} år gammel utvikler fokusert på å skape elegante løsninger gjennom ren kode. Lidenskapelig opptatt av backend-tjenester, optimalisering og sømløse brukeropplevelser.",
@@ -26,10 +33,41 @@
     "downloadAppStore": "Last ned fra App Store",
     "viewOnGitHub": "Se på GitHub"
   },
+  "projects": [
+    {
+      "name": "zed-industries/zed bidrag",
+      "imageURL": "/images/zed.webp",
+      "technologies": {
+        "Rust": "#000000",
+        "GPUI": "#3178C6",
+        "JSON": "#ffffff"
+      },
+      "description": "- PR #26211: Implementer utvidet terminalalternativ\n- Gruber Darker temaforlengelse",
+      "source": {
+        "type": "github",
+        "link": "https://github.com/zed-industries/zed/pull/26211"
+      }
+    },
+    {
+      "name": "Appleosophy",
+      "imageURL": "/images/appleosophy.webp",
+      "technologies": {
+        "Swift": "#F05138",
+        "Objective-C": "#007AFF",
+        "SwiftUI": "#F05138",
+        "WordPress": "#21759B"
+      },
+      "description": "Den offisielle iOS-appen for Applesophy, som jeg bygde og lanserte som eneutvikler på 6 måneder. Jeg brukte den eksisterende WordPress REST API som backend.",
+      "source": {
+        "type": "appstore",
+        "link": "https://apps.apple.com/us/app/appleosophy/id1635844078"
+      }
+    }
+  ],
   "experience": {
-    "subtitle": "Karrierevei",
-    "title": "Min Erfaring",
-    "description": "En kronologisk oversikt over min profesjonelle reise og viktige milepæler."
+    "subtitle": "Åpen Kildekode",
+    "title": "GitHub Repos",
+    "description": "En samling av mine mest bemerkelsesverdige open source-bidrag og personlige prosjekter."
   },
   "theme": {
     "light": "Lys",
@@ -41,47 +79,5 @@
   "buttons": {
     "github": "GitHub",
     "linkedin": "LinkedIn"
-  },
-  "projects": {
-    "zed": {
-      "name": "zed-industries/zed bidrag",
-      "description": "- PR #26211: Implementer utvidet terminalalternativ\n- Gruber Darker temaforlengelse"
-    },
-    "appleosophy": {
-      "name": "Appleosophy",
-      "description": "Den offisielle iOS-appen for Applesophy, som jeg bygde og lanserte som eneutvikler på 6 måneder. Jeg brukte den eksisterende WordPress REST API som backend."
-    }
-  },
-  "experienceEntries": {
-    "joinedApplesophy": {
-      "title": "Ble med i Applesophy",
-      "date": "Des 2021",
-      "description": "Skrev artikler primært om Apple, sammen med anmeldelser av ulike teknologiprodukter."
-    },
-    "learningSwift": {
-      "title": "Lærte Swift",
-      "date": "Juni 2022",
-      "description": "Begynte å jobbe med Appleosophy iOS-appen, et enormt prosjekt; spesielt med tanke på at jeg ikke kunne noe om verken SwiftUI, Swift eller Objective-C."
-    },
-    "testflight": {
-      "title": "Appleosophy på Testflight",
-      "date": "Sep 2022",
-      "description": "Appleosophy-appen var klar for betatestere etter 3 måneder med læring og utvikling i SwiftUI."
-    },
-    "released": {
-      "title": "Appleosophy 1.0 lansert",
-      "date": "Des 2022",
-      "description": "Min første iOS-app lanseres på App Store etter 3 måneder med intern og ekstern betatesting."
-    },
-    "joinedBoolean": {
-      "title": "Ble med i Boolean UK",
-      "date": "Apr 2024",
-      "description": "Startet det intensive 6-måneders Full Stack programvareutviklerkurset hos Boolean UK."
-    },
-    "booleanAlumni": {
-      "title": "Boolean UK Alumni",
-      "date": "Okt 2024",
-      "description": "Uteksaminert fra Full Stack programvareutviklerkurset hos Boolean UK"
-    }
   }
 }

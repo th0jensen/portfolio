@@ -1,6 +1,5 @@
-import type { Project } from '~/lib/data/types.ts'
+import type { Project } from '../lib/schemas.ts'
 import ProjectCardExpander from '~/islands/ProjectCardExpander.tsx'
-import { Image } from '@unpic/preact'
 
 interface ProjectCardProps {
 	project: Project
@@ -29,7 +28,7 @@ export default function ProjectCard({
 							rel='noopener noreferrer'
 							aria-label={downloadAppStoreLabel}
 						>
-							<Image
+							<img
 								src='/appstore.svg'
 								alt='App Store'
 								width={120}
@@ -42,7 +41,7 @@ export default function ProjectCard({
 				{project.source?.type === 'github' && (
 					<div className='absolute inset-0 z-10 flex items-center justify-center opacity-0 transition-all duration-300 group-hover:opacity-100 bg-gradient-to-b from-black/30 via-black/15 to-foreground/0' />
 				)}
-				<Image
+				<img
 					src={project.imageURL}
 					alt={project.name}
 					width={300}

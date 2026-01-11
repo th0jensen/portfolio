@@ -1,10 +1,12 @@
-import { createDefine } from "fresh";
-import type { TranslationState } from "fresh-i18n";
+import { createDefine } from 'fresh'
+import type { TranslationState } from 'fresh-i18n'
+import type { FormattedRepo } from '~/lib/github.ts'
 
 export interface State {
-  title?: string;
+	title?: string
+	repos?: FormattedRepo[]
 }
 
-export type ExtendedState = State & TranslationState;
+export type ExtendedState = State & TranslationState
 
-export const define = createDefine<ExtendedState>();
+export const define = createDefine<ExtendedState>()

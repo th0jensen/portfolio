@@ -1,14 +1,12 @@
 import Layout from '~/components/ComponentLayout.tsx'
-import type { Data } from '~/lib/data/types.ts'
 import { calculateAge } from '~/components/hero/index.ts'
 import SmoothScrollButton from '~/islands/SmoothScrollButton.tsx'
 import GitHubButton from '~/components/ui/GitHubButton.tsx'
 import LinkedInButton from '~/components/ui/LinkedInButton.tsx'
-import { Image } from '@unpic/preact'
-import type { ImageProps } from '@unpic/preact'
+import type { About } from '~/lib/schemas.ts'
 
 interface HeroProps {
-	about: Data['about']
+	about: About
 	t: (key: string, params?: Record<string, string>) => string
 }
 
@@ -28,10 +26,9 @@ export default function Hero({ about, t }: HeroProps) {
 				<div className='grid items-start lg:items-center flex-grow grid-cols-1 lg:grid-cols-5 gap-8 lg:gap-16 pt-4 lg:pt-0'>
 					<div className='lg:hidden flex justify-center -mt-4 mb-4'>
 						<div className='rounded-xl overflow-hidden'>
-							<Image
+							<img
 								src='/headshot.webp'
 								alt={t('common.hero.headshotAlt')}
-								layout='constrained'
 								fetchpriority='high'
 								width={360}
 								height={540}
@@ -99,10 +96,9 @@ export default function Hero({ about, t }: HeroProps) {
 
 					<div className='hidden lg:flex justify-center items-center lg:col-span-2'>
 						<div className='max-h-[calc(100vh-140px)] rounded-xl overflow-hidden'>
-							<Image
+							<img
 								src='/headshot.webp'
 								alt={t('common.hero.headshotAlt')}
-								layout='constrained'
 								fetchpriority='high'
 								width={360}
 								height={540}

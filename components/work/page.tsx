@@ -1,5 +1,5 @@
 import Layout from '~/components/ComponentLayout.tsx'
-import type { Project } from '~/lib/data/types.ts'
+import type { Project } from '../../lib/schemas.ts'
 import ProjectCard from '~/islands/ProjectCard.tsx'
 
 interface WorkPageProps {

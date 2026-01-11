@@ -1,11 +1,64 @@
 import { define } from '~/utils.ts'
 
+const SUPPORTED_LOCALES = ['en', 'no', 'he'] as const
+const DEFAULT_LOCALE = 'en'
+
+type SupportedLocale = (typeof SUPPORTED_LOCALES)[number]
+
+function parseAcceptLanguage(header: string | null): string[] {
+	if (!header) return []
+
+	return header
+		.split(',')
+		.map((lang) => {
+			const [locale, quality = 'q=1'] = lang.trim().split(';')
+			const q = parseFloat(quality.replace('q=', '')) || 1
+			return { locale: locale.trim().toLowerCase(), q }
+		})
+		.sort((a, b) => b.q - a.q)
+		.map(({ locale }) => locale)
+}
+
+function matchLocale(acceptedLanguages: string[]): SupportedLocale {
+	for (const lang of acceptedLanguages) {
+		// Exact match (e.g., "en", "no", "he")
+		if (SUPPORTED_LOCALES.includes(lang as SupportedLocale)) {
+			return lang as SupportedLocale
+		}
+
+		// Match language part (e.g., "en-US" -> "en", "nb-NO" -> "no")
+		const langPrefix = lang.split('-')[0]
+
+		// Norwegian variations (nb, nn, no) -> no
+		if (['nb', 'nn', 'no'].includes(langPrefix)) {
+			return 'no'
+		}
+
+		// Hebrew variations (he, iw) -> he
+		if (['he', 'iw'].includes(langPrefix)) {
+			return 'he'
+		}
+
+		// English variations -> en
+		if (langPrefix === 'en') {
+			return 'en'
+		}
+	}
+
+	return DEFAULT_LOCALE
+}
+
 export const handler = define.handlers({
-	GET() {
+	GET(ctx) {
+		const acceptLanguage = ctx.req.headers.get('Accept-Language')
+		const preferredLanguages = parseAcceptLanguage(acceptLanguage)
+		const locale = matchLocale(preferredLanguages)
+
 		return new Response(null, {
 			status: 302,
 			headers: {
-				Location: '/en',
+				Location: `/${locale}`,
+				'Vary': 'Accept-Language',
 				Link: [
 					'<https://fonts.googleapis.com>; rel=preconnect',
 					'<https://fonts.gstatic.com>; rel=preconnect; crossorigin',

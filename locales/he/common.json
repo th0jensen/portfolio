@@ -9,6 +9,13 @@
     "openMenu": "פתח תפריט",
     "closeMenu": "סגור תפריט"
   },
+  "about": {
+    "firstName": "תּוֹמַס",
+    "lastName": "יֶנְסֶן",
+    "birthday": "10-12-2003",
+    "humanLanguages": ["אנגלית", "נורווגית", "גרמנית", "עברית"],
+    "computerLanguages": ["Typescript", "Go", "Swift", "Rust"]
+  },
   "hero": {
     "role": "מפתח פול סטאק",
     "description": "בן {age} מפתח בן שנה המתמקד ביצירת פתרונות אלגנטיים באמצעות קוד נקי. נלהב משירותי צד-שרת, אופטימיזציה ויצירת חוויות משתמש חלקות.",
@@ -26,10 +33,41 @@
     "downloadAppStore": "הורד מאפ סטור",
     "viewOnGitHub": "צפה בגיטהאב"
   },
+  "projects": [
+    {
+      "name": "תרומות ל-zed-industries/zed",
+      "imageURL": "/images/zed.webp",
+      "technologies": {
+        "Rust": "#000000",
+        "GPUI": "#3178C6",
+        "JSON": "#ffffff"
+      },
+      "description": "- בקשת משיכה מספר 26211: מימוש אפשרות טרמינל מורחבת\n- הרחבת ערכת נושא גרובר דארקר",
+      "source": {
+        "type": "github",
+        "link": "https://github.com/zed-industries/zed/pull/26211"
+      }
+    },
+    {
+      "name": "Appleosophy",
+      "imageURL": "/images/appleosophy.webp",
+      "technologies": {
+        "Swift": "#F05138",
+        "Objective-C": "#007AFF",
+        "SwiftUI": "#F05138",
+        "WordPress": "#21759B"
+      },
+      "description": "האפליקציה הרשמית של אפלאוסופי לאייפון, אותה בניתי והשקתי כמפתח יחיד תוך 6 חודשים. השתמשתי בממשק וורדפרס הקיים כבקאנד.",
+      "source": {
+        "type": "appstore",
+        "link": "https://apps.apple.com/us/app/appleosophy/id1635844078"
+      }
+    }
+  ],
   "experience": {
-    "subtitle": "מסלול קריירה",
-    "title": "הניסיון שלי",
-    "description": "סקירה כרונולוגית של המסע המקצועי שלי ואבני דרך מרכזיות."
+    "subtitle": "קוד פתוח",
+    "title": "GitHub Repos",
+    "description": "אוסף התרומות הבולטות שלי לקוד פתוח ופרויקטים אישיים."
   },
   "theme": {
     "light": "בהיר",
@@ -37,61 +75,6 @@
   },
   "footer": {
     "copyright": "{year} תּוֹמַס יֶנְסֶן"
-  },
-  "about": {
-    "firstName": "תּוֹמַס",
-    "lastName": "יֶנְסֶן"
-  },
-  "projects": {
-    "zed": {
-      "name": "תרומות ל-Zed",
-      "description": "- בקשת משיכה מספר 26211: מימוש אפשרות טרמינל מורחבת\n- הרחבת ערכת נושא גרובר דארקר"
-    },
-    "appleosophy": {
-      "name": "Appleosophy",
-      "description": "האפליקציה הרשמית של אפלאוסופי לאייפון, אותה בניתי והשקתי כמפתח יחיד תוך 6 חודשים. השתמשתי בממשק וורדפרס הקיים כבקאנד."
-    }
-  },
-  "technologies": {
-    "Rust": "Rust",
-    "GPUI": "GPUI",
-    "JSON": "JSON",
-    "Swift": "Swift",
-    "Objective-C": "Obj-C",
-    "SwiftUI": "SwiftUI",
-    "WordPress": "WordPress"
-  },
-  "experienceEntries": {
-    "joinedApplesophy": {
-      "title": "הצטרפתי Appleosophy",
-      "date": "דצמבר 2021",
-      "description": "כתבתי מאמרים בעיקר על אפל, לצד ביקורות על גאדג׳טים טכנולוגיים שונים."
-    },
-    "learningSwift": {
-      "title": "למידת Swift",
-      "date": "יוני 2022",
-      "description": "התחלתי לעבוד על אפליקציית אייפון של אפלאוסופי, משימה עצומה; במיוחד בהתחשב בכך שלא ידעתי דבר על סוויפט-יו-אי, סוויפט או אובג׳קטיב-סי."
-    },
-    "testflight": {
-      "title": "אפלאוסופי בטסטפלייט",
-      "date": "ספטמבר 2022",
-      "description": "אפליקציית אפלאוסופי הייתה מוכנה לבודקי בטא לאחר 3 חודשי למידה ופיתוח בסוויפט-יו-אי."
-    },
-    "released": {
-      "title": "אפלאוסופי 1.0 שוחררה",
-      "date": "דצמבר 2022",
-      "description": "האפליקציה הראשונה שלי לאייפון הושקה באפ סטור לאחר 3 חודשי בדיקות בטא פנימיות וחיצוניות."
-    },
-    "joinedBoolean": {
-      "title": "הצטרפות ל-Boolean UK",
-      "date": "אפריל 2024",
-      "description": "התחלתי את קורס מפתחי פול סטאק האינטנסיבי בן 6 חודשים בבוליאן יו-קיי."
-    },
-    "booleanAlumni": {
-      "title": "בוגר Boolean UK",
-      "date": "אוקטובר 2024",
-      "description": "סיימתי את קורס מפתחי פול סטאק בבוליאן יו-קיי"
-    }
   },
   "buttons": {
     "github": "גיטהאב",
