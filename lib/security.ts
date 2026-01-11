@@ -22,6 +22,8 @@ export interface SecurityHeadersConfig {
 	enableReferrerPolicy?: boolean
 	/** Enable Permissions-Policy */
 	enablePermissionsPolicy?: boolean
+	/** Enable Trusted Types */
+	enableTrustedTypes?: boolean
 	/** HSTS max-age in seconds (default: 1 year) */
 	hstsMaxAge?: number
 	/** Include subdomains in HSTS */
@@ -42,6 +44,7 @@ const DEFAULT_CONFIG: Required<SecurityHeadersConfig> = {
 	enableXContentTypeOptions: true,
 	enableReferrerPolicy: true,
 	enablePermissionsPolicy: true,
+	enableTrustedTypes: true,
 	cspReportOnly: false, // Set to true to test CSP without breaking the site
 	hstsMaxAge: 31536000, // 1 year
 	hstsIncludeSubdomains: true,
@@ -50,16 +53,27 @@ const DEFAULT_CONFIG: Required<SecurityHeadersConfig> = {
 }
 
 /**
+ * Generate a cryptographically secure nonce for CSP
+ */
+export function generateNonce(): string {
+	const array = new Uint8Array(16)
+	crypto.getRandomValues(array)
+	return btoa(String.fromCharCode(...array))
+}
+
+/**
  * Build Content Security Policy header value
  */
 function buildCSP(
 	additionalDirectives: Record<string, string[]> = {},
+	nonce?: string,
+	enableTrustedTypes = true,
 ): string {
 	const directives: Record<string, string[]> = {
 		'default-src': ["'self'"],
 		'script-src': [
 			"'self'",
-			"'unsafe-inline'", // Required for inline scripts (theme detection)
+			...(nonce ? [`'nonce-${nonce}'`, "'strict-dynamic'"] : []),
 			'https://fonts.googleapis.com',
 		],
 		'style-src': [
@@ -86,10 +100,12 @@ function buildCSP(
 		'form-action': ["'self'"],
 		'object-src': ["'none'"],
 		'upgrade-insecure-requests': [],
-		// Note: Trusted Types disabled as it can break inline scripts
-		// Enable with nonce-based CSP for stricter security:
-		// 'require-trusted-types-for': ["'script'"],
-		// 'trusted-types': ['default'],
+	}
+
+	// Add Trusted Types directives if enabled
+	if (enableTrustedTypes) {
+		directives['require-trusted-types-for'] = ["'script'"]
+		directives['trusted-types'] = ['default']
 	}
 
 	// Merge additional directives
@@ -166,6 +182,7 @@ function buildPermissionsPolicy(): string {
 export function applySecurityHeaders(
 	response: Response,
 	config: SecurityHeadersConfig = {},
+	nonce?: string,
 ): Response {
 	const mergedConfig = { ...DEFAULT_CONFIG, ...config }
 	const headers = new Headers(response.headers)
@@ -177,7 +194,11 @@ export function applySecurityHeaders(
 			: 'Content-Security-Policy'
 		headers.set(
 			cspHeaderName,
-			buildCSP(mergedConfig.additionalCSPDirectives),
+			buildCSP(
+				mergedConfig.additionalCSPDirectives,
+				nonce,
+				mergedConfig.enableTrustedTypes,
+			),
 		)
 	}
 
@@ -239,10 +260,13 @@ export function applySecurityHeaders(
  * Security headers middleware for Fresh
  */
 export function securityHeaders(config: SecurityHeadersConfig = {}) {
-	return async function securityMiddleware(
-		ctx: { next: () => Promise<Response> },
-	): Promise<Response> {
+	return async function securityMiddleware(ctx: any): Promise<Response> {
+		// Generate a unique nonce for this request
+		const nonce = generateNonce()
+		// Store nonce in context state so it's available in page components
+		ctx.state.cspNonce = nonce
+
 		const response = await ctx.next()
-		return applySecurityHeaders(response, config)
+		return applySecurityHeaders(response, config, nonce)
 	}
 }

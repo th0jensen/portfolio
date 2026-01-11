@@ -1,5 +1,7 @@
 import type { FormattedRepo } from './schemas.ts'
 
+export type { FormattedRepo }
+
 export interface GitHubRepo {
 	name: string
 	full_name: string
