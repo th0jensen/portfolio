@@ -1,8 +1,11 @@
 import { App, staticFiles, trailingSlashes } from 'fresh'
 import { i18nPlugin } from 'fresh-i18n'
 import type { ExtendedState } from './utils.ts'
+import { securityHeaders } from '~/lib/security.ts'
 
 export const app = new App<ExtendedState>()
+	// Add security headers middleware
+	.use(securityHeaders())
 	// Add static file serving middleware
 	.use(staticFiles())
 	// Remove trailing slashes from URLs
