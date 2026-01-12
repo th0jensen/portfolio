@@ -1,125 +1,68 @@
+import { z } from 'zod'
 import type { FormattedRepo } from './schemas.ts'
 
 export type { FormattedRepo }
 
-export interface GitHubRepo {
-	name: string
-	full_name: string
-	description: string | null
-	html_url: string
-	stargazers_count: number
-	forks_count: number
-	language: string | null
-	owner: {
-		login: string
-	}
-}
+// GitHub API Schemas
+export const GitHubRepoSchema = z.object({
+	name: z.string(),
+	full_name: z.string(),
+	description: z.string().nullable(),
+	html_url: z.string().url(),
+	stargazers_count: z.number().int().nonnegative(),
+	forks_count: z.number().int().nonnegative(),
+	language: z.string().nullable(),
+	owner: z.object({
+		login: z.string(),
+	}),
+})
 
-export interface GitHubPR {
-	number: number
-	title: string
-	html_url: string
-	state: string
-	merged_at: string | null
-	user: {
-		login: string
-	}
-	base: {
-		repo: {
-			full_name: string
-			language: string | null
-		}
-	}
-	additions: number
-	deletions: number
-	changed_files: number
-}
+export const GitHubPRSchema = z.object({
+	number: z.number().int().positive(),
+	title: z.string(),
+	body: z.string().nullable(),
+	html_url: z.string().url(),
+	state: z.string(),
+	merged_at: z.string().nullable(),
+	user: z.object({
+		login: z.string(),
+	}),
+	base: z.object({
+		repo: z.object({
+			full_name: z.string(),
+			language: z.string().nullable(),
+		}),
+	}),
+	additions: z.number().int().nonnegative(),
+	deletions: z.number().int().nonnegative(),
+	changed_files: z.number().int().nonnegative(),
+})
 
-export interface ZedExtension {
-	id: string
-	name: string
-	version: string
-	description: string
-	authors: string[]
-	repository: string
-	download_count: number
-	published_at: string
-}
+export const ZedExtensionSchema = z.object({
+	id: z.string(),
+	name: z.string(),
+	version: z.string(),
+	description: z.string(),
+	authors: z.array(z.string()),
+	repository: z.string(),
+	download_count: z.number().int().nonnegative(),
+	published_at: z.string(),
+})
 
-export interface ZedExtensionResponse {
-	data: ZedExtension[]
-}
+export const ZedExtensionResponseSchema = z.object({
+	data: z.array(ZedExtensionSchema),
+})
 
-// Fallback repos in case GitHub API fails or rate limits
-export const FALLBACK_REPOS: FormattedRepo[] = [
-	{
-		name: 'zed-industries/zed',
-		description: 'workspace: Implement Extended Terminal Option',
-		url: 'https://github.com/zed-industries/zed/pull/26211',
-		stars: 0,
-		forks: 0,
-		language: 'Rust',
-		languageColor: '#dea584',
-		type: 'pr',
-		prNumber: 26211,
-		prState: 'merged',
-		additions: 1082,
-		deletions: 95,
-	},
-	{
-		name: 'Gruber Darker',
-		description: 'A port of Gruber Darker from emacs to Zed.',
-		url: 'https://zed.dev/extensions/gruber-darker',
-		stars: 0,
-		forks: 0,
-		language: undefined,
-		languageColor: undefined,
-		type: 'zed-extension',
-		downloads: 0,
-	},
-	{
-		name: 'th0jensen/portfolio',
-		description:
-			'Portfolio made in Fresh/Preact with Deno. Deployed on Deno Deploy.',
-		url: 'https://github.com/th0jensen/portfolio',
-		stars: 0,
-		forks: 0,
-		language: 'TypeScript',
-		languageColor: '#3178c6',
-	},
-	{
-		name: 'th0jensen/tunafiles',
-		description: 'A tuner files management platform.',
-		url: 'https://github.com/th0jensen/tunafiles',
-		stars: 0,
-		forks: 0,
-		language: 'TypeScript',
-		languageColor: '#3178c6',
-	},
-	{
-		name: 'th0jensen/water-tracker',
-		description: 'Water Tracker app made using React Native/Expo.',
-		url: 'https://github.com/th0jensen/water-tracker',
-		stars: 0,
-		forks: 0,
-		language: 'TypeScript',
-		languageColor: '#3178c6',
-	},
-	{
-		name: 'th0jensen/nix',
-		description: 'Personal Nix configuration and system setup.',
-		url: 'https://github.com/th0jensen/nix',
-		stars: 0,
-		forks: 0,
-		language: 'Nix',
-		languageColor: '#7e7eff',
-	},
-]
+export type GitHubRepo = z.infer<typeof GitHubRepoSchema>
+export type GitHubPR = z.infer<typeof GitHubPRSchema>
+export type ZedExtension = z.infer<typeof ZedExtensionSchema>
+export type ZedExtensionResponse = z.infer<typeof ZedExtensionResponseSchema>
 
-const LANGUAGE_COLORS: Record<string, string> = {
+// Language colors - centralized and used throughout
+export const LANGUAGE_COLORS: Record<string, string> = {
 	TypeScript: '#3178c6',
 	JavaScript: '#f1e05a',
-	Rust: '#dea584',
+	Rust: '#c25a3c',
 	Swift: '#f05138',
 	Python: '#3572A5',
 	Go: '#00ADD8',
@@ -140,7 +83,83 @@ const LANGUAGE_COLORS: Record<string, string> = {
 	Lua: '#000080',
 	Zig: '#ec915c',
 	Nix: '#7e7eff',
+	JSON: '#f1e05a',
+} as const
+
+export function getLanguageColor(
+	language: string | null | undefined,
+): string | undefined {
+	if (!language) return undefined
+	return LANGUAGE_COLORS[language]
 }
+
+// Fallback repos in case GitHub API fails or rate limits
+export const FALLBACK_REPOS: FormattedRepo[] = [
+	{
+		name: 'owner/repo',
+		description: 'Pull request title\n\nRelease notes content here',
+		url: 'https://github.com/owner/repo/pull/0',
+		stars: 0,
+		forks: 0,
+		language: 'Rust',
+		languageColor: LANGUAGE_COLORS['Rust'],
+		type: 'pr',
+		prNumber: 0,
+		prState: 'merged',
+		additions: 0,
+		deletions: 0,
+	},
+	{
+		name: 'th0jensen/gruber-darker.zed',
+		description: 'A port of Gruber Darker from emacs to Zed.',
+		url: 'https://github.com/th0jensen/gruber-darker.zed',
+		stars: 0,
+		forks: 0,
+		language: 'JSON',
+		languageColor: LANGUAGE_COLORS['JSON'],
+		type: 'zed-extension',
+		downloads: 0,
+		zedExtensionUrl: 'https://zed.dev/extensions/gruber-darker',
+		githubUrl: 'https://github.com/th0jensen/gruber-darker.zed',
+	},
+	{
+		name: 'th0jensen/portfolio',
+		description:
+			'Portfolio made in Fresh/Preact with Deno. Deployed on Deno Deploy.',
+		url: 'https://github.com/th0jensen/portfolio',
+		stars: 0,
+		forks: 0,
+		language: 'TypeScript',
+		languageColor: LANGUAGE_COLORS['TypeScript'],
+	},
+	{
+		name: 'th0jensen/tunafiles',
+		description: 'A tuner files management platform.',
+		url: 'https://github.com/th0jensen/tunafiles',
+		stars: 0,
+		forks: 0,
+		language: 'TypeScript',
+		languageColor: LANGUAGE_COLORS['TypeScript'],
+	},
+	{
+		name: 'th0jensen/water-tracker',
+		description: 'Water Tracker app made using React Native/Expo.',
+		url: 'https://github.com/th0jensen/water-tracker',
+		stars: 0,
+		forks: 0,
+		language: 'TypeScript',
+		languageColor: LANGUAGE_COLORS['TypeScript'],
+	},
+	{
+		name: 'th0jensen/nix',
+		description: 'Personal Nix configuration and system setup.',
+		url: 'https://github.com/th0jensen/nix',
+		stars: 0,
+		forks: 0,
+		language: 'Nix',
+		languageColor: LANGUAGE_COLORS['Nix'],
+	},
+]
 
 export async function fetchZedExtension(
 	extensionId: string,
@@ -178,13 +197,62 @@ export async function fetchZedExtension(
 			url: `https://zed.dev/extensions/${extensionId}`,
 			stars: 0,
 			forks: 0,
-			language: undefined,
-			languageColor: undefined,
+			language: 'JSON',
+			languageColor: getLanguageColor('JSON'),
 			type: 'zed-extension',
 			downloads: extension.download_count,
 		}
 	} catch (error) {
 		console.error(`Error fetching Zed extension ${extensionId}:`, error)
+		return null
+	}
+}
+
+export async function fetchZedExtensionWithGitHub(
+	extensionId: string,
+	owner: string,
+	repo: string,
+): Promise<FormattedRepo | null> {
+	try {
+		// Fetch both GitHub repo and Zed extension data in parallel
+		const [githubData, zedData] = await Promise.all([
+			fetchGitHubRepo(owner, repo),
+			fetch(`https://api.zed.dev/extensions/${extensionId}`, {
+				headers: { 'User-Agent': 'Portfolio-Site' },
+			}).then((res) => res.ok ? res.json() : null),
+		])
+
+		if (!githubData) {
+			console.error(`Failed to fetch GitHub data for ${owner}/${repo}`)
+			return null
+		}
+
+		let downloads = 0
+		if (zedData?.data && zedData.data.length > 0) {
+			downloads = zedData.data[0].download_count
+		}
+
+		// For Zed extensions, default to JSON if GitHub doesn't provide a language
+		const language = githubData.language || 'JSON'
+
+		return {
+			name: githubData.full_name,
+			description: githubData.description || 'No description available',
+			url: githubData.html_url,
+			stars: githubData.stargazers_count,
+			forks: githubData.forks_count,
+			language,
+			languageColor: getLanguageColor(language),
+			type: 'zed-extension',
+			downloads,
+			zedExtensionUrl: `https://zed.dev/extensions/${extensionId}`,
+			githubUrl: githubData.html_url,
+		}
+	} catch (error) {
+		console.error(
+			`Error fetching Zed extension with GitHub data ${extensionId}:`,
+			error,
+		)
 		return null
 	}
 }
@@ -221,14 +289,34 @@ export async function fetchGitHubPR(
 		const pr: GitHubPR = await response.json()
 		const language = pr.base.repo.language
 
+		// Extract content from PR body and clean it up
+		let description = pr.title
+		if (pr.body && pr.body.trim()) {
+			// Extract everything from Closes lines through Release Notes
+			const cleanBody = pr.body
+				.replace(/!\[.*?\]\(.*?\)/g, '') // Remove images
+				.replace(/Screenshot.*?:/gi, '') // Remove "Screenshot of..." lines
+				.replace(/\n\s*\n+/g, '\n\n') // Normalize line breaks
+				.trim()
+
+			// Look for pattern: starts with Closes or Release Notes
+			const contentMatch = cleanBody.match(
+				/(Closes[\s\S]*?Release Notes:[\s\S]*)/i,
+			)
+
+			if (contentMatch) {
+				description = `${pr.title}\n\n${contentMatch[1].trim()}`
+			}
+		}
+
 		return {
 			name: pr.base.repo.full_name,
-			description: pr.title,
+			description,
 			url: pr.html_url,
 			stars: 0,
 			forks: 0,
 			language: language || undefined,
-			languageColor: language ? LANGUAGE_COLORS[language] : undefined,
+			languageColor: getLanguageColor(language),
 			type: 'pr',
 			prNumber: pr.number,
 			prState: pr.merged_at ? 'merged' : pr.state as 'open' | 'closed',

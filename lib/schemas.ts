@@ -43,6 +43,8 @@ export const FormattedRepoSchema = z.object({
 	additions: z.number().int().nonnegative().optional(),
 	deletions: z.number().int().nonnegative().optional(),
 	downloads: z.number().int().nonnegative().optional(),
+	zedExtensionUrl: z.string().url().optional(),
+	githubUrl: z.string().url().optional(),
 })
 
 export type FormattedRepo = z.infer<typeof FormattedRepoSchema>

@@ -13,7 +13,7 @@ import {
 	FALLBACK_REPOS,
 	fetchGitHubPR,
 	fetchMultipleRepos,
-	fetchZedExtension,
+	fetchZedExtensionWithGitHub,
 } from '~/lib/github.ts'
 import type { FormattedRepo } from '~/lib/schemas.ts'
 import { z } from 'zod'
@@ -31,7 +31,6 @@ const ZED_EXTENSION_ID = 'gruber-darker'
 const FEATURED_REPOS = [
 	{ owner: GITHUB_USERNAME, repo: 'portfolio' },
 	{ owner: GITHUB_USERNAME, repo: 'tunafiles' },
-	{ owner: GITHUB_USERNAME, repo: 'water-tracker' },
 	{ owner: GITHUB_USERNAME, repo: 'nix' },
 ]
 
@@ -48,14 +47,18 @@ async function getRepos(): Promise<FormattedRepo[]> {
 	}
 
 	try {
-		// Fetch the featured PR, Zed extension, and repos in parallel
+		// Fetch the featured PR, Zed extension with GitHub data, and repos in parallel
 		const [featuredPR, zedExtension, repos] = await Promise.all([
 			fetchGitHubPR(
 				FEATURED_PR.owner,
 				FEATURED_PR.repo,
 				FEATURED_PR.number,
 			),
-			fetchZedExtension(ZED_EXTENSION_ID),
+			fetchZedExtensionWithGitHub(
+				ZED_EXTENSION_ID,
+				GITHUB_USERNAME,
+				'gruber-darker.zed',
+			),
 			fetchMultipleRepos(FEATURED_REPOS),
 		])
 
