@@ -35,6 +35,21 @@ export interface GitHubPR {
 	changed_files: number
 }
 
+export interface ZedExtension {
+	id: string
+	name: string
+	version: string
+	description: string
+	authors: string[]
+	repository: string
+	download_count: number
+	published_at: string
+}
+
+export interface ZedExtensionResponse {
+	data: ZedExtension[]
+}
+
 // Fallback repos in case GitHub API fails or rate limits
 export const FALLBACK_REPOS: FormattedRepo[] = [
 	{
@@ -52,13 +67,15 @@ export const FALLBACK_REPOS: FormattedRepo[] = [
 		deletions: 95,
 	},
 	{
-		name: 'th0jensen/gruber-darker.zed',
+		name: 'Gruber Darker',
 		description: 'A port of Gruber Darker from emacs to Zed.',
-		url: 'https://github.com/th0jensen/gruber-darker.zed',
-		stars: 4,
+		url: 'https://zed.dev/extensions/gruber-darker',
+		stars: 0,
 		forks: 0,
 		language: undefined,
 		languageColor: undefined,
+		type: 'zed-extension',
+		downloads: 0,
 	},
 	{
 		name: 'th0jensen/portfolio',
@@ -123,6 +140,53 @@ const LANGUAGE_COLORS: Record<string, string> = {
 	Lua: '#000080',
 	Zig: '#ec915c',
 	Nix: '#7e7eff',
+}
+
+export async function fetchZedExtension(
+	extensionId: string,
+): Promise<FormattedRepo | null> {
+	try {
+		const response = await fetch(
+			`https://api.zed.dev/extensions/${extensionId}`,
+			{
+				headers: {
+					'User-Agent': 'Portfolio-Site',
+				},
+			},
+		)
+
+		if (!response.ok) {
+			console.error(
+				`Failed to fetch Zed extension ${extensionId}: ${response.status}`,
+			)
+			return null
+		}
+
+		const data: ZedExtensionResponse = await response.json()
+
+		if (!data.data || data.data.length === 0) {
+			console.error(`No data found for Zed extension ${extensionId}`)
+			return null
+		}
+
+		// Get the latest version (first in the array)
+		const extension = data.data[0]
+
+		return {
+			name: extension.name,
+			description: extension.description,
+			url: `https://zed.dev/extensions/${extensionId}`,
+			stars: 0,
+			forks: 0,
+			language: undefined,
+			languageColor: undefined,
+			type: 'zed-extension',
+			downloads: extension.download_count,
+		}
+	} catch (error) {
+		console.error(`Error fetching Zed extension ${extensionId}:`, error)
+		return null
+	}
 }
 
 export async function fetchGitHubPR(

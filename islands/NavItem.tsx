@@ -24,6 +24,7 @@ export default function NavItem(
 			<Button
 				variant='ghost'
 				size='sm'
+				type='button'
 				onClick={handleClick}
 				className={className}
 			>

@@ -1,4 +1,4 @@
-import * as React from 'react'
+import { type JSX } from 'preact'
 import { Slot } from '@radix-ui/react-slot'
 import { cva, type VariantProps } from 'class-variance-authority'
 
@@ -36,37 +36,44 @@ const buttonVariants = cva(
 
 export interface ButtonProps
     extends
-        React.ButtonHTMLAttributes<HTMLButtonElement>,
+        JSX.HTMLAttributes<HTMLButtonElement>,
         VariantProps<typeof buttonVariants> {
     asChild?: boolean
+    type?: 'button' | 'submit' | 'reset'
 }
 
-const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
-    ({ className, variant, size, asChild = false, ...props }, ref) => {
-        const Comp = asChild ? Slot : 'button'
-        return (
-            <Comp
-                className={cn(buttonVariants({ variant, size, className }))}
-                ref={ref}
-                {...props}
-            />
-        )
-    },
-)
-Button.displayName = 'Button'
+export interface LinkProps
+    extends
+        JSX.HTMLAttributes<HTMLAnchorElement>,
+        VariantProps<typeof buttonVariants> {
+    asChild?: boolean
+    href?: string
+}
 
-const Link = React.forwardRef<HTMLButtonElement, ButtonProps>(
-    ({ className, variant, size, asChild = false, ...props }, ref) => {
-        const Comp = asChild ? Slot : 'a'
-        return (
-            <Comp
-                className={cn(buttonVariants({ variant, size, className }))}
-                ref={ref}
-                {...props}
-            />
-        )
-    },
-)
-Link.displayName = 'Link'
+function Button(
+    { className, variant, size, asChild = false, type = 'button', ...props }: ButtonProps,
+) {
+    const Comp = asChild ? Slot : 'button'
+    return (
+        <Comp
+            type={type}
+            className={cn(buttonVariants({ variant, size, className }))}
+            {...props}
+        />
+    )
+}
+
+function Link(
+    { className, variant, size, asChild = false, href = '#', ...props }: LinkProps,
+) {
+    const Comp = asChild ? Slot : 'a'
+    return (
+        <Comp
+            href={href}
+            className={cn(buttonVariants({ variant, size, className }))}
+            {...props}
+        />
+    )
+}
 
 export { Button, Link, buttonVariants }

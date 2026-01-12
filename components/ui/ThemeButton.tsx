@@ -9,6 +9,7 @@ interface ThemeToggleProps {
 	showText?: boolean
 	lightText?: string
 	darkText?: string
+	type?: 'button' | 'submit' | 'reset'
 }
 
 export default function ThemeToggle({
@@ -18,6 +19,7 @@ export default function ThemeToggle({
 	showText = false,
 	lightText = 'Light',
 	darkText = 'Dark',
+	type = 'button',
 }: ThemeToggleProps) {
 	const targetMode = theme === 'light' ? darkText : lightText
 
@@ -25,6 +27,7 @@ export default function ThemeToggle({
 		<Button
 			variant='ghost'
 			size='sm'
+			type={type}
 			onClick={onClick}
 			className={`flex items-center justify-end gap-2 ${className}`}
 			aria-label={`Switch to ${targetMode} mode`}

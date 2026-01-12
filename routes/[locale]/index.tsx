@@ -13,6 +13,7 @@ import {
 	FALLBACK_REPOS,
 	fetchGitHubPR,
 	fetchMultipleRepos,
+	fetchZedExtension,
 } from '~/lib/github.ts'
 import type { FormattedRepo } from '~/lib/schemas.ts'
 import { z } from 'zod'
@@ -23,9 +24,11 @@ const GITHUB_USERNAME = 'th0jensen'
 // Featured PR (shown as large card)
 const FEATURED_PR = { owner: 'zed-industries', repo: 'zed', number: 26211 }
 
+// Zed extension
+const ZED_EXTENSION_ID = 'gruber-darker'
+
 // Your personal repos
 const FEATURED_REPOS = [
-	{ owner: GITHUB_USERNAME, repo: 'gruber-darker.zed' },
 	{ owner: GITHUB_USERNAME, repo: 'portfolio' },
 	{ owner: GITHUB_USERNAME, repo: 'tunafiles' },
 	{ owner: GITHUB_USERNAME, repo: 'water-tracker' },
@@ -45,20 +48,24 @@ async function getRepos(): Promise<FormattedRepo[]> {
 	}
 
 	try {
-		// Fetch the featured PR and repos in parallel
-		const [featuredPR, repos] = await Promise.all([
+		// Fetch the featured PR, Zed extension, and repos in parallel
+		const [featuredPR, zedExtension, repos] = await Promise.all([
 			fetchGitHubPR(
 				FEATURED_PR.owner,
 				FEATURED_PR.repo,
 				FEATURED_PR.number,
 			),
+			fetchZedExtension(ZED_EXTENSION_ID),
 			fetchMultipleRepos(FEATURED_REPOS),
 		])
 
-		// Combine PR (first/featured) with repos
+		// Combine PR (first/featured), Zed extension, and repos
 		const allItems: FormattedRepo[] = []
 		if (featuredPR) {
 			allItems.push(featuredPR)
+		}
+		if (zedExtension) {
+			allItems.push(zedExtension)
 		}
 		allItems.push(...repos)
 

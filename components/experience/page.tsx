@@ -28,6 +28,7 @@ function RepoCard({
 
 	const isLarge = size === 'large'
 	const isPR = repo.type === 'pr'
+	const isZedExtension = repo.type === 'zed-extension'
 
 	const prStateColors = {
 		merged: 'bg-purple-500/15 text-purple-600 dark:text-purple-400',
@@ -54,6 +55,18 @@ function RepoCard({
 								viewBox='0 0 16 16'
 							>
 								<path d='M1.5 3.25a2.25 2.25 0 1 1 3 2.122v5.256a2.251 2.251 0 1 1-1.5 0V5.372A2.25 2.25 0 0 1 1.5 3.25Zm5.677-.177L9.573.677A.25.25 0 0 1 10 .854V2.5h1A2.5 2.5 0 0 1 13.5 5v5.628a2.251 2.251 0 1 1-1.5 0V5a1 1 0 0 0-1-1h-1v1.646a.25.25 0 0 1-.427.177L7.177 3.427a.25.25 0 0 1 0-.354ZM3.75 2.5a.75.75 0 1 0 0 1.5.75.75 0 0 0 0-1.5Zm0 9.5a.75.75 0 1 0 0 1.5.75.75 0 0 0 0-1.5Zm8.25.75a.75.75 0 1 0 1.5 0 .75.75 0 0 0-1.5 0Z' />
+							</svg>
+						)
+						: isZedExtension
+						? (
+							<svg
+								className='w-5 h-5'
+								fill='currentColor'
+								viewBox='0 0 16 16'
+							>
+								<path d='M8.5 5.5a.5.5 0 0 0-1 0v3.362l-1.429 2.38a.5.5 0 1 0 .858.515l1.5-2.5A.5.5 0 0 0 8.5 9V5.5z' />
+								<path d='M6.5 0A1.5 1.5 0 0 0 5 1.5v1A1.5 1.5 0 0 0 6.5 4h3A1.5 1.5 0 0 0 11 2.5v-1A1.5 1.5 0 0 0 9.5 0h-3zM6 1.5a.5.5 0 0 1 .5-.5h3a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-3a.5.5 0 0 1-.5-.5v-1z' />
+								<path d='M2 4.5A1.5 1.5 0 0 1 3.5 3h9A1.5 1.5 0 0 1 14 4.5v9a1.5 1.5 0 0 1-1.5 1.5h-9A1.5 1.5 0 0 1 2 13.5v-9zm1.5-.5a.5.5 0 0 0-.5.5v9a.5.5 0 0 0 .5.5h9a.5.5 0 0 0 .5-.5v-9a.5.5 0 0 0-.5-.5h-9z' />
 							</svg>
 						)
 						: (
@@ -134,6 +147,20 @@ function RepoCard({
 								<span>-{formatNumber(repo.deletions)}</span>
 							</div>
 						</>
+					)
+					: isZedExtension && repo.downloads !== undefined
+					? (
+						<div className='flex items-center gap-1'>
+							<svg
+								className='w-4 h-4'
+								fill='currentColor'
+								viewBox='0 0 16 16'
+							>
+								<path d='M.5 9.9a.5.5 0 0 1 .5.5v2.5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-2.5a.5.5 0 0 1 1 0v2.5a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2v-2.5a.5.5 0 0 1 .5-.5z' />
+								<path d='M7.646 11.854a.5.5 0 0 0 .708 0l3-3a.5.5 0 0 0-.708-.708L8.5 10.293V1.5a.5.5 0 0 0-1 0v8.793L5.354 8.146a.5.5 0 1 0-.708.708l3 3z' />
+							</svg>
+							<span>{formatNumber(repo.downloads)}</span>
+						</div>
 					)
 					: (
 						<>

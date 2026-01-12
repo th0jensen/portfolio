@@ -29,7 +29,10 @@ export default function Header({ translations, locale }: HeaderProps) {
 	const theme = useSignal<'light' | 'dark'>('light')
 
 	useEffect(() => {
-		const savedTheme = localStorage.getItem('theme') as 'light' | 'dark' | null
+		const savedTheme = localStorage.getItem('theme') as
+			| 'light'
+			| 'dark'
+			| null
 		if (savedTheme) {
 			theme.value = savedTheme
 			if (savedTheme === 'dark') {
@@ -56,7 +59,10 @@ export default function Header({ translations, locale }: HeaderProps) {
 	const navLinks = [
 		{ id: 'work', label: translations.work },
 		{ id: 'experience', label: translations.experience },
-		{ href: 'mailto:thomas.jensen_@outlook.com', label: translations.contact },
+		{
+			href: 'mailto:thomas.jensen_@outlook.com',
+			label: translations.contact,
+		},
 	]
 
 	const availableLocales = [
@@ -65,24 +71,34 @@ export default function Header({ translations, locale }: HeaderProps) {
 		{ code: 'he', label: 'עברית', flag: '🇮🇱' },
 	]
 
-	const currentLocale = availableLocales.find((l) => l.code === locale) || availableLocales[0]
+	const currentLocale = availableLocales.find((l) => l.code === locale) ||
+		availableLocales[0]
 
 	return (
 		<div className='fixed top-0 left-0 right-0 z-50 bg-background/70 backdrop-blur-xl border-b border-border/20'>
 			<header className='h-16'>
 				<div className='container mx-auto flex h-full max-w-6xl items-center justify-between px-4'>
 					<div className='flex items-center z-10'>
-						<NavItem id='hero' label={translations.name} className='font-medium tracking-tight text-lg' />
+						<NavItem
+							id='hero'
+							label={translations.name}
+							className='font-medium tracking-tight text-lg'
+						/>
 					</div>
 					<div className='md:hidden'>
 						<Button
 							variant='ghost'
 							size='sm'
+							type='button'
 							onClick={() => displayNav.value = !displayNav.value}
 							className='focus:ring-0'
-							aria-label={displayNav.value ? translations.closeMenu : translations.openMenu}
+							aria-label={displayNav.value
+								? translations.closeMenu
+								: translations.openMenu}
 						>
-							{!displayNav.value ? <HamburgerIcon /> : <CloseIcon />}
+							{!displayNav.value
+								? <HamburgerIcon />
+								: <CloseIcon />}
 						</Button>
 					</div>
 					<nav className='hidden md:flex md:items-center md:space-x-1'>
@@ -98,14 +114,34 @@ export default function Header({ translations, locale }: HeaderProps) {
 						<div className='relative ml-2'>
 							<button
 								type='button'
-								onClick={() => displayLangMenu.value = !displayLangMenu.value}
-								onBlur={() => setTimeout(() => displayLangMenu.value = false, 150)}
+								onClick={() =>
+									displayLangMenu.value = !displayLangMenu
+										.value}
+								onBlur={() =>
+									setTimeout(
+										() => displayLangMenu.value = false,
+										150,
+									)}
 								className='flex items-center gap-1.5 px-2 py-1 text-sm font-medium rounded-md transition-colors text-muted-foreground hover:text-foreground hover:bg-muted'
 							>
 								<span>{currentLocale.flag}</span>
 								<span>{currentLocale.label}</span>
-								<svg className={`w-3 h-3 transition-transform ${displayLangMenu.value ? 'rotate-180' : ''}`} fill='none' stroke='currentColor' viewBox='0 0 24 24'>
-									<path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M19 9l-7 7-7-7' />
+								<svg
+									className={`w-3 h-3 transition-transform ${
+										displayLangMenu.value
+											? 'rotate-180'
+											: ''
+									}`}
+									fill='none'
+									stroke='currentColor'
+									viewBox='0 0 24 24'
+								>
+									<path
+										strokeLinecap='round'
+										strokeLinejoin='round'
+										strokeWidth={2}
+										d='M19 9l-7 7-7-7'
+									/>
 								</svg>
 							</button>
 							{displayLangMenu.value && (
@@ -114,7 +150,11 @@ export default function Header({ translations, locale }: HeaderProps) {
 										<a
 											key={loc.code}
 											href={`/${loc.code}`}
-											className={`flex items-center gap-2 px-3 py-2 text-sm transition-colors ${locale === loc.code ? 'bg-primary/10 text-foreground font-medium' : 'text-muted-foreground hover:text-foreground hover:bg-muted'}`}
+											className={`flex items-center gap-2 px-3 py-2 text-sm transition-colors ${
+												locale === loc.code
+													? 'bg-primary/10 text-foreground font-medium'
+													: 'text-muted-foreground hover:text-foreground hover:bg-muted'
+											}`}
 										>
 											<span>{loc.flag}</span>
 											<span>{loc.label}</span>
@@ -123,7 +163,14 @@ export default function Header({ translations, locale }: HeaderProps) {
 								</div>
 							)}
 						</div>
-						<ThemeToggle onClick={toggleTheme} theme={theme.value} showText={false} className='ml-2 h-9 rounded-full w-auto' lightText={translations.themeLight} darkText={translations.themeDark} />
+						<ThemeToggle
+							onClick={toggleTheme}
+							theme={theme.value}
+							showText={false}
+							className='ml-2 h-9 rounded-full w-auto'
+							lightText={translations.themeLight}
+							darkText={translations.themeDark}
+						/>
 					</nav>
 				</div>
 			</header>
@@ -132,25 +179,54 @@ export default function Header({ translations, locale }: HeaderProps) {
 					<nav className='flex flex-col space-y-4'>
 						<div className='flex flex-col items-center gap-4'>
 							{navLinks.map((link) => (
-								<NavItem key={link.id || link.href} id={link.id} href={link.href} label={link.label} className='flex items-center justify-center h-10 w-36 text-sm font-medium' onClick={handleNavLinkClick} />
+								<NavItem
+									key={link.id || link.href}
+									id={link.id}
+									href={link.href}
+									label={link.label}
+									className='flex items-center justify-center h-10 w-36 text-sm font-medium'
+									onClick={handleNavLinkClick}
+								/>
 							))}
 						</div>
 						<div className='border-t border-border/20 pt-4 flex flex-col items-center'>
 							<button
 								type='button'
-								onClick={() => displayMobileLangMenu.value = !displayMobileLangMenu.value}
+								onClick={() =>
+									displayMobileLangMenu.value =
+										!displayMobileLangMenu.value}
 								className='flex items-center gap-2 w-36 justify-center px-3 py-2 text-sm font-medium rounded-md transition-colors text-muted-foreground hover:text-foreground hover:bg-muted'
 							>
 								<span>{currentLocale.flag}</span>
 								<span>{currentLocale.label}</span>
-								<svg className={`w-3 h-3 transition-transform ${displayMobileLangMenu.value ? 'rotate-180' : ''}`} fill='none' stroke='currentColor' viewBox='0 0 24 24'>
-									<path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M19 9l-7 7-7-7' />
+								<svg
+									className={`w-3 h-3 transition-transform ${
+										displayMobileLangMenu.value
+											? 'rotate-180'
+											: ''
+									}`}
+									fill='none'
+									stroke='currentColor'
+									viewBox='0 0 24 24'
+								>
+									<path
+										strokeLinecap='round'
+										strokeLinejoin='round'
+										strokeWidth={2}
+										d='M19 9l-7 7-7-7'
+									/>
 								</svg>
 							</button>
 							{displayMobileLangMenu.value && (
 								<div className='flex flex-col items-center gap-1 mt-2'>
-									{availableLocales.filter(loc => loc.code !== locale).map((loc) => (
-										<a key={loc.code} href={`/${loc.code}`} className='flex items-center gap-2 w-36 justify-center px-3 py-2 text-sm font-medium rounded-md transition-colors text-muted-foreground hover:text-foreground hover:bg-muted'>
+									{availableLocales.filter((loc) =>
+										loc.code !== locale
+									).map((loc) => (
+										<a
+											key={loc.code}
+											href={`/${loc.code}`}
+											className='flex items-center gap-2 w-36 justify-center px-3 py-2 text-sm font-medium rounded-md transition-colors text-muted-foreground hover:text-foreground hover:bg-muted'
+										>
 											<span>{loc.flag}</span>
 											<span>{loc.label}</span>
 										</a>
@@ -159,7 +235,14 @@ export default function Header({ translations, locale }: HeaderProps) {
 							)}
 						</div>
 						<div className='border-t border-border/20 pt-4 flex items-center justify-center'>
-							<ThemeToggle onClick={toggleTheme} theme={theme.value} showText className='h-10 rounded-full w-auto' lightText={translations.themeLight} darkText={translations.themeDark} />
+							<ThemeToggle
+								onClick={toggleTheme}
+								theme={theme.value}
+								showText
+								className='h-10 rounded-full w-auto'
+								lightText={translations.themeLight}
+								darkText={translations.themeDark}
+							/>
 						</div>
 					</nav>
 				</div>

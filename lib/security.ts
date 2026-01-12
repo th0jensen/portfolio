@@ -76,6 +76,7 @@ function buildCSP(
 			...(nonce ? [`'nonce-${nonce}'`, "'strict-dynamic'"] : []),
 			'https://fonts.googleapis.com',
 			"'sha256-n7a4rEI8Cnx0W5jStpvU5bvv6eY8omXw3NhmKwGU4TA='",
+			"'sha256-EB+HDJ+aosQmji/RlDjWmMB6gNCx7pwA8ILkBOfPwqY='",
 		],
 		'style-src': [
 			"'self'",
@@ -91,6 +92,7 @@ function buildCSP(
 		'font-src': [
 			"'self'",
 			'https://fonts.gstatic.com',
+			'https://r2cdn.perplexity.ai',
 		],
 		'connect-src': [
 			"'self'",

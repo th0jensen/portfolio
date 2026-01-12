@@ -37,11 +37,12 @@ export const FormattedRepoSchema = z.object({
 	forks: z.number().int().nonnegative(),
 	language: z.string().optional(),
 	languageColor: z.string().optional(),
-	type: z.enum(['repo', 'pr']).optional(),
+	type: z.enum(['repo', 'pr', 'zed-extension']).optional(),
 	prNumber: z.number().int().positive().optional(),
 	prState: z.enum(['open', 'closed', 'merged']).optional(),
 	additions: z.number().int().nonnegative().optional(),
 	deletions: z.number().int().nonnegative().optional(),
+	downloads: z.number().int().nonnegative().optional(),
 })
 
 export type FormattedRepo = z.infer<typeof FormattedRepoSchema>
