@@ -75,6 +75,7 @@ function buildCSP(
 			"'self'",
 			...(nonce ? [`'nonce-${nonce}'`, "'strict-dynamic'"] : []),
 			'https://fonts.googleapis.com',
+			"'sha256-n7a4rEI8Cnx0W5jStpvU5bvv6eY8omXw3NhmKwGU4TA='",
 		],
 		'style-src': [
 			"'self'",
