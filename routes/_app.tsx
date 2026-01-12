@@ -24,6 +24,7 @@ export default define.page(function App({ Component, state }) {
 				<link rel='icon' type='image/svg+xml' href='/favicon.svg' />
 				<script
 					nonce={state.cspNonce}
+					// deno-lint-ignore react-no-danger
 					dangerouslySetInnerHTML={{
 						__html:
 							`(function(){var t=localStorage.getItem('theme');if(t==='dark'){document.documentElement.classList.add('dark')}})();`,

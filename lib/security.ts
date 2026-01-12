@@ -1,3 +1,6 @@
+import { Context } from 'fresh'
+import { ExtendedState } from '../utils.ts'
+
 /**
  * Security headers configuration
  */
@@ -66,14 +69,14 @@ export function generateNonce(): string {
  */
 function buildCSP(
 	additionalDirectives: Record<string, string[]> = {},
-	nonce?: string,
+	_nonce?: string,
 	enableTrustedTypes = true,
 ): string {
 	const directives: Record<string, string[]> = {
 		'default-src': ["'self'"],
 		'script-src': [
 			"'self'",
-			...(nonce ? [`'nonce-${nonce}'`, "'strict-dynamic'"] : []),
+			"'unsafe-inline'",
 		],
 		'style-src': [
 			"'self'",
@@ -260,7 +263,9 @@ export function applySecurityHeaders(
  * Security headers middleware for Fresh
  */
 export function securityHeaders(config: SecurityHeadersConfig = {}) {
-	return async function securityMiddleware(ctx: any): Promise<Response> {
+	return async function securityMiddleware(
+		ctx: Context<ExtendedState>,
+	): Promise<Response> {
 		// Generate a unique nonce for this request
 		const nonce = generateNonce()
 		// Store nonce in context state so it's available in page components

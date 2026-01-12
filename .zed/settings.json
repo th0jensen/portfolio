@@ -14,6 +14,9 @@
   },
 
   "languages": {
+    "CSS": {
+      "language_servers": ["tailwindcss-language-server", "!..."],
+    },
     "JavaScript": {
       "language_servers": [
         "deno",
