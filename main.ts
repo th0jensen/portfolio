@@ -4,8 +4,8 @@ import type { ExtendedState } from './utils.ts'
 import { securityHeaders } from '~/lib/security.ts'
 
 export const app = new App<ExtendedState>()
-	// Add security headers middleware
-	.use(securityHeaders())
+	// Add security headers middleware with Trusted Types disabled for Fresh compatibility
+	.use(securityHeaders({ enableTrustedTypes: false }))
 	// Add static file serving middleware
 	.use(staticFiles())
 	// Remove trailing slashes from URLs

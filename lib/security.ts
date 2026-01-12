@@ -74,11 +74,6 @@ function buildCSP(
 		'script-src': [
 			"'self'",
 			...(nonce ? [`'nonce-${nonce}'`, "'strict-dynamic'"] : []),
-			'https://fonts.googleapis.com',
-			"'sha256-n7a4rEI8Cnx0W5jStpvU5bvv6eY8omXw3NhmKwGU4TA='",
-			"'sha256-EB+HDJ+aosQmji/RlDjWmMB6gNCx7pwA8ILkBOfPwqY='",
-			"'sha256-pyPl0ijQMVLdV0Fl4R0hwAXr3YIINMTuQvMnbqeLD5Q='",
-			"'sha256-j3aSeGWQa0tqBbeE4fCOpns+Cyrn8NuIE7Bdl0ObRJw='",
 		],
 		'style-src': [
 			"'self'",
