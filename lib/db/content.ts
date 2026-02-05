@@ -22,6 +22,10 @@ export async function getLocaleContent(locale: string) {
 			.limit(1)
 	} catch (error) {
 		console.error('Failed to fetch locale content:', error)
+		console.error(
+			'Locale query error details:',
+			JSON.stringify(error, Object.getOwnPropertyNames(error)),
+		)
 		return null
 	}
 
