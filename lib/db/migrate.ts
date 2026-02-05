@@ -80,10 +80,7 @@ export async function runMigrations() {
 
 let migrationPromise: Promise<void> | null = null
 
-export async function migrateIfEnabled() {
-	if (Deno.env.get('DB_MIGRATE_ON_START') !== 'true') {
-		return
-	}
+export async function runMigrationsOnce() {
 	if (!migrationPromise) {
 		migrationPromise = runMigrations()
 	}
