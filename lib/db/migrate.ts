@@ -14,6 +14,8 @@ function sleep(ms: number) {
 
 async function readLocaleFile(locale: string) {
 	const candidates = [
+		`${Deno.cwd()}/lib/locales/${locale}/common.json`,
+		`${Deno.cwd()}/locales/${locale}/common.json`,
 		new URL(`../lib/locales/${locale}/common.json`, import.meta.url),
 		new URL(`../locales/${locale}/common.json`, import.meta.url),
 	]
@@ -32,7 +34,9 @@ async function readLocaleFile(locale: string) {
 		: String(lastError)
 	throw new Error(
 		`Locale file not found for "${locale}". Checked: ` +
-			`${candidates.map((url) => url.pathname).join(', ')}. ` +
+			`${candidates.map((url) =>
+				typeof url === 'string' ? url : url.pathname
+			).join(', ')}. ` +
 			`Last error: ${message}`,
 	)
 }
