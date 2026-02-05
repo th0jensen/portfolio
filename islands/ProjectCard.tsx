@@ -45,9 +45,13 @@ export default function ProjectCard({
 					src={project.imageURL}
 					alt={project.name}
 					width={300}
-					height={project.imageURL === '/images/zed.jpeg' ? 150 : 180}
+					height={project.imageURL === '/images/zed.jpeg' ||
+						project.imageURL === '/images/zed.webp'
+						? 150
+						: 180}
 					className={`${
-						project.imageURL === '/images/zed.jpeg'
+						project.imageURL === '/images/zed.jpeg' ||
+						project.imageURL === '/images/zed.webp'
 							? 'h-[150px] rounded-xl overflow-hidden'
 							: 'h-[180px]'
 					} max-w-full object-contain transition-transform duration-500 group-hover:scale-105`}
