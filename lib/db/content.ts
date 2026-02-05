@@ -13,11 +13,17 @@ export async function getLocaleContent(locale: string) {
 		return cached.data
 	}
 
-	const rows = await db
-		.select({ content: localizedContent.content })
-		.from(localizedContent)
-		.where(eq(localizedContent.locale, locale))
-		.limit(1)
+	let rows: Array<{ content: unknown }> = []
+	try {
+		rows = await db
+			.select({ content: localizedContent.content })
+			.from(localizedContent)
+			.where(eq(localizedContent.locale, locale))
+			.limit(1)
+	} catch (error) {
+		console.error('Failed to fetch locale content:', error)
+		return null
+	}
 
 	if (rows.length === 0) {
 		return null
