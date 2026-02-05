@@ -1,6 +1,6 @@
 import { sql } from 'drizzle-orm'
 import { CommonLocaleSchema } from '~/lib/schemas.ts'
-import { getClient, getDb } from './client.ts'
+import { client, db } from './client.ts'
 import { localizedContent } from './schema.ts'
 
 const LOCALES = ['en', 'no', 'he'] as const
@@ -12,11 +12,11 @@ function sleep(ms: number) {
 	return new Promise((resolve) => setTimeout(resolve, ms))
 }
 
-async function waitForDb(db: ReturnType<typeof getDb>) {
+async function waitForDb(dbInstance: typeof db) {
 	let lastError: unknown = null
 	for (let attempt = 1; attempt <= CONNECT_RETRIES; attempt += 1) {
 		try {
-			await db.execute(sql`select 1`)
+			await dbInstance.execute(sql`select 1`)
 			return
 		} catch (error) {
 			lastError = error
@@ -33,8 +33,8 @@ async function waitForDb(db: ReturnType<typeof getDb>) {
 	)
 }
 
-async function ensureTables(db: ReturnType<typeof getDb>) {
-	await db.execute(sql`
+async function ensureTables(dbInstance: typeof db) {
+	await dbInstance.execute(sql`
 		CREATE TABLE IF NOT EXISTS "localized_content" (
 			"locale" text PRIMARY KEY NOT NULL,
 			"content" jsonb NOT NULL
@@ -42,7 +42,7 @@ async function ensureTables(db: ReturnType<typeof getDb>) {
 	`)
 }
 
-async function seedLocales(db: ReturnType<typeof getDb>) {
+async function seedLocales(dbInstance: typeof db) {
 	const values = [] as Array<{ locale: string; content: unknown }>
 
 	for (const locale of LOCALES) {
@@ -57,7 +57,7 @@ async function seedLocales(db: ReturnType<typeof getDb>) {
 
 	if (values.length === 0) return
 
-	await db
+	await dbInstance
 		.insert(localizedContent)
 		.values(values)
 		.onConflictDoUpdate({
@@ -67,8 +67,6 @@ async function seedLocales(db: ReturnType<typeof getDb>) {
 }
 
 export async function runMigrations() {
-	const db = getDb()
-	const client = getClient()
 	try {
 		await waitForDb(db)
 		await ensureTables(db)

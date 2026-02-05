@@ -1,10 +1,9 @@
 import { eq } from 'drizzle-orm'
 import { CommonLocaleSchema } from '~/lib/schemas.ts'
-import { getDb } from './client.ts'
+import { db } from './client.ts'
 import { localizedContent } from './schema.ts'
 
 export async function getLocaleContent(locale: string) {
-	const db = getDb()
 	const rows = await db
 		.select({ content: localizedContent.content })
 		.from(localizedContent)
