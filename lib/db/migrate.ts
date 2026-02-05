@@ -12,6 +12,31 @@ function sleep(ms: number) {
 	return new Promise((resolve) => setTimeout(resolve, ms))
 }
 
+async function readLocaleFile(locale: string) {
+	const candidates = [
+		new URL(`../lib/locales/${locale}/common.json`, import.meta.url),
+		new URL(`../locales/${locale}/common.json`, import.meta.url),
+	]
+
+	let lastError: unknown = null
+	for (const url of candidates) {
+		try {
+			return await Deno.readTextFile(url)
+		} catch (error) {
+			lastError = error
+		}
+	}
+
+	const message = lastError instanceof Error
+		? lastError.message
+		: String(lastError)
+	throw new Error(
+		`Locale file not found for "${locale}". Checked: ` +
+			`${candidates.map((url) => url.pathname).join(', ')}. ` +
+			`Last error: ${message}`,
+	)
+}
+
 async function waitForDb(dbInstance: typeof db) {
 	let lastError: unknown = null
 	for (let attempt = 1; attempt <= CONNECT_RETRIES; attempt += 1) {
@@ -46,11 +71,7 @@ async function seedLocales(dbInstance: typeof db) {
 	const values = [] as Array<{ locale: string; content: unknown }>
 
 	for (const locale of LOCALES) {
-		const fileUrl = new URL(
-			`../lib/locales/${locale}/common.json`,
-			import.meta.url,
-		)
-		const raw = await Deno.readTextFile(fileUrl)
+		const raw = await readLocaleFile(locale)
 		const parsed = CommonLocaleSchema.parse(JSON.parse(raw))
 		values.push({ locale, content: parsed })
 	}
