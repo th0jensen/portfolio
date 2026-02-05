@@ -11,7 +11,7 @@ export default function ComponentLayout(
 	return (
 		<div
 			id={id}
-			class='min-h-screen w-screen overflow-x-hidden overflow-y-hidden'
+			class='min-h-screen w-full overflow-x-hidden overflow-y-hidden px-4 sm:px-0'
 		>
 			<div class='pb-16'></div>
 			{children}

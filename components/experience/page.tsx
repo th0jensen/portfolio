@@ -271,7 +271,7 @@ export default function ExperiencePage(
 
 	return (
 		<Layout id='experience'>
-			<div className='container mx-auto max-w-6xl px-4 py-20'>
+			<div className='container mx-auto max-w-6xl py-20'>
 				<div className='mb-12'>
 					<h2 className='text-xs font-semibold tracking-widest text-muted-foreground uppercase mb-3'>
 						{t('common.experience.subtitle')}

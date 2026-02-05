@@ -22,7 +22,7 @@ export default function Hero({ about, t }: HeroProps) {
 				<div className='absolute right-[10%] bottom-[20%] h-80 w-80 rounded-full bg-accent/10 blur-3xl' />
 			</div>
 
-			<div className='container relative z-10 mx-auto max-w-6xl px-4 flex flex-col h-[calc(100vh-64px)] justify-between'>
+			<div className='container relative z-10 mx-auto max-w-6xl flex flex-col h-[calc(100vh-64px)] justify-between'>
 				<div className='grid items-start lg:items-center flex-grow grid-cols-1 lg:grid-cols-5 gap-8 lg:gap-16 pt-4 lg:pt-0'>
 					<div className='lg:hidden flex justify-center -mt-4 mb-4'>
 						<div className='rounded-xl overflow-hidden'>
