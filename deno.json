@@ -2,6 +2,7 @@
   "tasks": {
     "start": "deno run -A --env-file=.env vite",
     "build": "deno run -A vite build",
+    "migrate": "deno run -A --env-file=.env scripts/migrate.ts",
     "preview": "deno serve -A _fresh/server.js",
     "update": "deno run -A -r jsr:@fresh/update .",
     "wasmbuild": "cd rs_lib && wasm-pack build --target web --out-dir ../static/wasm"
