@@ -2,14 +2,34 @@ import postgres from 'postgres'
 import { drizzle } from 'drizzle-orm/postgres-js'
 import * as schema from './schema.ts'
 
-const databaseUrl = Deno.env.get('DATABASE_URL')
-if (!databaseUrl) {
-	throw new Error('DATABASE_URL is not set')
+let client: postgres.Sql | null = null
+let db:
+	| ReturnType<typeof drizzle<typeof schema>>
+	| null = null
+
+function isPoolerConnection(url: string) {
+	return url.includes('pooler') || url.includes(':6543')
 }
 
-export const client = postgres(databaseUrl, {
-	max: 2,
-	ssl: { rejectUnauthorized: false },
-})
+export function getClient() {
+	if (client) return client
 
-export const db = drizzle(client, { schema })
+	const databaseUrl = Deno.env.get('DATABASE_URL')
+	if (!databaseUrl) {
+		throw new Error('DATABASE_URL is not set')
+	}
+
+	client = postgres(databaseUrl, {
+		max: 2,
+		ssl: { rejectUnauthorized: false },
+		prepare: !isPoolerConnection(databaseUrl),
+	})
+
+	return client
+}
+
+export function getDb() {
+	if (db) return db
+	db = drizzle(getClient(), { schema })
+	return db
+}
