@@ -6,8 +6,13 @@
 export function smoothScrollTo(id: string, headerHeight = 64): void {
 	const element = document.getElementById(id)
 	if (element) {
+		if (id === 'hero') {
+			globalThis.scrollTo({ top: 0, behavior: 'smooth' })
+			return
+		}
+		const effectiveHeaderHeight = headerHeight
 		const topPosition = element.getBoundingClientRect().top +
-			globalThis.pageYOffset - headerHeight
+			globalThis.pageYOffset - effectiveHeaderHeight
 		globalThis.scrollTo({
 			top: topPosition,
 			behavior: 'smooth',

@@ -8,12 +8,13 @@ export interface LayoutProps {
 export default function ComponentLayout(
 	{ children, id }: LayoutProps,
 ) {
+	const spacerClass = id === 'hero' ? 'hidden' : 'pb-16'
 	return (
 		<div
 			id={id}
 			class='min-h-screen w-full overflow-x-hidden px-4 sm:px-0'
 		>
-			<div class='pb-16'></div>
+			<div class={spacerClass}></div>
 			{children}
 		</div>
 	)

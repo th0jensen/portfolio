@@ -40,10 +40,10 @@ export default function Hero({ about, t }: HeroProps) {
 					className='absolute left-0 right-0 -top-[20vh] h-[20vh] w-full object-cover object-[50%_5%] -scale-y-100 transform'
 				/>
 			</div>
-			<div className='pointer-events-none absolute top-[200px] left-0 right-0 h-[calc(62vh-200px)] bg-gradient-to-b from-transparent via-background/60 to-background md:hidden z-10' />
+			<div className='pointer-events-none absolute top-[120px] left-0 right-0 h-[calc(62vh-100px)] bg-[linear-gradient(to_bottom,transparent_0,transparent_calc(35%+50px),hsl(var(--background))_75%,hsl(var(--background))_100%)] dark:bg-[linear-gradient(to_bottom,transparent_0,transparent_calc(35%+50px),hsl(var(--background))_75%,hsl(var(--background))_100%)] md:hidden z-10' />
 
 			<div className='container relative z-20 mx-auto max-w-6xl flex flex-col h-[calc(100vh-64px)] justify-between'>
-				<div className='grid items-start md:items-center flex-grow grid-cols-1 md:grid-cols-5 gap-8 md:gap-16 pt-[32vh] sm:pt-[28vh] md:pt-0'>
+				<div className='grid items-start md:items-center flex-grow grid-cols-1 md:grid-cols-5 gap-8 md:gap-16 pt-[calc(32vh+75px)] sm:pt-[calc(28vh+75px)] md:pt-[75px]'>
 					<div className='relative md:col-span-3'>
 						<div className='relative z-10 space-y-4 lg:space-y-5'>
 							<div className='space-y-2'>
@@ -55,7 +55,7 @@ export default function Hero({ about, t }: HeroProps) {
 								</h1>
 							</div>
 
-							<p className='max-w-2xl text-base lg:text-lg leading-relaxed text-muted-foreground'>
+							<p className='max-w-2xl text-base lg:text-lg leading-relaxed text-black/85 dark:text-muted-foreground'>
 								{description}
 							</p>
 

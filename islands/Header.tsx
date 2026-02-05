@@ -1,6 +1,6 @@
 import { Button } from '~/components/ui/button.tsx'
 import { useSignal } from '@preact/signals'
-import { useEffect } from 'preact/hooks'
+import { useEffect, useRef } from 'preact/hooks'
 import NavItem from '~/islands/NavItem.tsx'
 import ThemeToggle from '~/components/ui/ThemeButton.tsx'
 import HamburgerIcon from '~/components/ui/icons/HamburgerIcon.tsx'
@@ -28,6 +28,8 @@ export default function Header({ translations, locale }: HeaderProps) {
 	const displayMobileLangMenu = useSignal<boolean>(false)
 	const theme = useSignal<'light' | 'dark'>('dark')
 	const isScrolled = useSignal<boolean>(false)
+	const menuHeight = useSignal<number>(0)
+	const menuRef = useRef<HTMLDivElement>(null)
 
 	useEffect(() => {
 		const savedTheme = localStorage.getItem('theme') as
@@ -55,6 +57,26 @@ export default function Header({ translations, locale }: HeaderProps) {
 			window.removeEventListener('scroll', handleScroll)
 		}
 	}, [])
+
+	useEffect(() => {
+		const updateMenuHeight = () => {
+			if (menuRef.current) {
+				menuHeight.value = menuRef.current.offsetHeight
+			}
+		}
+
+		if (displayNav.value) {
+			requestAnimationFrame(updateMenuHeight)
+			window.addEventListener('resize', updateMenuHeight)
+		} else {
+			menuHeight.value = 0
+		}
+
+		return () => {
+			window.removeEventListener('resize', updateMenuHeight)
+		}
+	}, [displayNav.value, displayMobileLangMenu.value])
+
 
 	const toggleTheme = () => {
 		const newTheme = theme.value === 'light' ? 'dark' : 'light'
@@ -89,19 +111,25 @@ export default function Header({ translations, locale }: HeaderProps) {
 	const currentLocale = availableLocales.find((l) => l.code === locale) ||
 		availableLocales[0]
 
+	const showGlass = isScrolled.value || displayNav.value
+	const glassClass = 'bg-background/80 backdrop-blur-xl'
+	const borderClass = showGlass && !displayNav.value
+		? 'border-b border-border/20'
+		: 'border-b border-transparent'
+
 	return (
-		<div
-			className={`fixed top-0 left-0 right-0 z-50 transition-colors duration-200 md:bg-background/70 md:backdrop-blur-xl md:border-b md:border-border/20 ${
-				isScrolled.value || displayNav.value
-					? 'bg-background/70 backdrop-blur-xl border-b border-border/20'
-					: 'bg-transparent border-b border-transparent'
-			}`}
-		>
+		<div className='sticky top-0 left-0 right-0 z-50'>
+			<div
+				className={`pointer-events-none absolute left-0 right-0 top-0 z-0 transition-colors duration-200 ${
+					showGlass ? glassClass : 'bg-transparent'
+				} ${borderClass}`}
+				style={{
+					height: `calc(4rem + ${displayNav.value ? menuHeight.value : 0}px)`,
+				}}
+			/>
 			<header
-				className={`h-16 transition-colors duration-200 md:text-foreground ${
-					isScrolled.value || displayNav.value
-						? 'text-foreground'
-						: 'text-black'
+				className={`relative z-50 h-16 transition-colors duration-200 md:text-foreground ${
+					showGlass ? 'text-foreground' : 'text-black'
 				}`}
 			>
 				<div className='container mx-auto flex h-full max-w-6xl items-center justify-between px-4'>
@@ -202,7 +230,10 @@ export default function Header({ translations, locale }: HeaderProps) {
 				</div>
 			</header>
 			{displayNav.value && (
-				<div className='p-4 md:hidden'>
+				<div
+					ref={menuRef}
+					className='absolute top-16 -mt-px left-0 right-0 z-40 p-4 md:hidden'
+				>
 					<nav className='flex flex-col space-y-4'>
 						<div className='flex flex-col items-center gap-4'>
 							{navLinks.map((link) => (
