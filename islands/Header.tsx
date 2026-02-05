@@ -26,7 +26,7 @@ export default function Header({ translations, locale }: HeaderProps) {
 	const displayNav = useSignal<boolean>(false)
 	const displayLangMenu = useSignal<boolean>(false)
 	const displayMobileLangMenu = useSignal<boolean>(false)
-	const theme = useSignal<'light' | 'dark'>('light')
+	const theme = useSignal<'light' | 'dark'>('dark')
 	const isScrolled = useSignal<boolean>(false)
 
 	useEffect(() => {
@@ -39,6 +39,9 @@ export default function Header({ translations, locale }: HeaderProps) {
 			if (savedTheme === 'dark') {
 				document.documentElement.classList.add('dark')
 			}
+		} else {
+			theme.value = 'dark'
+			document.documentElement.classList.add('dark')
 		}
 
 		const handleScroll = () => {
