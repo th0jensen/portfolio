@@ -74,7 +74,7 @@
         transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
     }
     .glass-card {
-        @apply bg-card/80 backdrop-blur-xl border border-border/50;
+        @apply bg-card/80 backdrop-blur-xl border border-border/50 mx-2 sm:mx-0;
     }
     .backdrop-blur-xl {
         -webkit-backdrop-filter: blur(24px);
