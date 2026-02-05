@@ -59,6 +59,10 @@
     * {
         @apply border-border;
     }
+    html {
+        @apply bg-background text-foreground;
+        background-color: hsl(var(--background));
+    }
     body {
         @apply bg-background text-foreground alef;
         font-feature-settings:

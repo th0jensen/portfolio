@@ -21,7 +21,7 @@ export default function Hero({ about, t }: HeroProps) {
 				<div className='absolute left-[5%] top-[20%] h-96 w-96 rounded-full bg-primary/8 blur-3xl' />
 				<div className='absolute right-[10%] bottom-[20%] h-80 w-80 rounded-full bg-accent/10 blur-3xl' />
 			</div>
-			<div className='absolute top-0 left-0 right-0 md:hidden h-[62vh] overflow-hidden z-0'>
+			<div className='absolute top-0 left-0 right-0 md:hidden h-[62vh] overflow-visible z-0'>
 				<img
 					src='/headshot.jpg'
 					alt={t('common.hero.headshotAlt')}
@@ -29,6 +29,15 @@ export default function Hero({ about, t }: HeroProps) {
 					width={1200}
 					height={1600}
 					className='h-full w-full object-cover object-[50%_35%]'
+				/>
+				<img
+					src='/headshot.jpg'
+					alt=''
+					aria-hidden='true'
+					fetchpriority='high'
+					width={1200}
+					height={600}
+					className='absolute left-0 right-0 -top-[20vh] h-[20vh] w-full object-cover object-[50%_5%] -scale-y-100 transform'
 				/>
 			</div>
 			<div className='pointer-events-none absolute top-[200px] left-0 right-0 h-[calc(62vh-200px)] bg-gradient-to-b from-transparent via-background/60 to-background md:hidden z-10' />
