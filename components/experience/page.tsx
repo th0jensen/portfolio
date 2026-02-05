@@ -286,7 +286,7 @@ export default function ExperiencePage(
 
 				{repos.length > 0
 					? (
-						<div className='grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6 auto-rows-fr md:auto-rows-[minmax(200px,auto)]'>
+						<div className='grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6 md:auto-rows-[minmax(200px,auto)]'>
 							{repos.map((repo, index) => (
 								<RepoCard
 									key={repo.url}
