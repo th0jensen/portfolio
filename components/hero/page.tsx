@@ -23,7 +23,7 @@ export default function Hero({ about, t }: HeroProps) {
 			</div>
 			<div className='absolute top-0 left-0 right-0 md:hidden h-[62vh] overflow-hidden z-0'>
 				<img
-					src='/headshot.webp'
+					src='/headshot.jpg'
 					alt={t('common.hero.headshotAlt')}
 					fetchpriority='high'
 					width={1200}
@@ -41,9 +41,9 @@ export default function Hero({ about, t }: HeroProps) {
 								<p className='text-xs font-semibold tracking-widest text-muted-foreground uppercase'>
 									{t('common.hero.role')}
 								</p>
-							<h1 className='text-4xl font-bold tracking-tight lg:text-6xl bg-gradient-to-r from-foreground to-foreground/70 bg-clip-text text-transparent leading-relaxed pb-2'>
-								{about.firstName} {about.lastName}
-							</h1>
+								<h1 className='text-4xl font-bold tracking-tight lg:text-6xl bg-gradient-to-r from-foreground to-foreground/70 bg-clip-text text-transparent leading-relaxed pb-2'>
+									{about.firstName} {about.lastName}
+								</h1>
 							</div>
 
 							<p className='max-w-2xl text-base lg:text-lg leading-relaxed text-muted-foreground'>
@@ -78,7 +78,9 @@ export default function Hero({ about, t }: HeroProps) {
 									/>
 									<LinkedInButton
 										ariaLabel={t('common.hero.linkedin')}
-										buttonText={t('common.buttons.linkedin')}
+										buttonText={t(
+											'common.buttons.linkedin',
+										)}
 									/>
 								</div>
 								<SmoothScrollButton
@@ -97,7 +99,7 @@ export default function Hero({ about, t }: HeroProps) {
 					<div className='hidden md:flex justify-center items-center md:col-span-2'>
 						<div className='max-h-[calc(100vh-140px)] rounded-xl overflow-hidden'>
 							<img
-								src='/headshot.webp'
+								src='/headshot.jpg'
 								alt={t('common.hero.headshotAlt')}
 								fetchpriority='high'
 								width={360}

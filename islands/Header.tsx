@@ -95,7 +95,7 @@ export default function Header({ translations, locale }: HeaderProps) {
 			}`}
 		>
 			<header
-				className={`h-16 transition-colors duration-200 ${
+				className={`h-16 transition-colors duration-200 md:text-foreground ${
 					isScrolled.value || displayNav.value
 						? 'text-foreground'
 						: 'text-black'
