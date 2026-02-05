@@ -23,6 +23,7 @@ export function getClient() {
 		max: 2,
 		ssl: { rejectUnauthorized: false },
 		prepare: !isPoolerConnection(databaseUrl),
+		family: 4,
 	})
 
 	return client
