@@ -2,7 +2,6 @@
   "tasks": {
     "start": "deno run -A --env-file=.env vite",
     "build": "deno run -A vite build",
-    "migrate": "deno run -A --env-file=.env scripts/migrate.ts",
     "preview": "deno serve -A _fresh/server.js",
     "update": "deno run -A -r jsr:@fresh/update .",
     "wasmbuild": "cd rs_lib && wasm-pack build --target web --out-dir ../static/wasm"
@@ -34,10 +33,6 @@
     "tailwindcss/plugin": "npm:/tailwindcss@3.4.1/plugin.js",
     "vite": "npm:vite@^7.3.1",
     "zod": "npm:zod@^4.3.5",
-    "drizzle-orm": "npm:drizzle-orm@0.45.1",
-    "drizzle-orm/pg-core": "npm:drizzle-orm@0.45.1/pg-core",
-    "drizzle-orm/postgres-js": "npm:drizzle-orm@0.45.1/postgres-js",
-    "postgres": "npm:postgres@3.4.7",
     "~/": "./",
     "fresh": "jsr:@fresh/core@^2.2.0",
     "fresh-i18n": "jsr:@elsoul/fresh-i18n@^1.2.0"
