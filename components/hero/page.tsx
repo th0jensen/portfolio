@@ -21,7 +21,7 @@ export default function Hero({ about, t }: HeroProps) {
 				<div className='absolute left-[5%] top-[20%] h-96 w-96 rounded-full bg-primary/8 blur-3xl' />
 				<div className='absolute right-[10%] bottom-[20%] h-80 w-80 rounded-full bg-accent/10 blur-3xl' />
 			</div>
-			<div className='absolute top-0 left-1/2 -translate-x-1/2 w-screen lg:hidden h-[62vh] overflow-hidden z-0'>
+			<div className='absolute top-0 left-0 right-0 md:hidden h-[62vh] overflow-hidden z-0'>
 				<img
 					src='/headshot.webp'
 					alt={t('common.hero.headshotAlt')}
@@ -31,16 +31,16 @@ export default function Hero({ about, t }: HeroProps) {
 					className='h-full w-full object-cover object-[50%_35%]'
 				/>
 			</div>
-			<div className='pointer-events-none absolute top-[200px] left-1/2 -translate-x-1/2 w-screen h-[calc(62vh-200px)] bg-gradient-to-b from-transparent via-background/60 to-background lg:hidden z-10' />
+			<div className='pointer-events-none absolute top-[200px] left-0 right-0 h-[calc(62vh-200px)] bg-gradient-to-b from-transparent via-background/60 to-background md:hidden z-10' />
 
 			<div className='container relative z-20 mx-auto max-w-6xl flex flex-col h-[calc(100vh-64px)] justify-between'>
-				<div className='grid items-start lg:items-center flex-grow grid-cols-1 lg:grid-cols-5 gap-8 lg:gap-16 pt-[32vh] sm:pt-[28vh] lg:pt-0'>
-					<div className='relative lg:col-span-3'>
+				<div className='grid items-start md:items-center flex-grow grid-cols-1 md:grid-cols-5 gap-8 md:gap-16 pt-[32vh] sm:pt-[28vh] md:pt-0'>
+					<div className='relative md:col-span-3'>
 						<div className='relative z-10 space-y-4 lg:space-y-5'>
 							<div className='space-y-2'>
-							<p className='text-xs font-semibold tracking-widest text-muted-foreground uppercase'>
-								{t('common.hero.role')}
-							</p>
+								<p className='text-xs font-semibold tracking-widest text-muted-foreground uppercase'>
+									{t('common.hero.role')}
+								</p>
 							<h1 className='text-4xl font-bold tracking-tight lg:text-6xl bg-gradient-to-r from-foreground to-foreground/70 bg-clip-text text-transparent leading-relaxed pb-2'>
 								{about.firstName} {about.lastName}
 							</h1>
@@ -50,7 +50,7 @@ export default function Hero({ about, t }: HeroProps) {
 								{description}
 							</p>
 
-							<div className='hidden lg:flex flex-wrap gap-3'>
+							<div className='hidden md:flex flex-wrap gap-3'>
 								<SmoothScrollButton
 									targetId='work'
 									className='group'
@@ -70,7 +70,7 @@ export default function Hero({ about, t }: HeroProps) {
 								/>
 							</div>
 
-							<div className='lg:hidden flex flex-col gap-3 mt-4 items-start'>
+							<div className='md:hidden flex flex-col gap-3 mt-4 items-start'>
 								<div className='flex gap-3'>
 									<GitHubButton
 										ariaLabel={t('common.hero.github')}
@@ -94,7 +94,7 @@ export default function Hero({ about, t }: HeroProps) {
 						</div>
 					</div>
 
-					<div className='hidden lg:flex justify-center items-center lg:col-span-2'>
+					<div className='hidden md:flex justify-center items-center md:col-span-2'>
 						<div className='max-h-[calc(100vh-140px)] rounded-xl overflow-hidden'>
 							<img
 								src='/headshot.webp'

@@ -27,6 +27,7 @@ export default function Header({ translations, locale }: HeaderProps) {
 	const displayLangMenu = useSignal<boolean>(false)
 	const displayMobileLangMenu = useSignal<boolean>(false)
 	const theme = useSignal<'light' | 'dark'>('light')
+	const isScrolled = useSignal<boolean>(false)
 
 	useEffect(() => {
 		const savedTheme = localStorage.getItem('theme') as
@@ -38,6 +39,17 @@ export default function Header({ translations, locale }: HeaderProps) {
 			if (savedTheme === 'dark') {
 				document.documentElement.classList.add('dark')
 			}
+		}
+
+		const handleScroll = () => {
+			isScrolled.value = window.scrollY > 0
+		}
+
+		handleScroll()
+		window.addEventListener('scroll', handleScroll, { passive: true })
+
+		return () => {
+			window.removeEventListener('scroll', handleScroll)
 		}
 	}, [])
 
@@ -75,8 +87,20 @@ export default function Header({ translations, locale }: HeaderProps) {
 		availableLocales[0]
 
 	return (
-		<div className='fixed top-0 left-0 right-0 z-50 bg-background/70 backdrop-blur-xl border-b border-border/20'>
-			<header className='h-16'>
+		<div
+			className={`fixed top-0 left-0 right-0 z-50 transition-colors duration-200 md:bg-background/70 md:backdrop-blur-xl md:border-b md:border-border/20 ${
+				isScrolled.value || displayNav.value
+					? 'bg-background/70 backdrop-blur-xl border-b border-border/20'
+					: 'bg-transparent border-b border-transparent'
+			}`}
+		>
+			<header
+				className={`h-16 transition-colors duration-200 ${
+					isScrolled.value || displayNav.value
+						? 'text-foreground'
+						: 'text-black'
+				}`}
+			>
 				<div className='container mx-auto flex h-full max-w-6xl items-center justify-between px-4'>
 					<div className='flex items-center z-10'>
 						<NavItem
