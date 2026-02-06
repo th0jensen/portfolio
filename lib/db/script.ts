@@ -191,19 +191,25 @@ async function seed(): Promise<void> {
 	)
 }
 
+let exitCode = 0
+
 try {
 	await seed()
 } catch (error) {
+	exitCode = 1
 	if (isMissingTableError(error)) {
-		throw new Error(
+		console.error(
 			[
 				'Missing required database tables.',
 				'Run migrations first in the same environment/context you are seeding:',
 				'`deno task db:migrate:tunnel`',
 			].join(' '),
 		)
+	} else {
+		console.error('Seed failed:', error)
 	}
-	throw error
 } finally {
 	await closeDb()
 }
+
+Deno.exit(exitCode)

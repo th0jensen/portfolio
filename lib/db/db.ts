@@ -12,6 +12,7 @@ if (!connectionString) {
 
 const pool = new pg.Pool({
 	connectionString,
+	allowExitOnIdle: true,
 })
 
 export const db = drizzle({
@@ -19,6 +20,22 @@ export const db = drizzle({
 	schema,
 })
 
-export async function closeDb(): Promise<void> {
-	await pool.end()
+export async function closeDb(timeoutMs = 5000): Promise<void> {
+	let closed = false
+	const closePromise = pool.end().then(() => {
+		closed = true
+	}).catch((error) => {
+		console.error('Failed to close DB pool cleanly:', error)
+	})
+
+	await Promise.race([
+		closePromise,
+		new Promise<void>((resolve) => setTimeout(resolve, timeoutMs)),
+	])
+
+	if (!closed) {
+		console.warn(
+			`DB pool close timed out after ${timeoutMs}ms; proceeding with process exit.`,
+		)
+	}
 }
