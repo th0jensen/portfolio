@@ -10,7 +10,8 @@
 		"db:verify:tunnel": "deno task --tunnel db:verify",
 		"seed": "deno run -A ./lib/db/script.ts",
 		"seed:tunnel": "deno task --tunnel seed",
-		"db:bootstrap:tunnel": "deno task db:migrate:tunnel && deno task seed:tunnel",
+		"db:bootstrap": "deno task db:migrate && deno task seed",
+		"db:bootstrap:deploy": "deno task db:migrate && deno task seed && deno task db:verify",
 		"preview": "deno serve -A _fresh/server.js",
 		"update": "deno run -A -r jsr:@fresh/update .",
 		"wasmbuild": "cd rs_lib && wasm-pack build --target web --out-dir ../static/wasm"
