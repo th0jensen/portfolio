@@ -31,8 +31,15 @@ async function verifyDbState(): Promise<void> {
 	)
 }
 
+let exitCode = 0
+
 try {
 	await verifyDbState()
+} catch (error) {
+	exitCode = 1
+	console.error('DB verify failed:', error)
 } finally {
 	await closeDb()
 }
+
+Deno.exit(exitCode)
