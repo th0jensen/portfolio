@@ -13,6 +13,7 @@ import { getTranslationData } from '~/lib/db/locales.ts'
 import {
 	FALLBACK_REPOS,
 	fetchGitHubPR,
+	fetchGitHubTotalDownloads,
 	fetchMultipleRepos,
 	fetchZedExtensionWithGitHub,
 } from '~/lib/github.ts'
@@ -48,25 +49,34 @@ async function getRepos(): Promise<FormattedRepo[]> {
 	}
 
 	try {
-		// Fetch the featured PR, Zed extension with GitHub data, and repos in parallel
-		const [featuredPR, zedExtension, repos] = await Promise.all([
-			fetchGitHubPR(
-				FEATURED_PR.owner,
-				FEATURED_PR.repo,
-				FEATURED_PR.number,
-			),
-			fetchZedExtensionWithGitHub(
-				ZED_EXTENSION_ID,
-				GITHUB_USERNAME,
-				'gruber-darker.zed',
-			),
-			fetchMultipleRepos(FEATURED_REPOS),
-		])
+		// Fetch the featured PR, Zed extension card, Zed app downloads, and repos in parallel
+		const [featuredPR, zedExtension, zedTotalDownloads, repos] =
+			await Promise.all([
+				fetchGitHubPR(
+					FEATURED_PR.owner,
+					FEATURED_PR.repo,
+					FEATURED_PR.number,
+				),
+				fetchZedExtensionWithGitHub(
+					ZED_EXTENSION_ID,
+					GITHUB_USERNAME,
+					'gruber-darker.zed',
+				),
+				fetchGitHubTotalDownloads(FEATURED_PR.owner, FEATURED_PR.repo),
+				fetchMultipleRepos(FEATURED_REPOS),
+			])
+
+		const featuredPrWithProductStats = featuredPR
+			? {
+				...featuredPR,
+				downloads: zedTotalDownloads ?? featuredPR.downloads,
+			}
+			: null
 
 		// Combine PR (first/featured), Zed extension, and repos
 		const allItems: FormattedRepo[] = []
-		if (featuredPR) {
-			allItems.push(featuredPR)
+		if (featuredPrWithProductStats) {
+			allItems.push(featuredPrWithProductStats)
 		}
 		if (zedExtension) {
 			allItems.push(zedExtension)

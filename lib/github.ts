@@ -57,6 +57,9 @@ export type GitHubRepo = z.infer<typeof GitHubRepoSchema>
 export type GitHubPR = z.infer<typeof GitHubPRSchema>
 export type ZedExtension = z.infer<typeof ZedExtensionSchema>
 export type ZedExtensionResponse = z.infer<typeof ZedExtensionResponseSchema>
+type GitHubRelease = {
+	assets?: Array<{ download_count?: number }>
+}
 
 // Language colors - centralized and used throughout
 export const LANGUAGE_COLORS: Record<string, string> = {
@@ -261,6 +264,7 @@ export async function fetchGitHubPR(
 	owner: string,
 	repo: string,
 	prNumber: number,
+	options: { downloads?: number } = {},
 ): Promise<FormattedRepo | null> {
 	const GITHUB_TOKEN = Deno.env.get('GITHUB_TOKEN')
 
@@ -274,20 +278,26 @@ export async function fetchGitHubPR(
 	}
 
 	try {
-		const response = await fetch(
-			`https://api.github.com/repos/${owner}/${repo}/pulls/${prNumber}`,
-			{ headers },
-		)
+		const [prResponse, repoResponse] = await Promise.all([
+			fetch(
+				`https://api.github.com/repos/${owner}/${repo}/pulls/${prNumber}`,
+				{ headers },
+			),
+			fetch(`https://api.github.com/repos/${owner}/${repo}`, { headers }),
+		])
 
-		if (!response.ok) {
+		if (!prResponse.ok) {
 			console.error(
-				`Failed to fetch PR ${owner}/${repo}#${prNumber}: ${response.status}`,
+				`Failed to fetch PR ${owner}/${repo}#${prNumber}: ${prResponse.status}`,
 			)
 			return null
 		}
 
-		const pr: GitHubPR = await response.json()
-		const language = pr.base.repo.language
+		const pr: GitHubPR = await prResponse.json()
+		const repoData: GitHubRepo | null = repoResponse.ok
+			? await repoResponse.json()
+			: null
+		const language = repoData?.language ?? pr.base.repo.language
 
 		// Extract content from PR body and clean it up
 		let description = pr.title
@@ -313,8 +323,8 @@ export async function fetchGitHubPR(
 			name: pr.base.repo.full_name,
 			description,
 			url: pr.html_url,
-			stars: 0,
-			forks: 0,
+			stars: repoData?.stargazers_count ?? 0,
+			forks: repoData?.forks_count ?? 0,
 			language: language || undefined,
 			languageColor: getLanguageColor(language),
 			type: 'pr',
@@ -322,6 +332,7 @@ export async function fetchGitHubPR(
 			prState: pr.merged_at ? 'merged' : pr.state as 'open' | 'closed',
 			additions: pr.additions,
 			deletions: pr.deletions,
+			downloads: options.downloads,
 		}
 	} catch (error) {
 		console.error(`Error fetching PR ${owner}/${repo}#${prNumber}:`, error)
@@ -343,6 +354,92 @@ function getHeaders(): HeadersInit {
 	}
 
 	return headers
+}
+
+function parseLastPage(linkHeader: string | null): number {
+	if (!linkHeader) return 1
+
+	const lastPageMatch = linkHeader.match(
+		/<[^>]*[?&]page=(\d+)[^>]*>\s*;\s*rel="last"/,
+	)
+
+	if (!lastPageMatch) {
+		return 1
+	}
+
+	const page = Number(lastPageMatch[1])
+	return Number.isFinite(page) && page > 0 ? page : 1
+}
+
+function sumReleaseDownloads(releases: GitHubRelease[]): number {
+	let total = 0
+	for (const release of releases) {
+		if (!release.assets) continue
+		for (const asset of release.assets) {
+			if (typeof asset.download_count === 'number') {
+				total += asset.download_count
+			}
+		}
+	}
+	return total
+}
+
+export async function fetchGitHubTotalDownloads(
+	owner: string,
+	repo: string,
+): Promise<number | undefined> {
+	try {
+		const perPage = 100
+		const firstResponse = await fetch(
+			`https://api.github.com/repos/${owner}/${repo}/releases?per_page=${perPage}&page=1`,
+			{ headers: getHeaders() },
+		)
+
+		if (!firstResponse.ok) {
+			console.error(
+				`Failed to fetch release downloads for ${owner}/${repo}: ${firstResponse.status}`,
+			)
+			return undefined
+		}
+
+		const firstPageReleases: GitHubRelease[] = await firstResponse.json()
+		let totalDownloads = sumReleaseDownloads(firstPageReleases)
+		const lastPage = parseLastPage(firstResponse.headers.get('link'))
+
+		if (lastPage <= 1) {
+			return totalDownloads
+		}
+
+		const pageRequests: Promise<Response>[] = []
+		for (let page = 2; page <= lastPage; page++) {
+			pageRequests.push(
+				fetch(
+					`https://api.github.com/repos/${owner}/${repo}/releases?per_page=${perPage}&page=${page}`,
+					{ headers: getHeaders() },
+				),
+			)
+		}
+
+		const pageResponses = await Promise.all(pageRequests)
+		for (const pageResponse of pageResponses) {
+			if (!pageResponse.ok) {
+				console.error(
+					`Failed to fetch release downloads page for ${owner}/${repo}: ${pageResponse.status}`,
+				)
+				continue
+			}
+			const pageReleases: GitHubRelease[] = await pageResponse.json()
+			totalDownloads += sumReleaseDownloads(pageReleases)
+		}
+
+		return totalDownloads
+	} catch (error) {
+		console.error(
+			`Error fetching release downloads for ${owner}/${repo}:`,
+			error,
+		)
+		return undefined
+	}
 }
 
 export async function fetchGitHubRepo(
