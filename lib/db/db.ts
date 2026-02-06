@@ -12,7 +12,6 @@ if (!connectionString) {
 
 const pool = new pg.Pool({
 	connectionString,
-	allowExitOnIdle: true,
 })
 
 export const db = drizzle({

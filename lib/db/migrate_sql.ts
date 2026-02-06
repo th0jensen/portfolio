@@ -19,7 +19,6 @@ if (!connectionString) {
 
 const pool = new pg.Pool({
 	connectionString,
-	allowExitOnIdle: true,
 	max: 1,
 	connectionTimeoutMillis: CONNECTION_TIMEOUT_MS,
 	idleTimeoutMillis: 1_000,
