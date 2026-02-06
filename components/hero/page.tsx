@@ -13,6 +13,7 @@ interface HeroProps {
 export default function Hero({ about, t }: HeroProps) {
 	const age = calculateAge(about.birthday).toString()
 	const description = t('common.hero.description').replace('{age}', age)
+	const headshotUrl = '/api/images/headshot.jpg'
 
 	return (
 		<Layout id='hero'>
@@ -23,7 +24,7 @@ export default function Hero({ about, t }: HeroProps) {
 			</div>
 			<div className='absolute top-0 left-0 right-0 md:hidden h-[62vh] overflow-visible z-0'>
 				<img
-					src='/headshot.jpg'
+					src={headshotUrl}
 					alt={t('common.hero.headshotAlt')}
 					fetchpriority='high'
 					width={1200}
@@ -31,7 +32,7 @@ export default function Hero({ about, t }: HeroProps) {
 					className='h-full w-full object-cover object-[50%_35%]'
 				/>
 				<img
-					src='/headshot.jpg'
+					src={headshotUrl}
 					alt=''
 					aria-hidden='true'
 					fetchpriority='high'
@@ -108,7 +109,7 @@ export default function Hero({ about, t }: HeroProps) {
 					<div className='hidden md:flex justify-center items-center md:col-span-2'>
 						<div className='max-h-[calc(100vh-140px)] rounded-xl overflow-hidden'>
 							<img
-								src='/headshot.jpg'
+								src={headshotUrl}
 								alt={t('common.hero.headshotAlt')}
 								fetchpriority='high'
 								width={360}

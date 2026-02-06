@@ -1,9 +1,9 @@
 import { define } from '~/utils.ts'
-
-const SUPPORTED_LOCALES = ['en', 'no', 'he'] as const
-const DEFAULT_LOCALE = 'en'
-
-type SupportedLocale = (typeof SUPPORTED_LOCALES)[number]
+import {
+	DEFAULT_LOCALE,
+	type LocaleCode,
+	SUPPORTED_LOCALES,
+} from '~/lib/i18n.ts'
 
 function parseAcceptLanguage(header: string | null): string[] {
 	if (!header) return []
@@ -19,11 +19,11 @@ function parseAcceptLanguage(header: string | null): string[] {
 		.map(({ locale }) => locale)
 }
 
-function matchLocale(acceptedLanguages: string[]): SupportedLocale {
+function matchLocale(acceptedLanguages: string[]): LocaleCode {
 	for (const lang of acceptedLanguages) {
 		// Exact match (e.g., "en", "no", "he")
-		if (SUPPORTED_LOCALES.includes(lang as SupportedLocale)) {
-			return lang as SupportedLocale
+		if (SUPPORTED_LOCALES.includes(lang as LocaleCode)) {
+			return lang as LocaleCode
 		}
 
 		// Match language part (e.g., "en-US" -> "en", "nb-NO" -> "no")

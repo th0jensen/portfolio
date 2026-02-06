@@ -16,6 +16,10 @@ export default function ProjectCard({
 	visitProjectLabel,
 	downloadAppStoreLabel = 'Download on App Store',
 }: ProjectCardProps) {
+	const isZedImage = project.imageURL.endsWith('/zed.jpeg') ||
+		project.imageURL.endsWith('/zed.webp')
+	const appStoreBadgeUrl = '/api/images/appstore.svg'
+
 	return (
 		<div className='group glass-card overflow-hidden rounded-2xl smooth-transition hover:shadow-lg'>
 			<div className='relative flex justify-center items-center h-[200px] overflow-hidden'>
@@ -29,7 +33,7 @@ export default function ProjectCard({
 							aria-label={downloadAppStoreLabel}
 						>
 							<img
-								src='/appstore.svg'
+								src={appStoreBadgeUrl}
 								alt='App Store'
 								width={120}
 								height={40}
@@ -45,13 +49,9 @@ export default function ProjectCard({
 					src={project.imageURL}
 					alt={project.name}
 					width={300}
-					height={project.imageURL === '/images/zed.jpeg' ||
-						project.imageURL === '/images/zed.webp'
-						? 150
-						: 180}
+					height={isZedImage ? 150 : 180}
 					className={`${
-						project.imageURL === '/images/zed.jpeg' ||
-						project.imageURL === '/images/zed.webp'
+						isZedImage
 							? 'h-[150px] rounded-xl overflow-hidden'
 							: 'h-[180px]'
 					} max-w-full object-contain transition-transform duration-500 group-hover:scale-105`}

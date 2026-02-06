@@ -9,6 +9,7 @@ import {
 	type Project,
 	ProjectSchema,
 } from '~/lib/schemas.ts'
+import { getTranslationData } from '~/lib/db/locales.ts'
 import {
 	FALLBACK_REPOS,
 	fetchGitHubPR,
@@ -91,6 +92,26 @@ const DEFAULT_ABOUT: About = {
 	humanLanguages: ['English', 'Norwegian', 'German', 'Hebrew'],
 	computerLanguages: ['Typescript', 'Go', 'Swift', 'Rust'],
 }
+
+export const handler = define.handlers({
+	async GET(ctx) {
+		const { locale, translationData } = await getTranslationData(
+			ctx.params.locale,
+		)
+		if (locale !== ctx.params.locale) {
+			return new Response(null, {
+				status: 302,
+				headers: { Location: `/${locale}` },
+			})
+		}
+		ctx.state.locale = locale
+		ctx.state.translationData = translationData as unknown as Record<
+			string,
+			Record<string, string>
+		>
+		return { data: null }
+	},
+})
 
 export default define.page(async function Home(props) {
 	const t = createTranslator(props.state.translationData || {})

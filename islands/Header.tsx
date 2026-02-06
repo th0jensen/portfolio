@@ -47,14 +47,14 @@ export default function Header({ translations, locale }: HeaderProps) {
 		}
 
 		const handleScroll = () => {
-			isScrolled.value = window.scrollY > 0
+			isScrolled.value = globalThis.scrollY > 0
 		}
 
 		handleScroll()
-		window.addEventListener('scroll', handleScroll, { passive: true })
+		globalThis.addEventListener('scroll', handleScroll, { passive: true })
 
 		return () => {
-			window.removeEventListener('scroll', handleScroll)
+			globalThis.removeEventListener('scroll', handleScroll)
 		}
 	}, [])
 
@@ -67,16 +67,15 @@ export default function Header({ translations, locale }: HeaderProps) {
 
 		if (displayNav.value) {
 			requestAnimationFrame(updateMenuHeight)
-			window.addEventListener('resize', updateMenuHeight)
+			globalThis.addEventListener('resize', updateMenuHeight)
 		} else {
 			menuHeight.value = 0
 		}
 
 		return () => {
-			window.removeEventListener('resize', updateMenuHeight)
+			globalThis.removeEventListener('resize', updateMenuHeight)
 		}
 	}, [displayNav.value, displayMobileLangMenu.value])
-
 
 	const toggleTheme = () => {
 		const newTheme = theme.value === 'light' ? 'dark' : 'light'
@@ -124,7 +123,9 @@ export default function Header({ translations, locale }: HeaderProps) {
 					showGlass ? glassClass : 'bg-transparent'
 				} ${borderClass}`}
 				style={{
-					height: `calc(4rem + ${displayNav.value ? menuHeight.value : 0}px)`,
+					height: `calc(4rem + ${
+						displayNav.value ? menuHeight.value : 0
+					}px)`,
 				}}
 			/>
 			<header
