@@ -49,9 +49,7 @@ async function closePool(timeoutMs = 5000): Promise<void> {
 
 function normalizeSql(rawSql: string): string {
 	return rawSql
-		.split('\n')
-		.filter((line) => !line.includes('--> statement-breakpoint'))
-		.join('\n')
+		.replaceAll(/-->\s*statement-breakpoint/g, '')
 		.trim()
 }
 
@@ -67,6 +65,14 @@ function isDuplicateObjectError(error: unknown): boolean {
 	const code = getPgErrorCode(error)
 	// duplicate_table, duplicate_object, duplicate_schema
 	return code === '42P07' || code === '42710' || code === '42P06'
+}
+
+function splitSqlStatements(sqlText: string): string[] {
+	return sqlText
+		.split(';')
+		.map((statement) => statement.trim())
+		.filter((statement) => statement.length > 0)
+		.map((statement) => `${statement};`)
 }
 
 async function readMigrationJournal(): Promise<MigrationJournalEntry[]> {
@@ -104,17 +110,6 @@ async function hasMigration(
 	return (result.rowCount ?? 0) > 0
 }
 
-async function markMigrationApplied(
-	client: pg.PoolClient,
-	tag: string,
-): Promise<void> {
-	await queryWithTimeout(
-		client,
-		'INSERT INTO drizzle.__sql_migrations (tag) VALUES ($1) ON CONFLICT (tag) DO NOTHING',
-		[tag],
-	)
-}
-
 async function queryWithTimeout<T extends pg.QueryResult>(
 	client: pg.PoolClient,
 	text: string,
@@ -138,6 +133,14 @@ async function applyMigration(
 	tag: string,
 	sqlText: string,
 ): Promise<void> {
+	const safeRollback = async () => {
+		try {
+			await queryWithTimeout(client, 'ROLLBACK', undefined, 5_000)
+		} catch {
+			// Ignore rollback timeout/failure so migration exits quickly.
+		}
+	}
+
 	await queryWithTimeout(client, 'BEGIN')
 	try {
 		await queryWithTimeout(client, sqlText)
@@ -147,12 +150,36 @@ async function applyMigration(
 			[tag],
 		)
 		await queryWithTimeout(client, 'COMMIT')
+		return
 	} catch (error) {
-		try {
-			await queryWithTimeout(client, 'ROLLBACK', undefined, 5_000)
-		} catch {
-			// Ignore rollback timeout/failure so migration exits quickly.
+		await safeRollback()
+		if (!isDuplicateObjectError(error)) {
+			throw error
 		}
+	}
+
+	// If the full migration failed only because some objects already exist,
+	// re-run statement-by-statement and skip duplicate-object statements.
+	await queryWithTimeout(client, 'BEGIN')
+	try {
+		const statements = splitSqlStatements(sqlText)
+		for (const statement of statements) {
+			try {
+				await queryWithTimeout(client, statement)
+			} catch (statementError) {
+				if (!isDuplicateObjectError(statementError)) {
+					throw statementError
+				}
+			}
+		}
+		await queryWithTimeout(
+			client,
+			'INSERT INTO drizzle.__sql_migrations (tag) VALUES ($1) ON CONFLICT (tag) DO NOTHING',
+			[tag],
+		)
+		await queryWithTimeout(client, 'COMMIT')
+	} catch (error) {
+		await safeRollback()
 		throw error
 	}
 }
@@ -183,21 +210,8 @@ async function migrate(): Promise<void> {
 				continue
 			}
 
-			try {
-				await applyMigration(client, entry.tag, sqlText)
-				console.log(`Applied migration ${entry.tag}.`)
-			} catch (error) {
-				if (isDuplicateObjectError(error)) {
-					await markMigrationApplied(client, entry.tag)
-					console.warn(
-						`Migration ${entry.tag} already reflected in schema (code ${
-							getPgErrorCode(error)
-						}); marked as applied.`,
-					)
-					continue
-				}
-				throw error
-			}
+			await applyMigration(client, entry.tag, sqlText)
+			console.log(`Applied migration ${entry.tag}.`)
 		}
 
 		console.log('SQL migrations complete.')
