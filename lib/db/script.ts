@@ -11,10 +11,12 @@ interface LocaleSeedRow {
 	rawJson: unknown
 }
 
-const STATIC_IMAGE_ASSETS: Array<{ key: string; staticPath: string }> = [
+const STATIC_DB_ASSETS: Array<{ key: string; staticPath: string }> = [
 	{ key: 'headshot.jpg', staticPath: 'headshot.jpg' },
 	{ key: 'headshot.webp', staticPath: 'headshot.webp' },
 	{ key: 'appstore.svg', staticPath: 'appstore.svg' },
+	{ key: 'alef-400.ttf', staticPath: 'fonts/alef-400.ttf' },
+	{ key: 'alef-700.ttf', staticPath: 'fonts/alef-700.ttf' },
 ]
 
 function getErrorCode(error: unknown): string | undefined {
@@ -106,7 +108,7 @@ function imageUrlFromKey(key: string): string {
 	return `/api/images/${key}`
 }
 
-function mimeTypeForImage(key: string): string {
+function mimeTypeForAsset(key: string): string {
 	const lowerKey = key.toLowerCase()
 	if (lowerKey.endsWith('.webp')) return 'image/webp'
 	if (lowerKey.endsWith('.jpg') || lowerKey.endsWith('.jpeg')) {
@@ -116,15 +118,19 @@ function mimeTypeForImage(key: string): string {
 	if (lowerKey.endsWith('.gif')) return 'image/gif'
 	if (lowerKey.endsWith('.svg')) return 'image/svg+xml'
 	if (lowerKey.endsWith('.avif')) return 'image/avif'
+	if (lowerKey.endsWith('.ttf')) return 'font/ttf'
+	if (lowerKey.endsWith('.otf')) return 'font/otf'
+	if (lowerKey.endsWith('.woff')) return 'font/woff'
+	if (lowerKey.endsWith('.woff2')) return 'font/woff2'
 
-	throw new Error(`Unsupported image type for "${key}"`)
+	throw new Error(`Unsupported asset type for "${key}"`)
 }
 
 function bytesToBase64(bytes: Uint8Array): string {
 	return Buffer.from(bytes).toString('base64')
 }
 
-async function seedProjectImages(imageKeys: Set<string>): Promise<void> {
+async function seedDbAssets(imageKeys: Set<string>): Promise<void> {
 	await db.delete(assetImages)
 
 	const imageSourcePath = new Map<string, string>()
@@ -133,7 +139,7 @@ async function seedProjectImages(imageKeys: Set<string>): Promise<void> {
 		imageSourcePath.set(key, `images/${key}`)
 	}
 
-	for (const asset of STATIC_IMAGE_ASSETS) {
+	for (const asset of STATIC_DB_ASSETS) {
 		imageSourcePath.set(asset.key, asset.staticPath)
 	}
 
@@ -142,7 +148,7 @@ async function seedProjectImages(imageKeys: Set<string>): Promise<void> {
 		const imageData = await Deno.readFile(imagePath)
 		await upsertImageAsset({
 			key,
-			mimeType: mimeTypeForImage(key),
+			mimeType: mimeTypeForAsset(key),
 			dataBase64: bytesToBase64(imageData),
 		})
 	}
@@ -177,12 +183,12 @@ async function seed(): Promise<void> {
 		})
 	}
 
-	await seedProjectImages(imageKeys)
+	await seedDbAssets(imageKeys)
 
 	console.log(
 		`Seeded ${localeRows.length} locale payload(s) and ${
-			imageKeys.size + STATIC_IMAGE_ASSETS.length
-		} image asset(s) into the database.`,
+			imageKeys.size + STATIC_DB_ASSETS.length
+		} static asset(s) into the database.`,
 	)
 }
 

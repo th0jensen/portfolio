@@ -34,6 +34,20 @@ export default define.page(function App({ Component, state }) {
 				<meta name='twitter:title' content={title} />
 				<meta name='twitter:description' content={description} />
 				<link rel='icon' type='image/svg+xml' href='/favicon.svg' />
+				<link
+					rel='preload'
+					href='/fonts/alef-400.ttf'
+					as='font'
+					type='font/ttf'
+					crossOrigin='anonymous'
+				/>
+				<link
+					rel='preload'
+					href='/fonts/alef-700.ttf'
+					as='font'
+					type='font/ttf'
+					crossOrigin='anonymous'
+				/>
 				<script
 					nonce={state.cspNonce}
 					// deno-lint-ignore react-no-danger
