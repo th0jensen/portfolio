@@ -4,6 +4,10 @@ import { createTranslator } from 'fresh-i18n'
 export default define.page(function App({ Component, state }) {
 	const t = createTranslator(state.translationData || {})
 	const locale = state.locale || 'en'
+	const assetOrigin = typeof state.assetOrigin === 'string'
+		? state.assetOrigin
+		: ''
+	const assetHost = assetOrigin ? new URL(assetOrigin).host : ''
 	const resolvedTitle = t('common.metadata.name')
 	const resolvedDescription = t('common.metadata.description')
 	const title = resolvedTitle === 'common.metadata.name'
@@ -33,6 +37,12 @@ export default define.page(function App({ Component, state }) {
 				<meta name='twitter:card' content='summary' />
 				<meta name='twitter:title' content={title} />
 				<meta name='twitter:description' content={description} />
+				{assetHost
+					? <link rel='dns-prefetch' href={`//${assetHost}`} />
+					: null}
+				{assetOrigin
+					? <link rel='preconnect' href={assetOrigin} />
+					: null}
 				<link rel='icon' type='image/svg+xml' href='/favicon.svg' />
 				<link
 					rel='preload'
