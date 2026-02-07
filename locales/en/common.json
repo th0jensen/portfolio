@@ -3,7 +3,7 @@
 		"description": "Thomas Jensen - Full Stack Software Developer focused on creating elegant solutions through clean code. Explore my projects and experience."
 	},
 	"nav": {
-		"work": "Work",
+		"work": "Projects",
 		"experience": "Experience",
 		"contact": "Contact",
 		"openMenu": "Open menu",
@@ -32,7 +32,7 @@
 	},
 	"work": {
 		"subtitle": "Featured Projects",
-		"title": "Work",
+		"title": "Projects",
 		"showMore": "Show more",
 		"showLess": "Show less",
 		"visitProject": "View {name} project",
