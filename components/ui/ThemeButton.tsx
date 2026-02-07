@@ -15,7 +15,7 @@ interface ThemeToggleProps {
 export default function ThemeToggle({
 	onClick,
 	theme,
-	className,
+	className = '',
 	showText = false,
 	lightText = 'Light',
 	darkText = 'Dark',

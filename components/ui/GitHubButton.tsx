@@ -1,4 +1,4 @@
-import ExternalLink from '~/islands/ExternalLink.tsx'
+import { Link } from '~/components/ui/button.tsx'
 
 function GitHubIcon() {
 	return (
@@ -19,17 +19,21 @@ interface GitHubButtonProps {
 	buttonText?: string
 }
 
-export default function GitHubButton({ ariaLabel = 'GitHub profile', buttonText = 'GitHub' }: GitHubButtonProps) {
+export default function GitHubButton(
+	{ ariaLabel = 'GitHub profile', buttonText = 'GitHub' }: GitHubButtonProps,
+) {
 	return (
-		<ExternalLink
+		<Link
 			href='https://github.com/th0jensen'
 			variant='secondary'
 			size='lg'
-			ariaLabel={ariaLabel}
+			target='_blank'
+			rel='noopener noreferrer'
+			aria-label={ariaLabel}
 		>
 			<span className='flex items-center gap-2'>
 				<GitHubIcon /> {buttonText}
 			</span>
-		</ExternalLink>
+		</Link>
 	)
 }

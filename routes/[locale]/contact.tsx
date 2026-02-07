@@ -1,19 +1,16 @@
 import { define } from '~/utils.ts'
 import { createTranslator } from 'fresh-i18n'
-import Hero from '~/components/hero/page.tsx'
+import ContactPage from '~/components/contact/page.tsx'
 import { localizedPageHandler } from '~/lib/locale_route.ts'
-import { getPortfolioPageDataFromState } from '~/lib/page_data.ts'
 
 export const handler = localizedPageHandler
 
-export default define.page(function Home(props) {
+export default define.page(function ContactRoutePage(props) {
 	const t = createTranslator(props.state.translationData || {})
-	const { locale, about } = getPortfolioPageDataFromState(props.state)
-	const workHref = `/${locale}/projects`
 
 	return (
 		<div class='flex flex-col items-center justify-center overflow-x-hidden'>
-			<Hero about={about} t={t} workHref={workHref} />
+			<ContactPage t={t} />
 		</div>
 	)
 })

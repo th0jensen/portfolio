@@ -1,12 +1,15 @@
 import { define } from '../utils.ts'
 import { createTranslator } from 'fresh-i18n'
-import Header from '~/islands/Header.tsx'
+import Header from '~/components/header/Header.tsx'
 import Footer from '~/components/Footer.tsx'
 
 export default define.page(function Layout({ Component, state }) {
 	const t = createTranslator(state.translationData || {})
 	const locale = state.locale || 'en'
 	const isRtl = locale === 'he'
+	const requestPath = typeof state.requestPath === 'string'
+		? state.requestPath
+		: `/${locale}`
 
 	const headerTranslations = {
 		work: t('common.nav.work'),
@@ -20,11 +23,15 @@ export default define.page(function Layout({ Component, state }) {
 	}
 
 	return (
-		<div class='flex flex-col' dir={isRtl ? 'rtl' : 'ltr'}>
-			<Header translations={headerTranslations} locale={locale} />
-			<div class='flex-1'>
+		<div class='flex min-h-screen flex-col' dir={isRtl ? 'rtl' : 'ltr'}>
+			<Header
+				translations={headerTranslations}
+				locale={locale}
+				currentPath={requestPath}
+			/>
+			<main class='flex-1'>
 				<Component />
-			</div>
+			</main>
 			<Footer t={t} />
 		</div>
 	)

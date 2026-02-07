@@ -6,9 +6,9 @@ import { getPortfolioPageDataFromState } from '~/lib/page_data.ts'
 
 export const handler = localizedPageHandler
 
-export default define.page(function Home(props) {
+export default define.page(function AboutPage(props) {
 	const t = createTranslator(props.state.translationData || {})
-	const { locale, about } = getPortfolioPageDataFromState(props.state)
+	const { about, locale } = getPortfolioPageDataFromState(props.state)
 	const workHref = `/${locale}/projects`
 
 	return (

@@ -44,7 +44,7 @@ export interface ButtonProps
 
 export interface LinkProps
     extends
-        JSX.HTMLAttributes<HTMLAnchorElement>,
+        JSX.AnchorHTMLAttributes<HTMLAnchorElement>,
         VariantProps<typeof buttonVariants> {
     asChild?: boolean
     href?: string

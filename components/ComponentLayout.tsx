@@ -8,14 +8,13 @@ export interface LayoutProps {
 export default function ComponentLayout(
 	{ children, id }: LayoutProps,
 ) {
-	const spacerClass = id === 'hero' ? 'hidden' : 'pb-16'
+	const scrollMarginClass = id === 'hero' ? '' : 'scroll-mt-24'
 	return (
-		<div
+		<section
 			id={id}
-			class='min-h-screen w-full overflow-x-hidden px-4 sm:px-0'
+			class={`min-h-[calc(100vh-4rem)] w-full overflow-x-hidden px-4 sm:px-0 ${scrollMarginClass}`}
 		>
-			<div class={spacerClass}></div>
 			{children}
-		</div>
+		</section>
 	)
 }

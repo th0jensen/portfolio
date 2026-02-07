@@ -1,4 +1,4 @@
-import ExternalLink from '~/islands/ExternalLink.tsx'
+import { Link } from '~/components/ui/button.tsx'
 
 function LinkedInIcon() {
 	return (
@@ -19,17 +19,24 @@ interface LinkedInButtonProps {
 	buttonText?: string
 }
 
-export default function LinkedInButton({ ariaLabel = 'LinkedIn profile', buttonText = 'LinkedIn' }: LinkedInButtonProps) {
+export default function LinkedInButton(
+	{
+		ariaLabel = 'LinkedIn profile',
+		buttonText = 'LinkedIn',
+	}: LinkedInButtonProps,
+) {
 	return (
-		<ExternalLink
+		<Link
 			href='https://www.linkedin.com/in/thomas-jensen-75a488208/'
 			variant='secondary'
 			size='lg'
-			ariaLabel={ariaLabel}
+			target='_blank'
+			rel='noopener noreferrer'
+			aria-label={ariaLabel}
 		>
 			<span className='flex items-center gap-2'>
 				<LinkedInIcon /> {buttonText}
 			</span>
-		</ExternalLink>
+		</Link>
 	)
 }

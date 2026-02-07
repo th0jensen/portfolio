@@ -18,11 +18,17 @@ export default define.page(function App({ Component, state }) {
 		: requestPath.endsWith('/') && requestPath.length > 1
 		? requestPath.slice(0, -1)
 		: requestPath
+	const localePrefix = `/${locale}`
+	const pathSuffix = normalizedPath === localePrefix
+		? ''
+		: normalizedPath.startsWith(`${localePrefix}/`)
+		? normalizedPath.slice(localePrefix.length)
+		: ''
 	const canonicalUrl = `${siteOrigin}${normalizedPath}`
 	const alternateLocaleUrls = {
-		en: `${siteOrigin}/en`,
-		no: `${siteOrigin}/no`,
-		he: `${siteOrigin}/he`,
+		en: `${siteOrigin}/en${pathSuffix}`,
+		no: `${siteOrigin}/no${pathSuffix}`,
+		he: `${siteOrigin}/he${pathSuffix}`,
 	} as const
 	const assetHost = assetOrigin ? new URL(assetOrigin).host : ''
 	const resolvedTitle = t('common.metadata.name')
@@ -37,7 +43,7 @@ export default define.page(function App({ Component, state }) {
 		'@context': 'https://schema.org',
 		'@type': 'Person',
 		name: title,
-		url: `${siteOrigin}/${locale}`,
+		url: canonicalUrl,
 		jobTitle: t('common.hero.role'),
 		sameAs: [
 			'https://github.com/th0jensen',
@@ -81,7 +87,11 @@ export default define.page(function App({ Component, state }) {
 					hrefLang='he'
 					href={alternateLocaleUrls.he}
 				/>
-				<link rel='alternate' hrefLang='x-default' href={siteOrigin} />
+				<link
+					rel='alternate'
+					hrefLang='x-default'
+					href={`${siteOrigin}${pathSuffix}`}
+				/>
 				<meta name='robots' content='index, follow, max-snippet:-1' />
 				<meta property='og:title' content={title} />
 				<meta property='og:description' content={description} />

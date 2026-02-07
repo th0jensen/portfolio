@@ -3,6 +3,6 @@ import { redirectToLocale } from '~/lib/locale.ts'
 
 export const handler = define.handlers({
 	GET(ctx) {
-		return redirectToLocale(ctx.req)
+		return redirectToLocale(ctx.req, '/contact')
 	},
 })
