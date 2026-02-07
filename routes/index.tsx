@@ -59,11 +59,6 @@ export const handler = define.handlers({
 			headers: {
 				Location: `/${locale}`,
 				'Vary': 'Accept-Language',
-				Link: [
-					'<https://fonts.googleapis.com>; rel=preconnect',
-					'<https://fonts.gstatic.com>; rel=preconnect; crossorigin',
-					'<https://fonts.googleapis.com/css2?family=Alef:wght@400;700&display=swap>; rel=preload; as=style',
-				].join(', '),
 			},
 		})
 	},

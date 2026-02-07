@@ -81,7 +81,6 @@ function buildCSP(
 		'style-src': [
 			"'self'",
 			"'unsafe-inline'", // Required for Tailwind and inline styles
-			'https://fonts.googleapis.com',
 		],
 		'img-src': [
 			"'self'",
@@ -91,7 +90,6 @@ function buildCSP(
 		],
 		'font-src': [
 			"'self'",
-			'https://fonts.gstatic.com',
 			'https://r2cdn.perplexity.ai',
 		],
 		'connect-src': [
