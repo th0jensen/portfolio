@@ -1,89 +1,89 @@
 {
-  "meta": {
-    "description": "Thomas Jensen - Full Stack Software Developer focused on creating elegant solutions through clean code. Explore my projects and experience."
-  },
-  "nav": {
-    "work": "Work",
-    "experience": "Experience",
-    "contact": "Contact",
-    "openMenu": "Open menu",
-    "closeMenu": "Close menu"
-  },
-  "about": {
-    "firstName": "Thomas",
-    "lastName": "Jensen",
-    "birthday": "10-12-2003",
-    "humanLanguages": ["English", "Norwegian", "German", "Hebrew"],
-    "computerLanguages": ["Typescript", "Go", "Swift", "Rust"]
-  },
-  "metadata": {
-    "name": "Thomas Jensen",
-    "altName": "Thomas Jensen",
-    "description": "Thomas Jensen - Full Stack Software Developer focused on creating elegant solutions through clean code. Explore my projects and experience.",
-    "footerText": "{year} Thomas Jensen"
-  },
-  "hero": {
-    "role": "Full Stack Software Developer",
-    "description": "{age} year old developer focused on creating elegant solutions through clean code. Passionate about backend services, optimisation, and creating seamless user experiences.",
-    "exploreWork": "Explore my work",
-    "github": "GitHub profile",
-    "linkedin": "LinkedIn profile",
-    "headshotAlt": "Headshot photo of Thomas Jensen"
-  },
-  "work": {
-    "subtitle": "Featured Works",
-    "title": "My Projects",
-    "showMore": "Show more",
-    "showLess": "Show less",
-    "visitProject": "Visit {name} project",
-    "downloadAppStore": "Download on App Store",
-    "viewOnGitHub": "View on GitHub"
-  },
-  "projects": [
-    {
-      "name": "zed-industries/zed contributions",
-      "imageURL": "/images/zed.webp",
-      "technologies": {
-        "Rust": "#000000",
-        "GPUI": "#3178C6",
-        "JSON": "#ffffff"
-      },
-      "description": "- PR #26211: Implement Extended Terminal Option\n- Gruber Darker Theme Extension",
-      "source": {
-        "type": "github",
-        "link": "https://github.com/zed-industries/zed/pull/26211"
-      }
-    },
-    {
-      "name": "Appleosophy",
-      "imageURL": "/images/appleosophy.webp",
-      "technologies": {
-        "Swift": "#F05138",
-        "Objective-C": "#007AFF",
-        "SwiftUI": "#F05138",
-        "WordPress": "#21759B"
-      },
-      "description": "The official iOS app for Applesophy, which I built and shipped as the sole developer in 6 months. I used the pre-existing WordPress REST API as a backend.",
-      "source": {
-        "type": "appstore",
-        "link": "https://apps.apple.com/us/app/appleosophy/id1635844078"
-      }
-    }
-  ],
-  "experience": {
-    "subtitle": "Open Source",
-    "title": "GitHub Repos",
-    "description": "A collection of my most notable open source contributions and personal projects."
-  },
-  "theme": {
-    "light": "Light",
-    "dark": "Dark"
-  },
-  "footer": {
-    "copyright": "{year} Thomas Jensen"
-  },
-  "buttons": {
-    "github": "GitHub",
-    "linkedin": "LinkedIn"
-  }
+	"meta": {
+		"description": "Thomas Jensen - Full Stack Software Developer focused on creating elegant solutions through clean code. Explore my projects and experience."
+	},
+	"nav": {
+		"work": "Work",
+		"experience": "Experience",
+		"contact": "Contact",
+		"openMenu": "Open menu",
+		"closeMenu": "Close menu"
+	},
+	"about": {
+		"firstName": "Thomas",
+		"lastName": "Jensen",
+		"birthday": "10-12-2003",
+		"humanLanguages": ["English", "Norwegian", "German", "Hebrew"],
+		"computerLanguages": ["Typescript", "Go", "Swift", "Rust"]
+	},
+	"metadata": {
+		"name": "Thomas Jensen",
+		"altName": "Thomas Jensen",
+		"description": "Thomas Jensen - Full Stack Software Developer focused on creating elegant solutions through clean code. Explore my projects and experience.",
+		"footerText": "{year} Thomas Jensen"
+	},
+	"hero": {
+		"role": "Full Stack Software Developer",
+		"description": "{age}-year-old developer focused on building elegant solutions with clean code. Passionate about backend services, performance optimization, and seamless user experiences.",
+		"exploreWork": "Explore my projects",
+		"github": "GitHub profile",
+		"linkedin": "LinkedIn profile",
+		"headshotAlt": "Headshot photo of Thomas Jensen"
+	},
+	"work": {
+		"subtitle": "Featured Projects",
+		"title": "Work",
+		"showMore": "Show more",
+		"showLess": "Show less",
+		"visitProject": "View {name} project",
+		"downloadAppStore": "Download on App Store",
+		"viewOnGitHub": "View on GitHub"
+	},
+	"projects": [
+		{
+			"name": "zed-industries/zed contributions",
+			"imageURL": "/images/zed.webp",
+			"technologies": {
+				"Rust": "#000000",
+				"GPUI": "#3178C6",
+				"JSON": "#ffffff"
+			},
+			"description": "- PR #26211: Implemented Extended Terminal Option in Zed (Rust + GPUI), including option wiring and validation.\n- I publish and maintain the Gruber Darker theme extension for Zed.",
+			"source": {
+				"type": "github",
+				"link": "https://github.com/zed-industries/zed/pull/26211"
+			}
+		},
+		{
+			"name": "Appleosophy",
+			"imageURL": "/images/appleosophy.webp",
+			"technologies": {
+				"Swift": "#F05138",
+				"Objective-C": "#007AFF",
+				"SwiftUI": "#F05138",
+				"WordPress": "#21759B"
+			},
+			"description": "The official iOS app for Appleosophy. I built and shipped it as the sole iOS developer in 6 months, integrated the existing WordPress REST API backend, and delivered the full App Store release workflow.",
+			"source": {
+				"type": "appstore",
+				"link": "https://apps.apple.com/us/app/appleosophy/id1635844078"
+			}
+		}
+	],
+	"experience": {
+		"subtitle": "Open Source",
+		"title": "Experience",
+		"description": "A selection of my open-source contributions and personal projects on GitHub."
+	},
+	"theme": {
+		"light": "Light",
+		"dark": "Dark"
+	},
+	"footer": {
+		"copyright": "{year} Thomas Jensen"
+	},
+	"buttons": {
+		"github": "GitHub",
+		"linkedin": "LinkedIn"
+	}
 }

@@ -1,18 +1,13 @@
 import type { Project } from '../lib/schemas.ts'
-import ProjectCardExpander from '~/islands/ProjectCardExpander.tsx'
 
 interface ProjectCardProps {
 	project: Project
-	showMoreText?: string
-	showLessText?: string
 	visitProjectLabel?: string
 	downloadAppStoreLabel?: string
 }
 
 export default function ProjectCard({
 	project,
-	showMoreText = 'Show more',
-	showLessText = 'Show less',
 	visitProjectLabel,
 	downloadAppStoreLabel = 'Download on App Store',
 }: ProjectCardProps) {
@@ -21,7 +16,7 @@ export default function ProjectCard({
 	const appStoreBadgeUrl = '/api/images/appstore.svg'
 
 	return (
-		<div className='group glass-card overflow-hidden rounded-2xl smooth-transition hover:shadow-lg'>
+		<div className='group glass-card overflow-hidden rounded-2xl smooth-transition hover:shadow-lg h-full flex flex-col'>
 			<div className='relative flex justify-center items-center h-[200px] overflow-hidden'>
 				{project.source?.type === 'appstore' && (
 					<div className='absolute inset-0 z-10 flex items-center justify-center opacity-0 transition-all duration-300 group-hover:opacity-100 bg-gradient-to-b from-black/30 via-black/15 to-foreground/0'>
@@ -79,13 +74,9 @@ export default function ProjectCard({
 							{project.name}
 						</a>
 					)}
-				<div>
-					<ProjectCardExpander
-						description={project.description}
-						showMoreText={showMoreText}
-						showLessText={showLessText}
-					/>
-				</div>
+				<p className='text-sm text-muted-foreground leading-relaxed whitespace-pre-line flex-1'>
+					{project.description}
+				</p>
 				<div className='flex flex-wrap gap-2 pt-2'>
 					{Object.keys(project.technologies).map((tech, index) => (
 						<div

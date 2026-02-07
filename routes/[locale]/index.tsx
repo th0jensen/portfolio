@@ -125,6 +125,7 @@ export const handler = define.handlers({
 
 export default define.page(async function Home(props) {
 	const t = createTranslator(props.state.translationData || {})
+	const locale = props.state.locale || 'en'
 	const repos = await getRepos()
 
 	// Get data directly from translation data
@@ -149,7 +150,7 @@ export default define.page(async function Home(props) {
 		<div class='flex flex-col items-center justify-center overflow-x-hidden'>
 			<Hero about={about} t={t} />
 			<Work projects={projects} t={t} />
-			<Experience repos={repos} t={t} />
+			<Experience repos={repos} t={t} locale={locale} />
 		</div>
 	)
 })

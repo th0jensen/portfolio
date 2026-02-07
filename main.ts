@@ -5,7 +5,9 @@ import { securityHeaders } from '~/lib/security.ts'
 export const app = new App<ExtendedState>()
 	// Expose the request origin for resource-hint links in the app shell.
 	.use(async (ctx) => {
-		ctx.state.assetOrigin = new URL(ctx.req.url).origin
+		const url = new URL(ctx.req.url)
+		ctx.state.assetOrigin = url.origin
+		ctx.state.requestPath = url.pathname
 		return await ctx.next()
 	})
 	// Add security headers middleware with Trusted Types disabled for Fresh compatibility

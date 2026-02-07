@@ -4,6 +4,69 @@ import type { FormattedRepo } from '~/lib/schemas.ts'
 interface ExperiencePageProps {
 	repos?: FormattedRepo[]
 	t: (key: string, params?: Record<string, string>) => string
+	locale: string
+}
+
+type LocaleKey = 'en' | 'no' | 'he'
+
+interface RepoUiLabels {
+	stars: string
+	forks: string
+	downloads: string
+	additions: string
+	deletions: string
+	viewInZed: string
+	loadingRepos: string
+	visitRepo: (name: string) => string
+	prState: Record<'open' | 'closed' | 'merged', string>
+}
+
+const REPO_UI_LABELS: Record<LocaleKey, RepoUiLabels> = {
+	en: {
+		stars: 'Stars',
+		forks: 'Forks',
+		downloads: 'Downloads',
+		additions: 'Additions',
+		deletions: 'Deletions',
+		viewInZed: 'View in Zed',
+		loadingRepos: 'Loading repositories...',
+		visitRepo: (name: string) => `Visit ${name}`,
+		prState: {
+			open: 'Open',
+			closed: 'Closed',
+			merged: 'Merged',
+		},
+	},
+	no: {
+		stars: 'Stjerner',
+		forks: 'Forker',
+		downloads: 'Nedlastinger',
+		additions: 'Linjer lagt til',
+		deletions: 'Linjer fjernet',
+		viewInZed: 'Åpne i Zed',
+		loadingRepos: 'Laster inn repositorier...',
+		visitRepo: (name: string) => `Besøk ${name}`,
+		prState: {
+			open: 'Åpen',
+			closed: 'Lukket',
+			merged: 'Slått sammen',
+		},
+	},
+	he: {
+		stars: 'כוכבים',
+		forks: 'פיצולים',
+		downloads: 'הורדות',
+		additions: 'שורות שנוספו',
+		deletions: 'שורות שנמחקו',
+		viewInZed: 'פתח ב-Zed',
+		loadingRepos: 'טוען מאגרים...',
+		visitRepo: (name: string) => `בקר ב-${name}`,
+		prState: {
+			open: 'פתוח',
+			closed: 'סגור',
+			merged: 'מוזג',
+		},
+	},
 }
 
 function formatNumber(num: number): string {
@@ -24,9 +87,11 @@ function formatNumber(num: number): string {
 function RepoCard({
 	repo,
 	size = 'default',
+	labels,
 }: {
 	repo: FormattedRepo
 	size?: 'large' | 'wide' | 'default'
+	labels: RepoUiLabels
 }) {
 	const sizeClasses = {
 		large: 'md:col-span-2 md:row-span-2',
@@ -52,7 +117,7 @@ function RepoCard({
 			</svg>
 			<span>{formatNumber(repo.stars)}</span>
 			<span className='absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-2 py-1 text-xs font-medium text-foreground bg-background border border-border/50 rounded-md shadow-lg opacity-0 group-hover/stat:opacity-100 transition-opacity pointer-events-none whitespace-nowrap'>
-				Stars
+				{labels.stars}
 			</span>
 		</div>
 	)
@@ -64,7 +129,7 @@ function RepoCard({
 			</svg>
 			<span>{formatNumber(repo.forks)}</span>
 			<span className='absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-2 py-1 text-xs font-medium text-foreground bg-background border border-border/50 rounded-md shadow-lg opacity-0 group-hover/stat:opacity-100 transition-opacity pointer-events-none whitespace-nowrap'>
-				Forks
+				{labels.forks}
 			</span>
 		</div>
 	)
@@ -82,7 +147,7 @@ function RepoCard({
 				</svg>
 				<span>{formatNumber(repo.downloads)}</span>
 				<span className='absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-2 py-1 text-xs font-medium text-foreground bg-background border border-border/50 rounded-md shadow-lg opacity-0 group-hover/stat:opacity-100 transition-opacity pointer-events-none whitespace-nowrap'>
-					Downloads
+					{labels.downloads}
 				</span>
 			</div>
 		)
@@ -94,7 +159,7 @@ function RepoCard({
 				<span>+</span>
 				<span>{formatNumber(repo.additions)}</span>
 				<span className='absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-2 py-1 text-xs font-medium text-foreground bg-background border border-border/50 rounded-md shadow-lg opacity-0 group-hover/stat:opacity-100 transition-opacity pointer-events-none whitespace-nowrap'>
-					Additions
+					{labels.additions}
 				</span>
 			</div>
 		)
@@ -106,7 +171,7 @@ function RepoCard({
 				<span>-</span>
 				<span>{formatNumber(repo.deletions)}</span>
 				<span className='absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-2 py-1 text-xs font-medium text-foreground bg-background border border-border/50 rounded-md shadow-lg opacity-0 group-hover/stat:opacity-100 transition-opacity pointer-events-none whitespace-nowrap'>
-					Deletions
+					{labels.deletions}
 				</span>
 			</div>
 		)
@@ -123,7 +188,7 @@ function RepoCard({
 					href={repo.url}
 					target='_blank'
 					rel='noopener noreferrer'
-					aria-label={`Visit ${repo.name}`}
+					aria-label={labels.visitRepo(repo.name)}
 					className='flex items-center gap-2 text-muted-foreground rounded-lg -ml-2 px-2 py-2 min-h-11 smooth-transition hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50'
 				>
 					{isPR
@@ -220,7 +285,7 @@ function RepoCard({
 										prStateColors[repo.prState]
 									}`}
 								>
-									{repo.prState}
+									{labels.prState[repo.prState]}
 								</span>
 							)}
 						</>
@@ -234,10 +299,10 @@ function RepoCard({
 							{repo.zedExtensionUrl && (
 								<a
 									href={repo.zedExtensionUrl}
-									aria-label='View in Zed'
+									aria-label={labels.viewInZed}
 									className='inline-flex items-center justify-center px-2 py-0.5 text-xs font-medium rounded-full bg-blue-500/15 text-blue-600 dark:text-blue-400 hover:bg-blue-500/25 smooth-transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50'
 								>
-									View in Zed
+									{labels.viewInZed}
 								</a>
 							)}
 						</>
@@ -254,8 +319,13 @@ function RepoCard({
 }
 
 export default function ExperiencePage(
-	{ repos = [], t }: ExperiencePageProps,
+	{ repos = [], t, locale }: ExperiencePageProps,
 ) {
+	const localeKey: LocaleKey = locale === 'no' || locale === 'he'
+		? locale
+		: 'en'
+	const labels = REPO_UI_LABELS[localeKey]
+
 	const getBentoSize = (index: number): 'large' | 'wide' | 'default' => {
 		if (index === 0) return 'large'
 		if (index === 3) return 'wide'
@@ -270,7 +340,7 @@ export default function ExperiencePage(
 						{t('common.experience.subtitle')}
 					</h2>
 					<h3 className='text-3xl md:text-4xl font-bold tracking-tight mb-4'>
-						{t('common.experience.title')}
+						{t('common.nav.experience')}
 					</h3>
 					<p className='text-muted-foreground/90 leading-relaxed max-w-2xl'>
 						{t('common.experience.description')}
@@ -285,13 +355,14 @@ export default function ExperiencePage(
 									key={repo.url}
 									repo={repo}
 									size={getBentoSize(index)}
+									labels={labels}
 								/>
 							))}
 						</div>
 					)
 					: (
 						<div className='text-center py-12 text-muted-foreground'>
-							<p>Loading repositories...</p>
+							<p>{labels.loadingRepos}</p>
 						</div>
 					)}
 			</div>

@@ -7,6 +7,7 @@ export interface State extends Record<string, unknown> {
 	repos?: FormattedRepo[]
 	cspNonce?: string
 	assetOrigin?: string
+	requestPath?: string
 }
 
 export type ExtendedState = State & TranslationState
