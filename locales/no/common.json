@@ -16,6 +16,12 @@
     "humanLanguages": ["Engelsk", "Norsk", "Tysk", "Hebraisk"],
     "computerLanguages": ["Typescript", "Go", "Swift", "Rust"]
   },
+  "metadata": {
+    "name": "Thomas Jensen",
+    "altName": "Thomas Jensen",
+    "description": "Thomas Jensen - Fullstack programvareutvikler fokusert på å skape elegante løsninger gjennom ren kode. Utforsk mine prosjekter og erfaring.",
+    "footerText": "{year} Thomas Jensen"
+  },
   "hero": {
     "role": "Fullstack Programvareutvikler",
     "description": "{age} år gammel utvikler fokusert på å skape elegante løsninger gjennom ren kode. Lidenskapelig opptatt av backend-tjenester, optimalisering og sømløse brukeropplevelser.",

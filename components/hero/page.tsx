@@ -13,6 +13,7 @@ interface HeroProps {
 export default function Hero({ about, t }: HeroProps) {
 	const age = calculateAge(about.birthday).toString()
 	const description = t('common.hero.description').replace('{age}', age)
+	const displayName = t('common.metadata.altName')
 	const headshotUrl = '/api/images/headshot.jpg'
 
 	return (
@@ -52,7 +53,7 @@ export default function Hero({ about, t }: HeroProps) {
 									{t('common.hero.role')}
 								</p>
 								<h1 className='text-4xl font-bold tracking-tight lg:text-6xl bg-gradient-to-r from-foreground to-foreground/70 bg-clip-text text-transparent leading-relaxed pb-2'>
-									{about.firstName} {about.lastName}
+									{displayName}
 								</h1>
 							</div>
 

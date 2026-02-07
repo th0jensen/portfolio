@@ -16,13 +16,15 @@ export default define.page(function Layout({ Component, state }) {
 		closeMenu: t('common.nav.closeMenu'),
 		themeLight: t('common.theme.light'),
 		themeDark: t('common.theme.dark'),
-		name: locale === 'he' ? t('common.about.firstName') + ' ' + t('common.about.lastName') : 'Thomas Jensen',
+		name: t('common.metadata.name'),
 	}
 
 	return (
 		<div class='flex flex-col' dir={isRtl ? 'rtl' : 'ltr'}>
 			<Header translations={headerTranslations} locale={locale} />
-			<div class='flex-1'><Component /></div>
+			<div class='flex-1'>
+				<Component />
+			</div>
 			<Footer t={t} />
 		</div>
 	)

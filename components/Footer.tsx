@@ -4,7 +4,10 @@ interface FooterProps {
 
 export default function Footer({ t }: FooterProps) {
 	const year = new Date().getFullYear()
-	const copyrightText = t('common.footer.copyright').replace('{year}', year.toString())
+	const copyrightText = t('common.metadata.footerText').replace(
+		'{year}',
+		year.toString(),
+	)
 
 	return (
 		<footer class='footer text-center justify-center py-8 px-4 border-t border-border/20'>

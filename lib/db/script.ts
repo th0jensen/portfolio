@@ -1,7 +1,7 @@
 import { closeDb, db } from './db.ts'
 import { upsertImageAsset } from './images.ts'
-import { upsertLocaleTranslation } from './locales.ts'
-import { assetImages, localeTranslations } from './schema.ts'
+import { clearLocaleTranslations, upsertLocaleTranslation } from './locales.ts'
+import { assetImages } from './schema.ts'
 import { LocaleCodeSchema } from '../i18n.ts'
 import { parseLocaleData } from '../schemas.ts'
 
@@ -60,7 +60,9 @@ function isMissingTableError(error: unknown): boolean {
 	const messages = getErrorMessages(error)
 	return messages.some((message) =>
 		message.includes('relation "asset_images" does not exist') ||
-		message.includes('relation "locale_translations" does not exist')
+		message.includes('relation "locale_metadata" does not exist') ||
+		message.includes('relation "locale_meta" does not exist') ||
+		message.includes('relation "locale_projects" does not exist')
 	)
 }
 
@@ -157,7 +159,7 @@ async function seed(): Promise<void> {
 	const localeRows = await loadLocaleFiles()
 	const imageKeys = new Set<string>()
 
-	await db.delete(localeTranslations)
+	await clearLocaleTranslations()
 
 	for (const row of localeRows) {
 		const locale = LocaleCodeSchema.parse(row.locale)

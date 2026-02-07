@@ -11,6 +11,15 @@ export const AboutSchema = z.object({
 
 export type About = z.infer<typeof AboutSchema>
 
+export const MetadataSchema = z.object({
+	name: z.string(),
+	altName: z.string(),
+	description: z.string(),
+	footerText: z.string(),
+})
+
+export type Metadata = z.infer<typeof MetadataSchema>
+
 // Project schema
 export const ProjectSourceSchema = z.object({
 	type: z.string(),
@@ -106,6 +115,7 @@ export const CommonLocaleSchema = z.object({
 	meta: MetaSchema,
 	nav: NavSchema,
 	about: AboutSchema,
+	metadata: MetadataSchema,
 	hero: HeroSchema,
 	work: WorkSchema,
 	projects: z.array(ProjectSchema),
