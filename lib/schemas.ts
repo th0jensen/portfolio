@@ -131,15 +131,3 @@ export type CommonLocale = z.infer<typeof CommonLocaleSchema>
 export function parseLocaleData(data: unknown): CommonLocale {
 	return CommonLocaleSchema.parse(data)
 }
-
-// Helper function to safely parse locale data (returns null on failure)
-export function safeParseLocaleData(
-	data: unknown,
-): CommonLocale | null {
-	const result = CommonLocaleSchema.safeParse(data)
-	if (result.success) {
-		return result.data
-	}
-	console.error('Locale data validation failed:', result.error)
-	return null
-}

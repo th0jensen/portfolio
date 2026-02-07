@@ -38,25 +38,8 @@ export const GitHubPRSchema = z.object({
 	changed_files: z.number().int().nonnegative(),
 })
 
-export const ZedExtensionSchema = z.object({
-	id: z.string(),
-	name: z.string(),
-	version: z.string(),
-	description: z.string(),
-	authors: z.array(z.string()),
-	repository: z.string(),
-	download_count: z.number().int().nonnegative(),
-	published_at: z.string(),
-})
-
-export const ZedExtensionResponseSchema = z.object({
-	data: z.array(ZedExtensionSchema),
-})
-
 export type GitHubRepo = z.infer<typeof GitHubRepoSchema>
 export type GitHubPR = z.infer<typeof GitHubPRSchema>
-export type ZedExtension = z.infer<typeof ZedExtensionSchema>
-export type ZedExtensionResponse = z.infer<typeof ZedExtensionResponseSchema>
 type GitHubRelease = {
 	assets?: Array<{ download_count?: number }>
 }
@@ -163,53 +146,6 @@ export const FALLBACK_REPOS: FormattedRepo[] = [
 		languageColor: LANGUAGE_COLORS['Nix'],
 	},
 ]
-
-export async function fetchZedExtension(
-	extensionId: string,
-): Promise<FormattedRepo | null> {
-	try {
-		const response = await fetch(
-			`https://api.zed.dev/extensions/${extensionId}`,
-			{
-				headers: {
-					'User-Agent': 'Portfolio-Site',
-				},
-			},
-		)
-
-		if (!response.ok) {
-			console.error(
-				`Failed to fetch Zed extension ${extensionId}: ${response.status}`,
-			)
-			return null
-		}
-
-		const data: ZedExtensionResponse = await response.json()
-
-		if (!data.data || data.data.length === 0) {
-			console.error(`No data found for Zed extension ${extensionId}`)
-			return null
-		}
-
-		// Get the latest version (first in the array)
-		const extension = data.data[0]
-
-		return {
-			name: extension.name,
-			description: extension.description,
-			url: `https://zed.dev/extensions/${extensionId}`,
-			stars: 0,
-			forks: 0,
-			language: 'JSON',
-			languageColor: getLanguageColor('JSON'),
-			type: 'zed-extension',
-			downloads: extension.download_count,
-		}
-	} catch (error) {
-		console.error(`Error fetching Zed extension ${extensionId}:`, error)
-		return null
-	}
-}
 
 export async function fetchZedExtensionWithGitHub(
 	extensionId: string,
@@ -496,49 +432,4 @@ export async function fetchMultipleRepos(
 	}
 
 	return formattedRepos
-}
-
-export async function fetchUserRepos(
-	username: string,
-	options: {
-		sort?: 'stars' | 'updated' | 'pushed'
-		perPage?: number
-	} = {},
-): Promise<FormattedRepo[]> {
-	const { sort = 'stars', perPage = 6 } = options
-
-	try {
-		const response = await fetch(
-			`https://api.github.com/users/${username}/repos?sort=${sort}&per_page=${perPage}&type=owner`,
-			{
-				headers: getHeaders(),
-			},
-		)
-
-		if (!response.ok) {
-			console.error(
-				`Failed to fetch repos for ${username}: ${response.status}`,
-			)
-			return []
-		}
-
-		const repos: GitHubRepo[] = await response.json()
-
-		return repos
-			.sort((a, b) => b.stargazers_count - a.stargazers_count)
-			.map((repo) => ({
-				name: repo.full_name,
-				description: repo.description || 'No description available',
-				url: repo.html_url,
-				stars: repo.stargazers_count,
-				forks: repo.forks_count,
-				language: repo.language || undefined,
-				languageColor: repo.language
-					? LANGUAGE_COLORS[repo.language]
-					: undefined,
-			}))
-	} catch (error) {
-		console.error(`Error fetching repos for ${username}:`, error)
-		return []
-	}
 }

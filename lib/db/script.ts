@@ -4,6 +4,7 @@ import { clearLocaleTranslations, upsertLocaleTranslation } from './locales.ts'
 import { assetImages } from './schema.ts'
 import { LocaleCodeSchema } from '../i18n.ts'
 import { parseLocaleData } from '../schemas.ts'
+import { Buffer } from 'node:buffer'
 
 interface LocaleSeedRow {
 	locale: string
@@ -120,15 +121,7 @@ function mimeTypeForImage(key: string): string {
 }
 
 function bytesToBase64(bytes: Uint8Array): string {
-	let binary = ''
-	const chunkSize = 0x8000
-
-	for (let i = 0; i < bytes.length; i += chunkSize) {
-		const chunk = bytes.subarray(i, i + chunkSize)
-		binary += String.fromCharCode(...chunk)
-	}
-
-	return btoa(binary)
+	return Buffer.from(bytes).toString('base64')
 }
 
 async function seedProjectImages(imageKeys: Set<string>): Promise<void> {
