@@ -105,7 +105,7 @@ export const FALLBACK_REPOS: FormattedRepo[] = [
 		languageColor: LANGUAGE_COLORS['JSON'],
 		type: 'zed-extension',
 		downloads: 0,
-		zedExtensionUrl: 'https://zed.dev/extensions/gruber-darker',
+		zedExtensionUrl: 'zed://extension/gruber-darker',
 		githubUrl: 'https://github.com/th0jensen/gruber-darker.zed',
 	},
 	{
@@ -184,7 +184,7 @@ export async function fetchZedExtensionWithGitHub(
 			languageColor: getLanguageColor(language),
 			type: 'zed-extension',
 			downloads,
-			zedExtensionUrl: `https://zed.dev/extensions/${extensionId}`,
+			zedExtensionUrl: `zed://extension/${extensionId}`,
 			githubUrl: githubData.html_url,
 		}
 	} catch (error) {

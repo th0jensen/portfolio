@@ -36,6 +36,7 @@ function RepoCard({
 
 	const isLarge = size === 'large'
 	const isPR = repo.type === 'pr'
+	const isZedPR = isPR && repo.url.includes('/zed-industries/zed/')
 	const isZedExtension = repo.type === 'zed-extension'
 
 	const prStateColors = {
@@ -117,15 +118,14 @@ function RepoCard({
 				sizeClasses[size]
 			}`}
 		>
-			<a
-				href={repo.url}
-				target='_blank'
-				rel='noopener noreferrer'
-				className='absolute inset-0 z-0'
-				aria-label={`Visit ${repo.name}`}
-			/>
 			<div className='flex items-start justify-between mb-3 relative z-10'>
-				<div className='flex items-center gap-2 text-muted-foreground'>
+				<a
+					href={repo.url}
+					target='_blank'
+					rel='noopener noreferrer'
+					aria-label={`Visit ${repo.name}`}
+					className='flex items-center gap-2 text-muted-foreground rounded-lg -ml-2 px-2 py-2 min-h-11 smooth-transition hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50'
+				>
 					{isPR
 						? (
 							<svg
@@ -169,37 +169,8 @@ function RepoCard({
 							</span>
 						)}
 					</span>
-				</div>
+				</a>
 				<div className='flex items-center gap-2'>
-					{isPR && repo.prState && (
-						<span
-							className={`px-2 py-0.5 text-xs font-medium rounded-full capitalize ${
-								prStateColors[repo.prState]
-							}`}
-						>
-							{repo.prState}
-						</span>
-					)}
-					{isZedExtension && repo.zedExtensionUrl && (
-						<a
-							href={repo.zedExtensionUrl}
-							target='_blank'
-							rel='noopener noreferrer'
-							className='relative z-20 px-2 py-0.5 text-xs font-medium rounded-full bg-blue-500/15 text-blue-600 dark:text-blue-400 hover:bg-blue-500/25 smooth-transition flex items-center gap-1'
-							onClick={(e) => e.stopPropagation()}
-						>
-							<svg
-								className='w-3 h-3'
-								fill='currentColor'
-								viewBox='0 0 16 16'
-							>
-								<path d='M8.5 5.5a.5.5 0 0 0-1 0v3.362l-1.429 2.38a.5.5 0 1 0 .858.515l1.5-2.5A.5.5 0 0 0 8.5 9V5.5z' />
-								<path d='M6.5 0A1.5 1.5 0 0 0 5 1.5v1A1.5 1.5 0 0 0 6.5 4h3A1.5 1.5 0 0 0 11 2.5v-1A1.5 1.5 0 0 0 9.5 0h-3zM6 1.5a.5.5 0 0 1 .5-.5h3a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-3a.5.5 0 0 1-.5-.5v-1z' />
-								<path d='M2 4.5A1.5 1.5 0 0 1 3.5 3h9A1.5 1.5 0 0 1 14 4.5v9a1.5 1.5 0 0 1-1.5 1.5h-9A1.5 1.5 0 0 1 2 13.5v-9zm1.5-.5a.5.5 0 0 0-.5.5v9a.5.5 0 0 0 .5.5h9a.5.5 0 0 0 .5-.5v-9a.5.5 0 0 0-.5-.5h-9z' />
-							</svg>
-							Zed
-						</a>
-					)}
 					<svg
 						className='w-4 h-4 text-muted-foreground opacity-0 -translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 smooth-transition'
 						fill='none'
@@ -241,8 +212,17 @@ function RepoCard({
 							{additionsStat}
 							{deletionsStat}
 							{starsStat}
-							{forksStat}
+							{!isZedPR && forksStat}
 							{downloadsStat}
+							{repo.prState && (
+								<span
+									className={`px-2 py-0.5 text-xs font-medium rounded-full capitalize ${
+										prStateColors[repo.prState]
+									}`}
+								>
+									{repo.prState}
+								</span>
+							)}
 						</>
 					)
 					: isZedExtension
@@ -251,6 +231,15 @@ function RepoCard({
 							{starsStat}
 							{forksStat}
 							{downloadsStat}
+							{repo.zedExtensionUrl && (
+								<a
+									href={repo.zedExtensionUrl}
+									aria-label='View in Zed'
+									className='inline-flex items-center justify-center px-2 py-0.5 text-xs font-medium rounded-full bg-blue-500/15 text-blue-600 dark:text-blue-400 hover:bg-blue-500/25 smooth-transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50'
+								>
+									View in Zed
+								</a>
+							)}
 						</>
 					)
 					: (
