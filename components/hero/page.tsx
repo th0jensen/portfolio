@@ -32,15 +32,6 @@ export default function Hero({ about, t }: HeroProps) {
 					height={1600}
 					className='h-full w-full object-cover object-[50%_35%]'
 				/>
-				<img
-					src={headshotUrl}
-					alt=''
-					aria-hidden='true'
-					fetchpriority='high'
-					width={1200}
-					height={600}
-					className='absolute left-0 right-0 -top-[20vh] h-[20vh] w-full object-cover object-[50%_5%] -scale-y-100 transform'
-				/>
 			</div>
 			<div className='pointer-events-none absolute top-[120px] left-0 right-0 h-[calc(62vh-100px)] bg-[linear-gradient(to_bottom,transparent_0,transparent_calc(35%+50px),hsl(var(--background))_75%,hsl(var(--background))_100%)] dark:bg-[linear-gradient(to_bottom,transparent_0,transparent_calc(35%+50px),hsl(var(--background))_75%,hsl(var(--background))_100%)] md:hidden z-10' />
 
