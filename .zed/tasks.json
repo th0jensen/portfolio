@@ -1,0 +1,20 @@
+[
+    {
+        "label": "Build",
+        "command": "deno task build",
+        "use_new_terminal": true,
+        "allow_concurrent_runs": false,
+        "reveal": "always",
+        "hide": "never",
+        "shell": "system"
+    },
+    {
+        "label": "Start",
+        "command": "deno task start",
+        "use_new_terminal": true,
+        "allow_concurrent_runs": false,
+        "reveal": "always",
+        "hide": "never",
+        "shell": "system"
+    }
+]

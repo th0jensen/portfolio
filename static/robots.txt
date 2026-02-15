@@ -1,0 +1,6 @@
+User-agent: *
+Allow: /
+Allow: /api/images/
+Disallow: /api/
+Disallow: /_fresh/
+Sitemap: https://thojensen.com/sitemap.xml

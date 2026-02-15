@@ -1,0 +1,105 @@
+{
+	"meta": {
+		"description": "Thomas Jensen - fullstackutvikler som bygger elegante og robuste løsninger med ren kode. Utforsk prosjektene mine og erfaringen min."
+	},
+	"nav": {
+		"about": "Om",
+		"work": "Prosjekter",
+		"experience": "Erfaring",
+		"contact": "Kontakt",
+		"openMenu": "Åpne meny",
+		"closeMenu": "Lukk meny"
+	},
+	"about": {
+		"firstName": "Thomas",
+		"lastName": "Jensen",
+		"birthday": "10-12-2003",
+		"humanLanguages": ["Engelsk", "Norsk", "Tysk", "Hebraisk"],
+		"computerLanguages": ["Typescript", "Go", "Swift", "Rust"]
+	},
+	"metadata": {
+		"name": "Thomas Jensen",
+		"altName": "Thomas Jensen",
+		"description": "Thomas Jensen - fullstackutvikler som bygger elegante og robuste løsninger med ren kode. Utforsk prosjektene mine og erfaringen min.",
+		"footerText": "{year} Thomas Jensen"
+	},
+	"hero": {
+		"role": "Fullstackutvikler",
+		"description": "{age} år gammel fullstackutvikler med fokus på elegante løsninger og ren kode. Jeg brenner for backend-tjenester, ytelsesoptimalisering og sømløse brukeropplevelser.",
+		"exploreWork": "Utforsk prosjektene mine",
+		"github": "GitHub-profil",
+		"linkedin": "LinkedIn-profil",
+		"headshotAlt": "Portrettbilde av Thomas Jensen"
+	},
+	"work": {
+		"subtitle": "Utvalgte",
+		"title": "Prosjekter",
+		"showMore": "Vis mer",
+		"showLess": "Vis mindre",
+		"visitProject": "Se prosjektet {name}",
+		"downloadAppStore": "Last ned fra App Store",
+		"viewOnGitHub": "Se på GitHub"
+	},
+	"projects": [
+		{
+			"name": "zed-industries/zed bidrag",
+			"imageURL": "/images/zed.webp",
+			"technologies": {
+				"Rust": "#000000",
+				"GPUI": "#3178C6",
+				"JSON": "#ffffff"
+			},
+			"description": "- PR #26211: Implementerte utvidede terminalvalg i Zed (Rust + GPUI), inkludert oppkobling av innstillinger og validering.\n- Publiserer og vedlikeholder temaet Gruber Darker for Zed.",
+			"source": {
+				"type": "github",
+				"link": "https://github.com/zed-industries/zed/pull/26211"
+			}
+		},
+		{
+			"name": "Appleosophy",
+			"imageURL": "/images/appleosophy.webp",
+			"technologies": {
+				"Swift": "#F05138",
+				"Objective-C": "#007AFF",
+				"SwiftUI": "#F05138",
+				"WordPress": "#21759B"
+			},
+			"description": "Den offisielle iOS-appen for Appleosophy. Jeg bygde og lanserte den som eneste iOS-utvikler på seks måneder, integrerte eksisterende WordPress REST API som backend og leverte hele App Store-lanseringen.",
+			"source": {
+				"type": "appstore",
+				"link": "https://apps.apple.com/us/app/appleosophy/id1635844078"
+			}
+		},
+		{
+			"name": "Bininspect",
+			"status": "Demo",
+			"imageURL": "/images/zed.webp",
+			"technologies": {
+				"Rust": "#000000",
+				"WASM": "#654FF0",
+				"TypeScript": "#3178C6"
+			},
+			"description": "En interaktiv lekeplass for binærinspeksjon der du kan utforske interne detaljer i kjørbare filer direkte i nettleseren.",
+			"source": {
+				"type": "demo",
+				"link": "https://thojensen.com/projects/bininspect"
+			}
+		}
+	],
+	"experience": {
+		"subtitle": "Åpen kildekode",
+		"title": "Erfaring",
+		"description": "Et utvalg av bidragene mine til åpen kildekode og personlige prosjekter på GitHub."
+	},
+	"theme": {
+		"light": "Lys",
+		"dark": "Mørk"
+	},
+	"footer": {
+		"copyright": "{year} Thomas Jensen"
+	},
+	"buttons": {
+		"github": "GitHub",
+		"linkedin": "LinkedIn"
+	}
+}

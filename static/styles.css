@@ -1,0 +1,102 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@font-face {
+	font-family: 'Alef';
+	font-style: normal;
+	font-weight: 400;
+	font-display: swap;
+	src:
+		local('Alef'),
+		url('/fonts/alef-400.ttf') format('truetype');
+}
+
+@font-face {
+	font-family: 'Alef';
+	font-style: normal;
+	font-weight: 700;
+	font-display: swap;
+	src:
+		local('Alef Bold'),
+		local('Alef'),
+		url('/fonts/alef-700.ttf') format('truetype');
+}
+
+@layer base {
+	:root {
+		--background: 0 0% 99%;
+		--foreground: 220 10% 15%;
+		--muted: 220 10% 95%;
+		--muted-foreground: 220 10% 38%;
+		--popover: 0 0% 100%;
+		--popover-foreground: 220 10% 15%;
+		--border: 220 10% 88%;
+		--input: 220 10% 88%;
+		--card: 0 0% 100%;
+		--card-foreground: 220 10% 15%;
+		--primary: 215 90% 45%;
+		--primary-foreground: 0 0% 100%;
+		--secondary: 220 10% 95%;
+		--secondary-foreground: 220 10% 20%;
+		--accent: 215 85% 96%;
+		--accent-foreground: 215 90% 45%;
+		--destructive: 0 72% 51%;
+		--destructive-foreground: 0 0% 100%;
+		--ring: 215 90% 55%;
+		--radius: 0.75rem;
+	}
+	.dark {
+		--background: 220 15% 8%;
+		--foreground: 220 10% 95%;
+		--muted: 220 12% 14%;
+		--muted-foreground: 220 10% 72%;
+		--accent: 220 12% 18%;
+		--accent-foreground: 220 10% 95%;
+		--popover: 220 15% 10%;
+		--popover-foreground: 220 10% 90%;
+		--border: 220 12% 18%;
+		--input: 220 12% 18%;
+		--card: 220 15% 10%;
+		--card-foreground: 220 10% 95%;
+		--primary: 215 90% 45%;
+		--primary-foreground: 0 0% 100%;
+		--secondary: 220 12% 16%;
+		--secondary-foreground: 220 10% 95%;
+		--destructive: 0 68% 48%;
+		--destructive-foreground: 0 0% 100%;
+		--ring: 215 90% 45%;
+		--radius: 0.75rem;
+	}
+	* {
+		@apply border-border;
+	}
+	html {
+		@apply bg-background text-foreground;
+		background-color: hsl(var(--background));
+		scroll-behavior: smooth;
+	}
+	body {
+		@apply bg-background text-foreground;
+		font-family:
+			'Alef', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+		font-feature-settings: 'rlig' 1, 'calt' 1;
+		-webkit-font-smoothing: antialiased;
+		-moz-osx-font-smoothing: grayscale;
+	}
+	summary {
+		list-style: none;
+	}
+	summary::-webkit-details-marker {
+		display: none;
+	}
+}
+
+@layer components {
+	.smooth-transition {
+		transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+	}
+	.glass-card {
+		@apply bg-card/80 backdrop-blur-xl border border-border/50;
+	}
+}

@@ -1,0 +1,81 @@
+{
+	"tasks": {
+		"start": "deno run -A vite",
+		"dev": "deno run -A --tunnel vite",
+		"build": "deno run -A vite build",
+		"db:generate": "deno run -A npm:drizzle-kit generate --config=drizzle.config.ts",
+		"db:migrate": "deno run -A ./lib/db/migrate_sql.ts",
+		"db:migrate:tunnel": "deno task --tunnel db:migrate",
+		"db:verify": "deno run -A ./lib/db/verify.ts",
+		"db:verify:tunnel": "deno task --tunnel db:verify",
+		"seed": "deno run -A ./lib/db/script.ts",
+		"seed:tunnel": "deno task --tunnel seed",
+		"db:bootstrap": "deno run -A ./lib/db/migrate_sql.ts && deno run -A ./lib/db/script.ts",
+		"db:bootstrap:deploy": "deno run -A ./lib/db/migrate_sql.ts && deno run -A ./lib/db/script.ts",
+		"preview": "deno serve -A _fresh/server.js",
+		"update": "deno run -A -r jsr:@fresh/update .",
+		"wasmbuild": "cd rs_lib && wasm-pack build --target web --out-dir ../static/wasm"
+	},
+	"fmt": {
+		"useTabs": true,
+		"lineWidth": 80,
+		"indentWidth": 4,
+		"semiColons": false,
+		"singleQuote": true,
+		"proseWrap": "preserve",
+		"exclude": ["generated", "node_modules", ".*"]
+	},
+	"lint": { "rules": { "tags": ["fresh", "recommended"] } },
+	"exclude": ["**/_fresh/*", "components/ui"],
+	"imports": {
+		"@fresh/plugin-vite": "jsr:@fresh/plugin-vite@^1.0.8",
+		"@preact/signals": "npm:@preact/signals@^2.5.0",
+		"@radix-ui/react-slot": "npm:@radix-ui/react-slot@^1.2.4",
+		"@types/pg": "npm:@types/pg@^8.16.0",
+		"class-variance-authority": "npm:class-variance-authority@^0.7.1",
+		"clsx": "npm:clsx@^2.1.1",
+		"drizzle-kit": "npm:drizzle-kit@^0.31.8",
+		"drizzle-orm": "npm:drizzle-orm@^0.45.1",
+		"pg": "npm:pg@^8.18.0",
+		"preact": "npm:preact@^10.27.2",
+		"react": "npm:@preact/compat@18.3.1",
+		"react-dom": "npm:@preact/compat@18.3.1",
+		"tailwind-merge": "npm:tailwind-merge@^2.6.0",
+		"tailwindcss": "npm:tailwindcss@3.4.1",
+		"tailwindcss-animate": "npm:tailwindcss-animate@^1.0.7",
+		"tailwindcss/": "npm:/tailwindcss@3.4.1/",
+		"tailwindcss/plugin": "npm:/tailwindcss@3.4.1/plugin.js",
+		"vite": "npm:vite@^7.3.1",
+		"zod": "npm:zod@^4.3.5",
+		"~/": "./",
+		"fresh": "jsr:@fresh/core@^2.2.0",
+		"fresh-i18n": "jsr:@elsoul/fresh-i18n@^1.2.0"
+	},
+	"compilerOptions": {
+		"lib": ["dom", "dom.asynciterable", "dom.iterable", "deno.ns"],
+		"jsx": "precompile",
+		"jsxImportSource": "preact",
+		"jsxPrecompileSkipElements": [
+			"a",
+			"img",
+			"source",
+			"body",
+			"html",
+			"head",
+			"title",
+			"meta",
+			"script",
+			"link",
+			"style",
+			"base",
+			"noscript",
+			"template"
+		],
+		"types": ["vite/client"]
+	},
+	"nodeModulesDir": "auto",
+	"deploy": {
+    "org": "th0jensen",
+    "app": "portfolio"
+  }
+}
