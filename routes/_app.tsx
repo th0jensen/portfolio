@@ -61,6 +61,14 @@ export default define.page(function App({ Component, state }) {
 	return (
 		<html lang={localeLanguageTag} dir={isRtl ? 'rtl' : 'ltr'}>
 			<head>
+				<script
+					nonce={state.cspNonce}
+					// deno-lint-ignore react-no-danger
+					dangerouslySetInnerHTML={{
+						__html:
+							`(function(){var d=document.documentElement;var t='dark';try{var s=localStorage.getItem('theme');if(s==='light'||s==='dark'){t=s}}catch(_){ }if(t==='dark'){d.classList.add('dark');d.style.backgroundColor='hsl(220 15% 8%)';d.style.colorScheme='dark';}else{d.classList.remove('dark');d.style.backgroundColor='hsl(0 0% 99%)';d.style.colorScheme='light';}})();`,
+					}}
+				/>
 				<meta charset='utf-8' />
 				<meta
 					name='viewport'
@@ -138,14 +146,6 @@ export default define.page(function App({ Component, state }) {
 					// deno-lint-ignore react-no-danger
 					dangerouslySetInnerHTML={{
 						__html: JSON.stringify(webSiteJsonLd),
-					}}
-				/>
-				<script
-					nonce={state.cspNonce}
-					// deno-lint-ignore react-no-danger
-					dangerouslySetInnerHTML={{
-						__html:
-							`(function(){var t=localStorage.getItem('theme');if(t==='dark'){document.documentElement.classList.add('dark')}})();`,
 					}}
 				/>
 			</head>
