@@ -36,8 +36,8 @@ function endpointUrl(
 	options: BininspectAssetOptions = {},
 ): string {
 	const path = BININSPECT_ENDPOINTS[name]
-	if (typeof window !== 'undefined') {
-		const clientUrl = new URL(path, window.location.origin)
+	if (typeof globalThis.window !== 'undefined') {
+		const clientUrl = new URL(path, globalThis.location.origin)
 		if (options.version?.trim()) {
 			clientUrl.searchParams.set('version', options.version.trim())
 		}

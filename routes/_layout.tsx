@@ -1,6 +1,6 @@
 import { define } from '../utils.ts'
 import { createTranslator } from 'fresh-i18n'
-import Header from '~/components/header/Header.tsx'
+import Header from '~/islands/Header.tsx'
 import Footer from '~/components/Footer.tsx'
 
 export default define.page(function Layout({ Component, state }) {

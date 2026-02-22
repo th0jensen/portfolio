@@ -1,8 +1,9 @@
-import { useSignal } from '@preact/signals'
+import { Signal, useSignal } from '@preact/signals'
 import NavItem from '~/components/header/NavItem.tsx'
 import ThemeToggle from '~/islands/ThemeToggle.tsx'
 import HamburgerIcon from '~/components/ui/icons/HamburgerIcon.tsx'
 import CloseIcon from '~/components/ui/icons/CloseIcon.tsx'
+import { twMerge as tw } from 'tailwind-merge'
 
 interface NavLink {
 	href: string
@@ -24,6 +25,8 @@ interface HeaderMobileMenuProps {
 	closeMenuLabel: string
 	themeLight: string
 	themeDark: string
+	displayNav: Signal<boolean>
+	isTransparentHeader: boolean
 }
 
 export default function HeaderMobileMenu({
@@ -34,8 +37,9 @@ export default function HeaderMobileMenu({
 	closeMenuLabel,
 	themeLight,
 	themeDark,
+	displayNav,
+	isTransparentHeader,
 }: HeaderMobileMenuProps) {
-	const displayNav = useSignal(false)
 	const displayLangMenu = useSignal(false)
 
 	const toggleNav = () => {
@@ -53,7 +57,12 @@ export default function HeaderMobileMenu({
 	return (
 		<div className='md:hidden'>
 			<button
-				className='inline-flex items-center justify-center h-9 w-9 rounded-lg hover:bg-muted transition-colors'
+				className={tw(
+					'inline-flex h-9 w-9 items-center justify-center rounded-lg transition-colors',
+					isTransparentHeader
+						? 'text-black hover:bg-black/10'
+						: 'text-foreground hover:bg-muted',
+				)}
 				type='button'
 				onClick={toggleNav}
 				aria-label={displayNav.value ? closeMenuLabel : openMenuLabel}
@@ -78,14 +87,17 @@ export default function HeaderMobileMenu({
 							<button
 								type='button'
 								onClick={() =>
-									displayLangMenu.value = !displayLangMenu.value}
+									displayLangMenu.value = !displayLangMenu
+										.value}
 								className='flex items-center gap-2 w-36 justify-center px-3 py-2 text-sm font-medium rounded-md transition-colors text-muted-foreground hover:text-foreground hover:bg-muted'
 							>
 								<span>{currentLocale.flag}</span>
 								<span>{currentLocale.label}</span>
 								<svg
 									className={`w-3 h-3 transition-transform ${
-										displayLangMenu.value ? 'rotate-180' : ''
+										displayLangMenu.value
+											? 'rotate-180'
+											: ''
 									}`}
 									fill='none'
 									stroke='currentColor'
@@ -102,7 +114,9 @@ export default function HeaderMobileMenu({
 							{displayLangMenu.value && (
 								<div className='flex flex-col items-center gap-1 mt-2'>
 									{locales
-										.filter((loc) => loc.code !== currentLocale.code)
+										.filter((loc) =>
+											loc.code !== currentLocale.code
+										)
 										.map((loc) => (
 											<a
 												key={loc.code}

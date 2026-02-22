@@ -10,8 +10,8 @@ export const app = new App<ExtendedState>()
 		ctx.state.requestPath = url.pathname
 		return await ctx.next()
 	})
-	// Add security headers middleware with Trusted Types disabled for Fresh compatibility
-	.use(securityHeaders({ enableTrustedTypes: false, enableCSP: false }))
+	// Add standard security headers and same-origin CORS handling.
+	.use(securityHeaders())
 	// Add static file serving middleware
 	.use(staticFiles())
 	// Remove trailing slashes from URLs
