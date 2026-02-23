@@ -26,12 +26,19 @@ export function generateNonce(): string {
 function buildCSP(): string {
 	const directives: Record<string, string[]> = {
 		'default-src': ["'self'"],
-		'script-src': ["'self'", "'unsafe-inline'", "'unsafe-eval'", 'fresh-island:'],
+		'script-src': [
+			"'self'",
+			"'unsafe-inline'",
+			"'unsafe-eval'",
+			'fresh-island:',
+			'data:',
+		],
 		'script-src-elem': [
 			"'self'",
 			"'unsafe-inline'",
 			"'unsafe-eval'",
 			'fresh-island:',
+			'data:',
 		],
 		'style-src': ["'self'", "'unsafe-inline'"],
 		'img-src': ["'self'", 'data:', 'blob:', 'https:'],
