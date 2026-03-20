@@ -12,7 +12,7 @@ export default function ComponentLayout(
 	return (
 		<section
 			id={id}
-			class={`min-h-[calc(100svh-4rem)] w-full overflow-x-hidden px-4 md:min-h-[calc(100vh-4rem)] sm:px-0 ${scrollMarginClass}`}
+			class={`min-h-[calc(100vh-4rem)] w-full overflow-x-hidden px-4 sm:px-0 ${scrollMarginClass}`}
 		>
 			{children}
 		</section>

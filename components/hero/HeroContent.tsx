@@ -67,7 +67,7 @@ export default function HeroContent({
 		<div className='relative md:col-span-3'>
 			<div className='relative z-10 space-y-4 lg:space-y-5'>
 				<div className='space-y-2'>
-					<p className='inline-flex w-fit rounded-full border border-black/10 bg-white/88 px-3 py-1 text-[0.7rem] font-semibold uppercase tracking-[0.24em] text-black shadow-sm backdrop-blur-sm dark:border-white/10 dark:bg-black/45 dark:text-white md:rounded-none md:border-0 md:bg-transparent md:px-0 md:py-0 md:text-xs md:tracking-widest md:text-muted-foreground md:shadow-none md:backdrop-blur-none'>
+					<p className='text-xs font-semibold tracking-widest text-muted-foreground uppercase'>
 						{roleLabel}
 					</p>
 					<h1 className='text-4xl font-bold tracking-tight lg:text-6xl bg-gradient-to-r from-foreground to-foreground/70 bg-clip-text text-transparent leading-relaxed pb-2'>

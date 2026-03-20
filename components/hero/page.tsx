@@ -25,8 +25,8 @@ export default function Hero({ about, t, workHref = '#work' }: HeroProps) {
 			<HeroBackground />
 			<HeroMobileImage headshotUrl={headshotUrl} alt={heroImageAlt} />
 
-			<div className='container relative z-20 mx-auto flex max-w-6xl flex-col justify-center min-h-[calc(100svh-64px)] md:min-h-[calc(100vh-64px)]'>
-				<div className='grid flex-grow grid-cols-1 items-start gap-8 pt-[calc(21vh+64px)] pb-10 sm:pt-[calc(20vh+64px)] md:items-center md:gap-16 md:pt-6 md:pb-0'>
+			<div className='container relative z-20 mx-auto max-w-6xl flex flex-col h-[calc(100vh-64px)] justify-center'>
+				<div className='grid items-start md:items-center flex-grow grid-cols-1 md:grid-cols-5 gap-8 md:gap-16 pt-[calc(26vh+64px)] sm:pt-[calc(24vh+64px)] md:pt-[24px]'>
 					<HeroContent
 						displayName={displayName}
 						description={description}
