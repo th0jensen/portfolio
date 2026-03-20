@@ -1,9 +1,8 @@
 import { define } from '../utils.ts'
 import { createTranslator } from 'fresh-i18n'
-import type { JSX } from 'preact'
 
 export default define.page(function App({ Component, state }) {
-	const PageComponent = Component as () => JSX.Element
+	const PageComponent = Component
 	const t = createTranslator(state.translationData || {})
 	const locale = state.locale || 'en'
 	const localeLanguageTag = locale === 'no' ? 'nb' : locale

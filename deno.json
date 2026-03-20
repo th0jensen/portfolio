@@ -29,7 +29,7 @@
   "exclude": ["**/_fresh/*", "components/ui"],
   "imports": {
     "@fresh/plugin-vite": "jsr:@fresh/plugin-vite@^1.0.8",
-    "@preact/signals": "npm:@preact/signals@1.2.2",
+    "@preact/signals": "npm:@preact/signals@^2.5.0",
     "@radix-ui/react-slot": "npm:@radix-ui/react-slot@^1.2.4",
     "@types/pg": "npm:@types/pg@^8.16.0",
     "class-variance-authority": "npm:class-variance-authority@^0.7.1",
@@ -37,7 +37,7 @@
     "drizzle-kit": "npm:drizzle-kit@^0.31.8",
     "drizzle-orm": "npm:drizzle-orm@^0.45.1",
     "pg": "npm:pg@^8.18.0",
-    "preact": "npm:preact@10.22.0",
+    "preact": "npm:preact@^10.27.2",
     "react": "npm:@preact/compat@18.3.1",
     "react-dom": "npm:@preact/compat@18.3.1",
     "tailwind-merge": "npm:tailwind-merge@^2.6.0",
@@ -49,10 +49,7 @@
     "zod": "npm:zod@^4.3.5",
     "~/": "./",
     "fresh": "jsr:@fresh/core@^2.2.0",
-    "fresh-i18n": "jsr:@elsoul/fresh-i18n@^1.2.0",
-    "$fresh/": "https://deno.land/x/fresh@1.7.3/",
-    "preact/": "npm:/preact@10.22.0/",
-    "@preact/signals-core": "npm:@preact/signals-core@1.5.1"
+    "fresh-i18n": "jsr:@elsoul/fresh-i18n@^1.2.0"
   },
   "compilerOptions": {
     "lib": ["dom", "dom.asynciterable", "dom.iterable", "deno.ns"],

@@ -101,7 +101,7 @@ export function applySecurityHeaders(
 ): Response {
 	const mergedConfig = { ...DEFAULT_CONFIG, ...config }
 	const requestOrigin = new URL(req.url).origin
-	const headers = new Headers(response.headers)
+	const headers = response.headers
 
 	if (mergedConfig.enableCSP) {
 		const cspHeaderName = mergedConfig.cspReportOnly
@@ -131,11 +131,7 @@ export function applySecurityHeaders(
 		setCorsHeaders(headers, req, requestOrigin)
 	}
 
-	return new Response(response.body, {
-		status: response.status,
-		statusText: response.statusText,
-		headers,
-	})
+	return response
 }
 
 export function securityHeaders(config: SecurityHeadersConfig = {}) {

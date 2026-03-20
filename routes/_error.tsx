@@ -1,6 +1,6 @@
-import { HttpError, PageProps } from 'fresh'
+import { HttpError } from 'fresh'
 
-export default function ErrorPage(props: PageProps) {
+export default function ErrorPage(props: { error: unknown }) {
 	const error = props.error
 
 	if (error instanceof HttpError) {

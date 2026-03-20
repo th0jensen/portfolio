@@ -1,11 +1,10 @@
 import { define } from '../utils.ts'
 import { createTranslator } from 'fresh-i18n'
-import type { JSX } from 'preact'
 import Header from '~/islands/Header.tsx'
 import Footer from '~/components/Footer.tsx'
 
-export default define.page(function Layout({ Component, state }) {
-	const PageComponent = Component as () => JSX.Element
+export default define.layout(function Layout({ Component, state }) {
+	const PageComponent = Component
 	const t = createTranslator(state.translationData || {})
 	const locale = state.locale || 'en'
 	const isRtl = locale === 'he'
