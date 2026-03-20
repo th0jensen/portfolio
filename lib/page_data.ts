@@ -13,22 +13,27 @@ import {
 	fetchMultipleRepos,
 	fetchZedExtensionWithGitHub,
 } from '~/lib/github.ts'
+import {
+	getGitHubRepoCache,
+	upsertGitHubRepoCache,
+} from '~/lib/db/github_cache.ts'
 import type { ExtendedState } from '~/utils.ts'
 
 // Configure your GitHub repos here (owner/repo format)
 const GITHUB_USERNAME = 'th0jensen'
 
-// Featured PR (shown as large card)
-const FEATURED_PR = { owner: 'zed-industries', repo: 'zed', number: 26211 }
+// Featured PRs (first item is shown as the large card)
+const FEATURED_PRS = [
+	{ owner: 'zed-industries', repo: 'zed', number: 50653 },
+	{ owner: 'zed-industries', repo: 'zed', number: 26211 },
+]
 
 // Zed extension
 const ZED_EXTENSION_ID = 'gruber-darker'
 
 // Personal repos
 const FEATURED_REPOS = [
-	{ owner: GITHUB_USERNAME, repo: 'portfolio' },
-	{ owner: GITHUB_USERNAME, repo: 'tunafiles' },
-	{ owner: GITHUB_USERNAME, repo: 'nix' },
+	{ owner: GITHUB_USERNAME, repo: 'crabdash' },
 ]
 
 // Cache the repos to avoid rate-limit pressure and repeated fetches
@@ -48,6 +53,10 @@ export interface PortfolioPageData {
 	locale: string
 	about: About
 	projects: Project[]
+}
+
+interface LivePortfolioRepoOptions {
+	persist?: boolean
 }
 
 export function getPortfolioPageDataFromState(
@@ -75,7 +84,66 @@ export function getPortfolioPageDataFromState(
 	}
 }
 
+async function loadLivePortfolioRepos(): Promise<FormattedRepo[]> {
+	const [featuredPRs, zedExtension, zedTotalDownloads, repos] = await Promise
+		.all([
+			Promise.all(
+				FEATURED_PRS.map((pr) =>
+					fetchGitHubPR(pr.owner, pr.repo, pr.number)
+				),
+			),
+			fetchZedExtensionWithGitHub(
+				ZED_EXTENSION_ID,
+				GITHUB_USERNAME,
+				'gruber-darker.zed',
+			),
+			fetchGitHubTotalDownloads(
+				FEATURED_PRS[0].owner,
+				FEATURED_PRS[0].repo,
+			),
+			fetchMultipleRepos(FEATURED_REPOS),
+		])
+
+	const featuredPrsWithProductStats = featuredPRs
+		.filter((repo): repo is FormattedRepo => repo !== null)
+		.map((featuredPR) => ({
+			...featuredPR,
+			downloads: zedTotalDownloads ?? featuredPR.downloads,
+		}))
+
+	const usedRepoFallback = repos === FALLBACK_REPOS
+	const allItems: FormattedRepo[] = []
+	if (featuredPrsWithProductStats.length > 0) {
+		allItems.push(...featuredPrsWithProductStats)
+	}
+	if (zedExtension) {
+		allItems.push(zedExtension)
+	}
+	allItems.push(...repos)
+
+	if (
+		allItems.length > 0 &&
+		(!usedRepoFallback || allItems.length > repos.length)
+	) {
+		return allItems
+	}
+
+	throw new Error('GitHub API returned only fallback repo data.')
+}
+
 export async function getPortfolioRepos(): Promise<FormattedRepo[]> {
+	try {
+		const cached = await getGitHubRepoCache()
+		return cached || FALLBACK_REPOS
+	} catch (error) {
+		console.error('Failed to read cached GitHub repo data:', error)
+		return FALLBACK_REPOS
+	}
+}
+
+export async function getLivePortfolioRepos(
+	{ persist = true }: LivePortfolioRepoOptions = {},
+): Promise<FormattedRepo[]> {
 	const now = Date.now()
 
 	if (cachedRepos && now - cacheTimestamp < CACHE_DURATION) {
@@ -83,47 +151,21 @@ export async function getPortfolioRepos(): Promise<FormattedRepo[]> {
 	}
 
 	try {
-		const [featuredPR, zedExtension, zedTotalDownloads, repos] =
-			await Promise.all([
-				fetchGitHubPR(
-					FEATURED_PR.owner,
-					FEATURED_PR.repo,
-					FEATURED_PR.number,
-				),
-				fetchZedExtensionWithGitHub(
-					ZED_EXTENSION_ID,
-					GITHUB_USERNAME,
-					'gruber-darker.zed',
-				),
-				fetchGitHubTotalDownloads(FEATURED_PR.owner, FEATURED_PR.repo),
-				fetchMultipleRepos(FEATURED_REPOS),
-			])
+		const repos = await loadLivePortfolioRepos()
+		cachedRepos = repos
+		cacheTimestamp = now
 
-		const featuredPrWithProductStats = featuredPR
-			? {
-				...featuredPR,
-				downloads: zedTotalDownloads ?? featuredPR.downloads,
+		if (persist) {
+			try {
+				await upsertGitHubRepoCache({ repos })
+			} catch (error) {
+				console.error('Failed to persist live GitHub repo data:', error)
 			}
-			: null
-
-		const allItems: FormattedRepo[] = []
-		if (featuredPrWithProductStats) {
-			allItems.push(featuredPrWithProductStats)
-		}
-		if (zedExtension) {
-			allItems.push(zedExtension)
-		}
-		allItems.push(...repos)
-
-		if (allItems.length > 0) {
-			cachedRepos = allItems
-			cacheTimestamp = now
-			return allItems
 		}
 
-		return FALLBACK_REPOS
+		return repos
 	} catch (error) {
-		console.error('Failed to fetch GitHub data:', error)
-		return cachedRepos || FALLBACK_REPOS
+		console.error('Failed to fetch live GitHub data:', error)
+		return cachedRepos || await getPortfolioRepos()
 	}
 }

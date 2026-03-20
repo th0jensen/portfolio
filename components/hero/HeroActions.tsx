@@ -32,17 +32,17 @@ export default function HeroActions({
 				>
 					<span className='flex items-center'>{label}</span>
 				</Link>
-			<GitHubButton
-				ariaLabel={githubAriaLabel}
-				buttonText={githubText}
-			/>
-			<LinkedInButton
-				ariaLabel={linkedinAriaLabel}
-				buttonText={linkedinText}
-			/>
-		</div>
-	)
-}
+				<GitHubButton
+					ariaLabel={githubAriaLabel}
+					buttonText={githubText}
+				/>
+				<LinkedInButton
+					ariaLabel={linkedinAriaLabel}
+					buttonText={linkedinText}
+				/>
+			</div>
+		)
+	}
 
 	return (
 		<div className='md:hidden flex flex-col gap-3 mt-4 items-start'>
@@ -57,7 +57,9 @@ export default function HeroActions({
 				/>
 			</div>
 			<Link href={workHref} variant='default' size='lg' className='group'>
-				<span className='flex items-center justify-center'>{label}</span>
+				<span className='flex items-center justify-center'>
+					{label}
+				</span>
 			</Link>
 		</div>
 	)

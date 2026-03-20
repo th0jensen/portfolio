@@ -1,7 +1,7 @@
 import {
 	DEFAULT_LOCALE,
-	SUPPORTED_LOCALES,
 	type LocaleCode,
+	SUPPORTED_LOCALES,
 } from '~/lib/i18n.ts'
 
 export function parseAcceptLanguage(header: string | null): string[] {

@@ -3,14 +3,16 @@ interface HeroMobileImageProps {
 	alt: string
 }
 
-export default function HeroMobileImage({ headshotUrl, alt }: HeroMobileImageProps) {
+export default function HeroMobileImage(
+	{ headshotUrl, alt }: HeroMobileImageProps,
+) {
 	return (
 		<>
 			<div className='absolute top-0 left-0 right-0 md:hidden h-[62vh] overflow-visible z-0'>
 				<img
 					src={headshotUrl}
 					alt={alt}
-					fetchpriority='high'
+					// fetchpriority='high'
 					width={1200}
 					height={1600}
 					className='h-full w-full object-cover object-[50%_35%]'

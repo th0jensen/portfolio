@@ -56,7 +56,9 @@ export default function RepoCardHeader({
 						</svg>
 					)}
 				<span
-					className={`font-semibold ${isLarge ? 'text-lg' : 'text-sm'}`}
+					className={`font-semibold ${
+						isLarge ? 'text-lg' : 'text-sm'
+					}`}
 				>
 					{repo.name}
 					{isPR && repo.prNumber && (

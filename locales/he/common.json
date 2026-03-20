@@ -1,104 +1,104 @@
 {
-  "meta": {
-    "description": "תומס ינסן - מפתח פול-סטאק שבונה פתרונות אלגנטיים ואמינים באמצעות קוד נקי. גלו את הפרויקטים והניסיון שלי."
-  },
-  "nav": {
-    "work": "פרויקטים",
-    "experience": "ניסיון",
-    "contact": "יצירת קשר",
-    "openMenu": "פתח תפריט",
-    "closeMenu": "סגור תפריט"
-  },
-  "about": {
-    "firstName": "תּוֹמַס",
-    "lastName": "יֶנְסֶן",
-    "birthday": "10-12-2003",
-    "humanLanguages": ["אנגלית", "נורווגית", "גרמנית", "עברית"],
-    "computerLanguages": ["Typescript", "Go", "Swift", "Rust"]
-  },
-  "metadata": {
-    "name": "תומס ינסן",
-    "altName": "תּוֹמַס יֶנְסֶן",
-    "description": "תומס ינסן - מפתח פול-סטאק שבונה פתרונות אלגנטיים ואמינים באמצעות קוד נקי. גלו את הפרויקטים והניסיון שלי.",
-    "footerText": "{year} תומס ינסן"
-  },
-  "hero": {
-    "role": "מפתח פול-סטאק",
-    "description": "מפתח פול-סטאק בן {age}, עם מיקוד בבניית פתרונות אלגנטיים באמצעות קוד נקי. אני נלהב מפיתוח צד שרת, אופטימיזציה וחוויות משתמש חלקות.",
-    "exploreWork": "לפרויקטים שלי",
-    "github": "פרופיל GitHub",
-    "linkedin": "פרופיל LinkedIn",
-    "headshotAlt": "תמונת פורטרט של תומס ינסן"
-  },
-  "work": {
-    "subtitle": "נבחרים",
-    "title": "פרויקטים",
-    "showMore": "הצג עוד",
-    "showLess": "הצג פחות",
-    "visitProject": "צפה בפרויקט {name}",
-    "downloadAppStore": "הורדה ב-App Store",
-    "viewOnGitHub": "צפה ב-GitHub"
-  },
-  "projects": [
-    {
-      "name": "תרומות ל-zed-industries/zed",
-      "imageURL": "/images/zed.webp",
-      "technologies": {
-        "Rust": "#000000",
-        "GPUI": "#3178C6",
-        "JSON": "#ffffff"
-      },
-      "description": "- PR #26211: יישמתי אפשרות טרמינל מורחבת ב-Zed (Rust + GPUI), כולל חיבור ההגדרה ואימות קלט.\n- אני מפרסם ומתחזק את הרחבת ערכת הנושא Gruber Darker עבור Zed.",
-      "source": {
-        "type": "github",
-        "link": "https://github.com/zed-industries/zed/pull/26211"
-      }
-    },
-    {
-      "name": "Bininspect",
-      "status": "דמו",
-      "imageURL": "/images/zed.webp",
-      "technologies": {
-        "Rust": "#000000",
-        "WASM": "#654FF0",
-        "TypeScript": "#3178C6"
-      },
-      "description": "סביבת דמו אינטראקטיבית לבדיקת קבצים בינאריים, המאפשרת לחקור את המבנה הפנימי של קבצי הרצה ישירות בדפדפן.",
-      "source": {
-        "type": "demo",
-        "link": "https://thojensen.com/projects/bininspect"
-      }
-    },
-    {
-      "name": "Appleosophy",
-      "imageURL": "/images/appleosophy.webp",
-      "technologies": {
-        "Swift": "#F05138",
-        "Objective-C": "#007AFF",
-        "SwiftUI": "#F05138",
-        "WordPress": "#21759B"
-      },
-      "description": "אפליקציית iOS הרשמית של Appleosophy. בניתי והשקתי אותה כמפתח iOS יחיד בתוך שישה חודשים, שילבתי את WordPress REST API הקיים בצד השרת וניהלתי את תהליך ההשקה המלא ל-App Store.",
-      "source": {
-        "type": "appstore",
-        "link": "https://apps.apple.com/us/app/appleosophy/id1635844078"
-      }
-    }
-  ],
-  "experience": {
-    "subtitle": "קוד פתוח",
-    "title": "ניסיון",
-    "description": "מבחר מהתרומות שלי לקוד פתוח ומהפרויקטים האישיים שלי ב-GitHub."
-  },
-  "theme": {
-    "light": "בהיר",
-    "dark": "כהה"
-  },
-  "footer": {
-    "copyright": "{year} תומס ינסן"
-  },
-  "buttons": {
-    "github": "GitHub",
-    "linkedin": "LinkedIn"
-  }
+	"meta": {
+		"description": "תומס ינסן - מפתח Rust המתמקד בעבודת מערכות, כלים מקומיים וקוד פתוח. תורם ל-Zed ובונה את Crabdash."
+	},
+	"nav": {
+		"work": "פרויקטים",
+		"experience": "ניסיון",
+		"contact": "יצירת קשר",
+		"openMenu": "פתח תפריט",
+		"closeMenu": "סגור תפריט"
+	},
+	"about": {
+		"firstName": "תּוֹמַס",
+		"lastName": "יֶנְסֶן",
+		"birthday": "10-12-2003",
+		"humanLanguages": ["אנגלית", "נורווגית", "גרמנית", "עברית"],
+		"computerLanguages": ["Typescript", "Go", "Swift", "Rust"]
+	},
+	"metadata": {
+		"name": "תומס ינסן",
+		"altName": "תּוֹמַס יֶנְסֶן",
+		"description": "תומס ינסן - מפתח Rust המתמקד בעבודת מערכות, כלים מקומיים וקוד פתוח. תורם ל-Zed ובונה את Crabdash.",
+		"footerText": "{year} תומס ינסן"
+	},
+	"hero": {
+		"role": "מפתח Rust - תורם לקוד פתוח ב-Zed",
+		"description": "מפתח Rust המתמקד בעבודת מערכות, כלים מקומיים וקוד פתוח. אני תורם ל-Zed ובונה כלי דסקטופ ו-Backend עם דגש על ביצועים, אמינות ושליטה.",
+		"currentlyBuilding": "בונה עכשיו: Crabdash — לוח מחוונים מקורי להומלאב ב-Rust ו-GPUI",
+		"exploreWork": "לפרויקטים שלי",
+		"github": "פרופיל GitHub",
+		"linkedin": "פרופיל LinkedIn",
+		"headshotAlt": "תמונת פורטרט של תומס ינסן"
+	},
+	"work": {
+		"subtitle": "נבחרים",
+		"title": "פרויקטים",
+		"showMore": "הצג עוד",
+		"showLess": "הצג פחות",
+		"visitProject": "צפה בפרויקט {name}",
+		"downloadAppStore": "הורדה ב-App Store",
+		"viewOnGitHub": "צפה ב-GitHub"
+	},
+	"projects": [
+		{
+			"name": "Zed Editor - תרומות",
+			"imageURL": "/images/zed.webp",
+			"technologies": {
+				"Rust": "#000000",
+				"GPUI": "#3178C6",
+				"JSON": "#ffffff"
+			},
+			"description": "- PR #26211: יישמתי אפשרות טרמינל מורחבת ב-Zed (Rust + GPUI), כולל חיבור ההגדרה ואימות קלט.\n- PR #50653: תיקנתי נתיבי manifest של Windows בעת העלאת הרחבות ל-WSL remotes ב-extension host של Zed.\n- חבר ב-Zed Guild ומתחזק את הרחבת Gruber Darker.",
+			"source": {
+				"type": "github",
+				"link": "https://github.com/zed-industries/zed/pull/26211"
+			}
+		},
+		{
+			"name": "Crabdash",
+			"imageURL": "/images/crabdash.webp",
+			"technologies": {
+				"Rust": "#000000",
+				"GPUI": "#3178C6",
+				"Docker": "#2496ED"
+			},
+			"description": "Crabdash הוא לוח מחוונים מקורי להומלאב שנבנה ב-Rust וב-GPUI כדי להחליף פקודות טרמינל מפוזרות במשטח שליטה ממוקד אחד עבור קונטיינרי Docker, שירותים מקומיים, דיסקים ומכונות Linux מרוחקות.",
+			"source": {
+				"type": "github",
+				"link": "https://github.com/th0jensen/crabdash"
+			}
+		},
+		{
+			"name": "Appleosophy",
+			"imageURL": "/images/appleosophy.webp",
+			"technologies": {
+				"Swift": "#F05138",
+				"Objective-C": "#007AFF",
+				"SwiftUI": "#F05138",
+				"WordPress": "#21759B"
+			},
+			"description": "Appleosophy היה פרויקט השילוח האמיתי הראשון שלי: המקום שבו למדתי לקחת מוצר מרעיון להשקה ב-App Store, דרך עבודה על iOS, אינטגרציית API והפרטים המעשיים של אספקת תוכנה אמיתית.",
+			"source": {
+				"type": "appstore",
+				"link": "https://apps.apple.com/us/app/appleosophy/id1635844078"
+			}
+		}
+	],
+	"experience": {
+		"subtitle": "תרומות ופרויקטים",
+		"title": "ניסיון",
+		"description": "תרומות קוד פתוח ל-Zed לצד פרויקטי Rust אישיים נבחרים שמייצגים את האופן שבו אני אוהב לבנות."
+	},
+	"theme": {
+		"light": "בהיר",
+		"dark": "כהה"
+	},
+	"footer": {
+		"copyright": "{year} תומס ינסן"
+	},
+	"buttons": {
+		"github": "GitHub",
+		"linkedin": "LinkedIn"
+	}
 }

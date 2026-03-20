@@ -79,7 +79,9 @@ function setCorsHeaders(
 			'GET, POST, PUT, PATCH, DELETE, OPTIONS',
 		)
 
-		const requestedHeaders = req.headers.get('access-control-request-headers')
+		const requestedHeaders = req.headers.get(
+			'access-control-request-headers',
+		)
 		headers.set(
 			'Access-Control-Allow-Headers',
 			requestedHeaders ?? 'Content-Type, Authorization, X-Requested-With',
@@ -145,7 +147,11 @@ export function securityHeaders(config: SecurityHeadersConfig = {}) {
 
 		if (config.enableCORS ?? DEFAULT_CONFIG.enableCORS) {
 			const preflightHeaders = new Headers()
-			const preflight = setCorsHeaders(preflightHeaders, ctx.req, requestOrigin)
+			const preflight = setCorsHeaders(
+				preflightHeaders,
+				ctx.req,
+				requestOrigin,
+			)
 			if (preflight) {
 				return preflight
 			}

@@ -17,10 +17,16 @@ export default function ProjectGrid({
 	return (
 		<div className='grid grid-cols-1 md:grid-cols-2 gap-8 items-stretch'>
 			{projects.map((project, index) => (
-				<div key={index} className='w-full h-full'>
+				<div
+					key={index}
+					className={`w-full h-full ${
+						index === 0 ? 'md:col-span-2' : ''
+					}`}
+				>
 					<ProjectCard
 						project={project}
 						locale={locale}
+						featured={index === 0}
 						visitProjectLabel={visitProjectLabel(project.name)}
 						downloadAppStoreLabel={downloadAppStoreLabel}
 					/>

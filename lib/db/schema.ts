@@ -7,7 +7,7 @@ import {
 	text,
 	timestamp,
 } from 'drizzle-orm/pg-core'
-import type { Project } from '../schemas.ts'
+import type { FormattedRepo, Project } from '../schemas.ts'
 
 export const localeCodeEnum = pgEnum('locale_code', ['en', 'no', 'he'])
 
@@ -57,6 +57,7 @@ export const localeHero = pgTable('locale_hero', {
 	locale: localeCodeEnum('locale').primaryKey(),
 	role: text('role').notNull(),
 	description: text('description').notNull(),
+	currentlyBuilding: text('currently_building').notNull(),
 	exploreWork: text('explore_work').notNull(),
 	github: text('github').notNull(),
 	linkedin: text('linkedin').notNull(),
@@ -130,6 +131,12 @@ export const assetImages = pgTable('asset_images', {
 	key: text('key').primaryKey(),
 	mimeType: text('mime_type').notNull(),
 	dataBase64: text('data_base64').notNull(),
+	updatedAt: withUpdatedAt(),
+})
+
+export const githubRepoCache = pgTable('github_repo_cache', {
+	cacheKey: text('cache_key').primaryKey(),
+	repos: jsonb('repos').$type<FormattedRepo[]>().notNull(),
 	updatedAt: withUpdatedAt(),
 })
 

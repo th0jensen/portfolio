@@ -1,15 +1,20 @@
 import { closeDb, db } from './db.ts'
+import { upsertGitHubRepoCache } from './github_cache.ts'
 import { upsertImageAsset } from './images.ts'
 import { clearLocaleTranslations, upsertLocaleTranslation } from './locales.ts'
 import { assetImages } from './schema.ts'
+import { FALLBACK_REPOS } from '../github.ts'
 import { LocaleCodeSchema } from '../i18n.ts'
-import { parseLocaleData } from '../schemas.ts'
+import { FormattedRepoSchema, parseLocaleData } from '../schemas.ts'
 import { Buffer } from 'node:buffer'
+import { z } from 'zod'
 
 interface LocaleSeedRow {
 	locale: string
 	rawJson: unknown
 }
+
+const githubRepoSeedSchema = z.array(FormattedRepoSchema)
 
 const STATIC_DB_ASSETS: Array<{ key: string; staticPath: string }> = [
 	{ key: 'headshot.jpg', staticPath: 'headshot.jpg' },
@@ -63,6 +68,7 @@ function isMissingTableError(error: unknown): boolean {
 	const messages = getErrorMessages(error)
 	return messages.some((message) =>
 		message.includes('relation "asset_images" does not exist') ||
+		message.includes('relation "github_repo_cache" does not exist') ||
 		message.includes('relation "locale_metadata" does not exist') ||
 		message.includes('relation "locale_meta" does not exist') ||
 		message.includes('relation "locale_projects" does not exist')
@@ -90,6 +96,31 @@ async function loadLocaleFiles(): Promise<LocaleSeedRow[]> {
 	}
 
 	return rows
+}
+
+async function loadSeededGitHubRepos() {
+	const snapshotPath = new URL(
+		'../../data/github-repos.seed.json',
+		import.meta.url,
+	)
+
+	try {
+		const fileContent = await Deno.readTextFile(snapshotPath)
+		return githubRepoSeedSchema.parse(JSON.parse(fileContent))
+	} catch (error) {
+		if (error instanceof Deno.errors.NotFound) {
+			console.warn(
+				'GitHub repo seed snapshot not found, using static fallback data.',
+			)
+			return FALLBACK_REPOS
+		}
+
+		throw new Error(
+			`Failed to load GitHub repo seed snapshot: ${
+				error instanceof Error ? error.message : String(error)
+			}`,
+		)
+	}
 }
 
 function imageKeyFromUrl(url: string): string | null {
@@ -156,6 +187,7 @@ async function seedDbAssets(imageKeys: Set<string>): Promise<void> {
 
 async function seed(): Promise<void> {
 	const localeRows = await loadLocaleFiles()
+	const seededGitHubRepos = await loadSeededGitHubRepos()
 	const imageKeys = new Set<string>()
 
 	await clearLocaleTranslations()
@@ -184,9 +216,10 @@ async function seed(): Promise<void> {
 	}
 
 	await seedDbAssets(imageKeys)
+	await upsertGitHubRepoCache({ repos: seededGitHubRepos })
 
 	console.log(
-		`Seeded ${localeRows.length} locale payload(s) and ${
+		`Seeded ${localeRows.length} locale payload(s), ${seededGitHubRepos.length} cached GitHub repo snapshot(s), and ${
 			imageKeys.size + STATIC_DB_ASSETS.length
 		} static asset(s) into the database.`,
 	)

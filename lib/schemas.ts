@@ -74,6 +74,7 @@ export const NavSchema = z.object({
 export const HeroSchema = z.object({
 	role: z.string(),
 	description: z.string(),
+	currentlyBuilding: z.string(),
 	exploreWork: z.string(),
 	github: z.string(),
 	linkedin: z.string(),

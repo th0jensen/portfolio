@@ -172,6 +172,7 @@ export async function upsertLocaleTranslation({
 				locale: dbLocale,
 				role: parsedPayload.hero.role,
 				description: parsedPayload.hero.description,
+				currentlyBuilding: parsedPayload.hero.currentlyBuilding,
 				exploreWork: parsedPayload.hero.exploreWork,
 				github: parsedPayload.hero.github,
 				linkedin: parsedPayload.hero.linkedin,
@@ -182,6 +183,7 @@ export async function upsertLocaleTranslation({
 				set: {
 					role: parsedPayload.hero.role,
 					description: parsedPayload.hero.description,
+					currentlyBuilding: parsedPayload.hero.currentlyBuilding,
 					exploreWork: parsedPayload.hero.exploreWork,
 					github: parsedPayload.hero.github,
 					linkedin: parsedPayload.hero.linkedin,
@@ -362,6 +364,7 @@ async function findLocalePayload(
 			.select({
 				role: localeHero.role,
 				description: localeHero.description,
+				currentlyBuilding: localeHero.currentlyBuilding,
 				exploreWork: localeHero.exploreWork,
 				github: localeHero.github,
 				linkedin: localeHero.linkedin,
@@ -475,6 +478,7 @@ async function findLocalePayload(
 		hero: {
 			role: hero.role,
 			description: hero.description,
+			currentlyBuilding: hero.currentlyBuilding,
 			exploreWork: hero.exploreWork,
 			github: hero.github,
 			linkedin: hero.linkedin,

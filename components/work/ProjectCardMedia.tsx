@@ -2,6 +2,7 @@ import type { Project } from '~/lib/schemas.ts'
 
 interface ProjectCardMediaProps {
 	project: Project
+	featured?: boolean
 	demoHref?: string
 	visitProjectLabel?: string
 	downloadAppStoreLabel: string
@@ -9,6 +10,7 @@ interface ProjectCardMediaProps {
 
 export default function ProjectCardMedia({
 	project,
+	featured = false,
 	demoHref,
 	visitProjectLabel,
 	downloadAppStoreLabel,
@@ -17,12 +19,16 @@ export default function ProjectCardMedia({
 	const demoCtaLabel = project.status
 		? `${project.status}: ${project.name}`
 		: `Demo ${project.name}`
-	const isZedImage = project.imageURL.endsWith('/zed.jpeg') ||
-		project.imageURL.endsWith('/zed.webp')
 	const appStoreBadgeUrl = '/api/images/appstore.svg'
 
 	return (
-		<div className='relative flex justify-center items-center h-[200px] overflow-hidden'>
+		<div
+			className={`relative flex justify-center items-center overflow-hidden ${
+				featured
+					? 'h-[240px] md:h-full md:min-h-[340px] p-8 md:p-10'
+					: 'h-[200px]'
+			}`}
+		>
 			{isDemoProject
 				? (
 					<div className='absolute inset-0 z-10 flex items-center justify-center bg-gradient-to-b from-black/5 via-transparent to-transparent p-4'>
@@ -64,12 +70,12 @@ export default function ProjectCardMedia({
 					src={project.imageURL}
 					alt={project.name}
 					width={300}
-					height={isZedImage ? 150 : 180}
-					className={`${
-						isZedImage
-							? 'h-[150px] rounded-xl overflow-hidden'
+					height={featured ? 240 : 180}
+					className={`max-w-full object-contain transition-transform duration-500 group-hover:scale-105 ${
+						featured
+							? 'h-[210px] md:h-[230px] mx-auto'
 							: 'h-[180px]'
-					} max-w-full object-contain transition-transform duration-500 group-hover:scale-105`}
+					}`}
 				/>
 			)}
 			{project.status && (

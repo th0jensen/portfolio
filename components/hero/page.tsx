@@ -15,6 +15,7 @@ interface HeroProps {
 export default function Hero({ about, t, workHref = '#work' }: HeroProps) {
 	const age = calculateAge(about.birthday).toString()
 	const description = t('common.hero.description').replace('{age}', age)
+	const currentlyBuilding = t('common.hero.currentlyBuilding')
 	const displayName = t('common.metadata.altName')
 	const headshotUrl = '/api/images/headshot.jpg'
 	const heroImageAlt = t('common.hero.headshotAlt')
@@ -29,6 +30,7 @@ export default function Hero({ about, t, workHref = '#work' }: HeroProps) {
 					<HeroContent
 						displayName={displayName}
 						description={description}
+						currentlyBuilding={currentlyBuilding}
 						roleLabel={t('common.hero.role')}
 						exploreWorkLabel={t('common.hero.exploreWork')}
 						githubAriaLabel={t('common.hero.github')}

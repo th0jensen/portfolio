@@ -6,6 +6,7 @@ import ProjectTechList from '~/components/work/ProjectTechList.tsx'
 interface ProjectCardProps {
 	project: Project
 	locale: string
+	featured?: boolean
 	visitProjectLabel?: string
 	downloadAppStoreLabel?: string
 }
@@ -24,6 +25,7 @@ function buildDemoHref(sourceLink: string, locale: string): string | undefined {
 export default function ProjectCard({
 	project,
 	locale,
+	featured = false,
 	visitProjectLabel,
 	downloadAppStoreLabel = 'Download on App Store',
 }: ProjectCardProps) {
@@ -32,16 +34,36 @@ export default function ProjectCard({
 		: undefined
 
 	return (
-		<div className='group glass-card overflow-hidden rounded-2xl smooth-transition hover:shadow-lg h-full flex flex-col'>
-			<ProjectCardMedia
-				project={project}
-				demoHref={demoHref}
-				visitProjectLabel={visitProjectLabel}
-				downloadAppStoreLabel={downloadAppStoreLabel}
-			/>
-			<div className='p-5 space-y-4 flex-1 flex flex-col'>
+		<div
+			className={`group glass-card rounded-2xl smooth-transition h-full ${
+				featured
+					? 'flex flex-col md:flex-row md:min-h-[340px] hover:shadow-lg'
+					: 'flex flex-col overflow-hidden hover:shadow-lg'
+			}`}
+		>
+			<div
+				className={featured
+					? 'overflow-hidden rounded-t-2xl md:rounded-l-2xl md:rounded-tr-none md:w-[34%] md:flex-shrink-0'
+					: ''}
+			>
+				<ProjectCardMedia
+					project={project}
+					featured={featured}
+					demoHref={demoHref}
+					visitProjectLabel={visitProjectLabel}
+					downloadAppStoreLabel={downloadAppStoreLabel}
+				/>
+			</div>
+			<div
+				className={`p-5 space-y-4 flex-1 flex flex-col ${
+					featured
+						? 'md:w-[66%] md:px-7 md:py-8 md:justify-center'
+						: ''
+				}`}
+			>
 				<ProjectCardMeta
 					project={project}
+					featured={featured}
 					demoHref={demoHref}
 					visitProjectLabel={visitProjectLabel}
 				/>

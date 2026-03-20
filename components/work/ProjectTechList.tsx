@@ -2,7 +2,9 @@ interface ProjectTechListProps {
 	technologies: Record<string, string>
 }
 
-export default function ProjectTechList({ technologies }: ProjectTechListProps) {
+export default function ProjectTechList(
+	{ technologies }: ProjectTechListProps,
+) {
 	return (
 		<div className='flex flex-wrap gap-2 pt-2'>
 			{Object.keys(technologies).map((tech, index) => (
