@@ -17,7 +17,7 @@ export default function Hero({ about, t, workHref = '#work' }: HeroProps) {
 	const description = t('common.hero.description').replace('{age}', age)
 	const currentlyBuilding = t('common.hero.currentlyBuilding')
 	const displayName = t('common.metadata.altName')
-	const headshotUrl = '/api/images/headshot.jpg'
+	const headshotUrl = '/headshot.jpg'
 	const heroImageAlt = t('common.hero.headshotAlt')
 
 	return (

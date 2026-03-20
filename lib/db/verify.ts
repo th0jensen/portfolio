@@ -1,9 +1,10 @@
 import { count } from 'drizzle-orm'
-import { closeDb, db } from './db.ts'
+import { closeDb, requireDb } from './db.ts'
 import { assetImages, localeMetadata, localeProjects } from './schema.ts'
 import { getTranslationData } from './locales.ts'
 
 async function verifyDbState(): Promise<void> {
+	const db = await requireDb()
 	const localeRows = await db
 		.select({
 			count: count(),

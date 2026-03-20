@@ -1,6 +1,6 @@
 import { asc, eq } from 'drizzle-orm'
 import { z } from 'zod'
-import { db } from './db.ts'
+import { getDb, requireDb } from './db.ts'
 import {
 	localeAbout,
 	localeButtons,
@@ -64,6 +64,7 @@ async function readLocalePayloadFromFilesystem(
 }
 
 export async function clearLocaleTranslations(): Promise<void> {
+	const db = await requireDb()
 	await db.transaction(async (tx) => {
 		await tx.delete(localeProjects)
 		await tx.delete(localeButtons)
@@ -86,6 +87,7 @@ export async function upsertLocaleTranslation({
 	const parsedPayload = CommonLocaleSchema.parse(payload)
 	const dbLocale = toDbLocale(locale)
 	const now = new Date().toISOString()
+	const db = await requireDb()
 
 	await db.transaction(async (tx) => {
 		await tx
@@ -306,6 +308,11 @@ export async function upsertLocaleTranslation({
 async function findLocalePayload(
 	locale: LocaleCode,
 ): Promise<CommonLocale | null> {
+	const db = await getDb()
+	if (!db) {
+		return null
+	}
+
 	const dbLocale = toDbLocale(locale)
 
 	const [

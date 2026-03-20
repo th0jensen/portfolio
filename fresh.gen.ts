@@ -30,8 +30,6 @@ import * as $ExperienceRepos from './islands/ExperienceRepos.tsx'
 import * as $Header from './islands/Header.tsx'
 import * as $HeaderMobileMenu from './islands/HeaderMobileMenu.tsx'
 import * as $ThemeToggle from './islands/ThemeToggle.tsx'
-import type { Manifest } from '$fresh/server.ts'
-
 const manifest = {
 	routes: {
 		'./routes/[locale]/_middleware.ts': $_locale_middleware,
@@ -67,6 +65,6 @@ const manifest = {
 		'./islands/ThemeToggle.tsx': $ThemeToggle,
 	},
 	baseUrl: import.meta.url,
-} satisfies Manifest
+}
 
 export default manifest

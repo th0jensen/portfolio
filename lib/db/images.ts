@@ -1,5 +1,5 @@
 import { eq } from 'drizzle-orm'
-import { db } from './db.ts'
+import { getDb, requireDb } from './db.ts'
 import { assetImages } from './schema.ts'
 
 interface UpsertImageInput {
@@ -13,6 +13,7 @@ export async function upsertImageAsset({
 	mimeType,
 	dataBase64,
 }: UpsertImageInput): Promise<void> {
+	const db = await requireDb()
 	await db
 		.insert(assetImages)
 		.values({
@@ -33,6 +34,11 @@ export async function upsertImageAsset({
 export async function getImageAsset(
 	key: string,
 ): Promise<{ mimeType: string; dataBase64: string } | null> {
+	const db = await getDb()
+	if (!db) {
+		return null
+	}
+
 	const rows = await db
 		.select({
 			mimeType: assetImages.mimeType,

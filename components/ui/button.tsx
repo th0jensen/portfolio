@@ -1,4 +1,4 @@
-import { type JSX } from 'preact'
+import { type ComponentChildren, type JSX } from 'preact'
 import { Slot } from '@radix-ui/react-slot'
 import { cva, type VariantProps } from 'class-variance-authority'
 
@@ -34,20 +34,30 @@ const buttonVariants = cva(
     },
 )
 
-export interface ButtonProps
-    extends
-        JSX.HTMLAttributes<HTMLButtonElement>,
-        VariantProps<typeof buttonVariants> {
-    asChild?: boolean
-    type?: 'button' | 'submit' | 'reset'
+type ButtonVariantProps = VariantProps<typeof buttonVariants>
+
+type NativeButtonProps = Omit<
+	JSX.HTMLAttributes<HTMLButtonElement>,
+	'size' | 'class' | 'className'
+>
+
+type NativeAnchorProps = Omit<
+	JSX.HTMLAttributes<HTMLAnchorElement>,
+	'size' | 'class' | 'className' | 'href'
+>
+
+export interface ButtonProps extends NativeButtonProps, ButtonVariantProps {
+	asChild?: boolean
+	type?: 'button' | 'submit' | 'reset'
+	className?: string
+	children?: ComponentChildren
 }
 
-export interface LinkProps
-    extends
-        JSX.AnchorHTMLAttributes<HTMLAnchorElement>,
-        VariantProps<typeof buttonVariants> {
-    asChild?: boolean
-    href?: string
+export interface LinkProps extends NativeAnchorProps, ButtonVariantProps {
+	asChild?: boolean
+	href?: string
+	className?: string
+	children?: ComponentChildren
 }
 
 function Button(

@@ -10,7 +10,6 @@ export default function HeroPortrait({ headshotUrl, alt }: HeroPortraitProps) {
 				<img
 					src={headshotUrl}
 					alt={alt}
-					fetchpriority='high'
 					width={360}
 					height={540}
 					className='w-auto h-full max-h-[calc(100vh-140px)] object-contain'

@@ -1,7 +1,7 @@
 import { desc, eq } from 'drizzle-orm'
 import { pgTable, text, timestamp } from 'drizzle-orm/pg-core'
 import z from 'zod'
-import { db } from './db.ts'
+import { getDb, requireDb } from './db.ts'
 
 function withUpdatedAt() {
 	return timestamp('updated_at', {
@@ -76,6 +76,7 @@ export function base64ToText(value: string): string {
 export async function upsertBininspectArtifact(
 	input: UpsertBininspectArtifactInput,
 ): Promise<void> {
+	const db = await requireDb()
 	await db
 		.insert(bininspectArtifacts)
 		.values({
@@ -109,6 +110,11 @@ export async function getBininspectArtifact(
 	}
 	| null
 > {
+	const db = await getDb()
+	if (!db) {
+		return null
+	}
+
 	const query = db
 		.select({
 			version: bininspectArtifacts.version,

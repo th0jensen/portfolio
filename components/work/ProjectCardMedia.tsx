@@ -19,7 +19,7 @@ export default function ProjectCardMedia({
 	const demoCtaLabel = project.status
 		? `${project.status}: ${project.name}`
 		: `Demo ${project.name}`
-	const appStoreBadgeUrl = '/api/images/appstore.svg'
+	const appStoreBadgeUrl = '/appstore.svg'
 
 	return (
 		<div

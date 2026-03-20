@@ -7,6 +7,14 @@ export default defineConfig({
 	plugins: [
 		fresh(),
 	],
+	resolve: {
+		alias: {
+			'pg-protocol': 'pg-protocol/dist/index.js',
+		},
+	},
+	ssr: {
+		external: ['pg', 'drizzle-orm/node-postgres', 'pg-protocol'],
+	},
 	css: {
 		postcss: {
 			plugins: [

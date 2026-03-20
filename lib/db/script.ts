@@ -1,4 +1,4 @@
-import { closeDb, db } from './db.ts'
+import { closeDb, requireDb } from './db.ts'
 import { upsertGitHubRepoCache } from './github_cache.ts'
 import { upsertImageAsset } from './images.ts'
 import { clearLocaleTranslations, upsertLocaleTranslation } from './locales.ts'
@@ -162,6 +162,7 @@ function bytesToBase64(bytes: Uint8Array): string {
 }
 
 async function seedDbAssets(imageKeys: Set<string>): Promise<void> {
+	const db = await requireDb()
 	await db.delete(assetImages)
 
 	const imageSourcePath = new Map<string, string>()

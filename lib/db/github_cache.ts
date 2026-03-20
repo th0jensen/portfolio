@@ -1,6 +1,6 @@
 import { eq } from 'drizzle-orm'
 import { z } from 'zod'
-import { db } from './db.ts'
+import { getDb, requireDb } from './db.ts'
 import { githubRepoCache } from './schema.ts'
 import { type FormattedRepo, FormattedRepoSchema } from '../schemas.ts'
 
@@ -18,6 +18,7 @@ export async function upsertGitHubRepoCache({
 	repos,
 }: UpsertGitHubRepoCacheInput): Promise<void> {
 	const parsedRepos = formattedRepoListSchema.parse(repos)
+	const db = await requireDb()
 
 	await db
 		.insert(githubRepoCache)
@@ -37,6 +38,11 @@ export async function upsertGitHubRepoCache({
 export async function getGitHubRepoCache(
 	cacheKey = PORTFOLIO_REPO_CACHE_KEY,
 ): Promise<FormattedRepo[] | null> {
+	const db = await getDb()
+	if (!db) {
+		return null
+	}
+
 	const rows = await db
 		.select({
 			repos: githubRepoCache.repos,
