@@ -99,7 +99,7 @@ export default function HeroContent({
 					layout='mobile'
 				/>
 
-				<p className='max-w-2xl pt-8 text-sm md:text-base text-black/75 dark:text-foreground/80'>
+				<p className='max-w-2xl pt-4 md:pt-8 text-sm md:text-base text-black/75 dark:text-foreground/80'>
 					{currentlyBuildingContent}
 				</p>
 			</div>
