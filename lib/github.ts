@@ -79,6 +79,56 @@ export function getLanguageColor(
 	return LANGUAGE_COLORS[language]
 }
 
+export function sanitizeGitHubPrDescription(description: string): string {
+	return description
+		.replace(
+			/\n*Before you mark this PR as ready for review, make sure that you have:[\s\S]*?(?=\n\s*(?:Closes\b|Release Notes:|$))/i,
+			'\n',
+		)
+		.replace(/<img[^>]*>/gi, '')
+		.replace(/!\[.*?\]\(.*?\)/g, '')
+		.replace(/^\s*- \[[ xX]\].*$/gm, '')
+		.replace(/\n{3,}/g, '\n\n')
+		.trim()
+}
+
+function formatGitHubPrDescription(title: string, body: string | null): string {
+	if (!body || !body.trim()) {
+		return title
+	}
+
+	const cleanedLines = sanitizeGitHubPrDescription(body)
+		.split('\n')
+		.map((line) => line.trim())
+		.filter((line) => line.length > 0)
+
+	const releaseNotesIndex = cleanedLines.findIndex((line) =>
+		/^Release Notes:/i.test(line)
+	)
+
+	if (releaseNotesIndex !== -1) {
+		const closesLines = cleanedLines
+			.slice(0, releaseNotesIndex)
+			.filter((line) => /^Closes\b/i.test(line))
+		const releaseNotesLines = cleanedLines.slice(releaseNotesIndex)
+
+		return `${title}\n\n${
+			[...closesLines, ...releaseNotesLines].join('\n')
+		}`
+			.trim()
+	}
+
+	const summaryLines = cleanedLines
+		.filter((line) => !/^Closes\b/i.test(line))
+		.slice(0, 3)
+
+	if (summaryLines.length === 0) {
+		return title
+	}
+
+	return `${title}\n\n${summaryLines.join('\n')}`.trim()
+}
+
 // Fallback repos in case GitHub API fails or rate limits
 export const FALLBACK_REPOS: FormattedRepo[] = [
 	{
@@ -223,25 +273,7 @@ export async function fetchGitHubPR(
 			: null
 		const language = repoData?.language ?? pr.base.repo.language
 
-		// Extract content from PR body and clean it up
-		let description = pr.title
-		if (pr.body && pr.body.trim()) {
-			// Extract everything from Closes lines through Release Notes
-			const cleanBody = pr.body
-				.replace(/!\[.*?\]\(.*?\)/g, '') // Remove images
-				.replace(/Screenshot.*?:/gi, '') // Remove "Screenshot of..." lines
-				.replace(/\n\s*\n+/g, '\n\n') // Normalize line breaks
-				.trim()
-
-			// Look for pattern: starts with Closes or Release Notes
-			const contentMatch = cleanBody.match(
-				/(Closes[\s\S]*?Release Notes:[\s\S]*)/i,
-			)
-
-			if (contentMatch) {
-				description = `${pr.title}\n\n${contentMatch[1].trim()}`
-			}
-		}
+		const description = formatGitHubPrDescription(pr.title, pr.body)
 
 		return {
 			name: pr.base.repo.full_name,

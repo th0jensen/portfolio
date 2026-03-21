@@ -12,6 +12,7 @@ import {
 	fetchGitHubTotalDownloads,
 	fetchMultipleRepos,
 	fetchZedExtensionWithGitHub,
+	sanitizeGitHubPrDescription,
 } from '~/lib/github.ts'
 import {
 	getGitHubRepoCache,
@@ -57,6 +58,17 @@ export interface PortfolioPageData {
 
 interface LivePortfolioRepoOptions {
 	persist?: boolean
+}
+
+function normalizePortfolioRepos(repos: FormattedRepo[]): FormattedRepo[] {
+	return repos.map((repo) =>
+		repo.type === 'pr'
+			? {
+				...repo,
+				description: sanitizeGitHubPrDescription(repo.description),
+			}
+			: repo
+	)
 }
 
 export function getPortfolioPageDataFromState(
@@ -125,7 +137,7 @@ async function loadLivePortfolioRepos(): Promise<FormattedRepo[]> {
 		allItems.length > 0 &&
 		(!usedRepoFallback || allItems.length > repos.length)
 	) {
-		return allItems
+		return normalizePortfolioRepos(allItems)
 	}
 
 	throw new Error('GitHub API returned only fallback repo data.')
@@ -134,10 +146,10 @@ async function loadLivePortfolioRepos(): Promise<FormattedRepo[]> {
 export async function getPortfolioRepos(): Promise<FormattedRepo[]> {
 	try {
 		const cached = await getGitHubRepoCache()
-		return cached || FALLBACK_REPOS
+		return normalizePortfolioRepos(cached || FALLBACK_REPOS)
 	} catch (error) {
 		console.error('Failed to read cached GitHub repo data:', error)
-		return FALLBACK_REPOS
+		return normalizePortfolioRepos(FALLBACK_REPOS)
 	}
 }
 
@@ -147,6 +159,7 @@ export async function getLivePortfolioRepos(
 	const now = Date.now()
 
 	if (cachedRepos && now - cacheTimestamp < CACHE_DURATION) {
+		cachedRepos = normalizePortfolioRepos(cachedRepos)
 		return cachedRepos
 	}
 

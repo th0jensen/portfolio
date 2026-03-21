@@ -1,7 +1,6 @@
 import { useEffect, useState } from 'preact/hooks'
 import RepoCard from '~/components/experience/RepoCard.tsx'
 import { getRepoUiLabels } from '~/components/experience/repoLabels.ts'
-import { getBentoSize } from '~/components/experience/utils.ts'
 import type { FormattedRepo } from '~/lib/schemas.ts'
 
 interface ExperienceReposProps {
@@ -52,12 +51,11 @@ export default function ExperienceRepos(
 	}
 
 	return (
-		<div className='grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6 md:auto-rows-[minmax(200px,auto)]'>
-			{repos.map((repo, index) => (
+		<div className='grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6'>
+			{repos.map((repo) => (
 				<RepoCard
 					key={repo.url}
 					repo={repo}
-					size={getBentoSize(index)}
 					labels={labels}
 				/>
 			))}

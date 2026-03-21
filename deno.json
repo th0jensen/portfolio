@@ -74,5 +74,8 @@
     "types": ["vite/client"]
   },
   "nodeModulesDir": "auto",
-  "deploy": { "org": "th0jensen", "app": "portfolio" }
+  "deploy": {
+    "org": "th0jensen",
+    "app": "portfolio"
+  }
 }

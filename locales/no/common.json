@@ -24,8 +24,8 @@
 		"footerText": "{year} Thomas Jensen"
 	},
 	"hero": {
-		"role": "Rust-utvikler - bidragsyter til åpen kildekode i Zed",
-		"description": "Rust-utvikler med fokus på systemarbeid, native verktøy og åpen kildekode. Jeg bidrar til Zed og bygger desktop- og backendverktøy med vekt på ytelse, pålitelighet og kontroll.",
+		"role": "Rust-utvikler",
+		"description": "Fokusert på systemarbeid, native verktøy og åpen kildekode. Jeg bidrar til Zed og bygger desktop- og backendverktøy med sterk vekt på ytelse, pålitelighet og kontroll.",
 		"currentlyBuilding": "Bygger akkurat nå: Crabdash — et native homelab-dashboard i Rust og GPUI",
 		"exploreWork": "Utforsk prosjektene mine",
 		"github": "GitHub-profil",

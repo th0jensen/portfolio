@@ -14,8 +14,8 @@ export default function ProjectCardMeta({
 	visitProjectLabel,
 }: ProjectCardMetaProps) {
 	const isDemoProject = project.source?.type === 'demo' && Boolean(demoHref)
-	const titleClassName = featured ? 'text-xl md:text-2xl' : 'text-lg'
-	const descriptionClassName = featured ? 'text-base' : 'text-sm'
+	const titleClassName = featured ? 'text-lg md:text-2xl' : 'text-lg'
+	const descriptionClassName = featured ? 'text-sm md:text-base' : 'text-sm'
 
 	return (
 		<>

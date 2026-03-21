@@ -70,10 +70,10 @@ export default function ProjectCardMedia({
 					src={project.imageURL}
 					alt={project.name}
 					width={300}
-					height={featured ? 240 : 180}
+					height={featured ? 180 : 180}
 					className={`max-w-full object-contain transition-transform duration-500 group-hover:scale-105 ${
 						featured
-							? 'h-[210px] md:h-[230px] mx-auto'
+							? 'h-[180px] md:h-[230px] mx-auto'
 							: 'h-[180px]'
 					}`}
 				/>
