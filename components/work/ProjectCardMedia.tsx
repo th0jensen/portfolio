@@ -1,4 +1,5 @@
 import type { Project } from '~/lib/schemas.ts'
+import { toApiAssetUrl } from '~/lib/assets.ts'
 
 interface ProjectCardMediaProps {
 	project: Project
@@ -19,7 +20,8 @@ export default function ProjectCardMedia({
 	const demoCtaLabel = project.status
 		? `${project.status}: ${project.name}`
 		: `Demo ${project.name}`
-	const appStoreBadgeUrl = '/appstore.svg'
+	const appStoreBadgeUrl = toApiAssetUrl('/appstore.svg')
+	const projectImageUrl = toApiAssetUrl(project.imageURL)
 
 	return (
 		<div
@@ -67,7 +69,7 @@ export default function ProjectCardMedia({
 			)}
 			{isDemoProject ? null : (
 				<img
-					src={project.imageURL}
+					src={projectImageUrl}
 					alt={project.name}
 					width={300}
 					height={featured ? 180 : 180}

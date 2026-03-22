@@ -37,12 +37,12 @@ const buttonVariants = cva(
 type ButtonVariantProps = VariantProps<typeof buttonVariants>
 
 type NativeButtonProps = Omit<
-	JSX.HTMLAttributes<HTMLButtonElement>,
+	JSX.ButtonHTMLAttributes<HTMLButtonElement>,
 	'size' | 'class' | 'className'
 >
 
 type NativeAnchorProps = Omit<
-	JSX.HTMLAttributes<HTMLAnchorElement>,
+	JSX.AnchorHTMLAttributes<HTMLAnchorElement>,
 	'size' | 'class' | 'className' | 'href'
 >
 

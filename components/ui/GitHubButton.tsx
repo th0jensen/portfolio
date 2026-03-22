@@ -17,10 +17,15 @@ function GitHubIcon() {
 interface GitHubButtonProps {
 	ariaLabel?: string
 	buttonText?: string
+	className?: string
 }
 
 export default function GitHubButton(
-	{ ariaLabel = 'GitHub profile', buttonText = 'GitHub' }: GitHubButtonProps,
+	{
+		ariaLabel = 'GitHub profile',
+		buttonText = 'GitHub',
+		className,
+	}: GitHubButtonProps,
 ) {
 	return (
 		<Link
@@ -30,6 +35,7 @@ export default function GitHubButton(
 			target='_blank'
 			rel='noopener noreferrer'
 			aria-label={ariaLabel}
+			className={className}
 		>
 			<span className='flex items-center gap-2'>
 				<GitHubIcon /> {buttonText}

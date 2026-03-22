@@ -17,12 +17,14 @@ function LinkedInIcon() {
 interface LinkedInButtonProps {
 	ariaLabel?: string
 	buttonText?: string
+	className?: string
 }
 
 export default function LinkedInButton(
 	{
 		ariaLabel = 'LinkedIn profile',
 		buttonText = 'LinkedIn',
+		className,
 	}: LinkedInButtonProps,
 ) {
 	return (
@@ -33,6 +35,7 @@ export default function LinkedInButton(
 			target='_blank'
 			rel='noopener noreferrer'
 			aria-label={ariaLabel}
+			className={className}
 		>
 			<span className='flex items-center gap-2'>
 				<LinkedInIcon /> {buttonText}

@@ -4,6 +4,7 @@ import HeroBackground from '~/components/hero/HeroBackground.tsx'
 import HeroMobileImage from '~/components/hero/HeroMobileImage.tsx'
 import HeroContent from '~/components/hero/HeroContent.tsx'
 import HeroPortrait from '~/components/hero/HeroPortrait.tsx'
+import { toApiAssetUrl } from '~/lib/assets.ts'
 import type { About } from '~/lib/schemas.ts'
 
 interface HeroProps {
@@ -17,7 +18,7 @@ export default function Hero({ about, t, workHref = '#work' }: HeroProps) {
 	const description = t('common.hero.description').replace('{age}', age)
 	const currentlyBuilding = t('common.hero.currentlyBuilding')
 	const displayName = t('common.metadata.altName')
-	const headshotUrl = '/headshot.jpg'
+	const headshotUrl = toApiAssetUrl('/headshot.jpg')
 	const heroImageAlt = t('common.hero.headshotAlt')
 
 	return (

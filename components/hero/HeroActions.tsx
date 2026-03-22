@@ -23,29 +23,43 @@ export default function HeroActions({
 }: HeroActionsProps) {
 	if (layout === 'desktop') {
 		return (
-			<div className='hidden md:flex flex-wrap gap-3'>
+			<div className='hidden md:flex flex-wrap items-center gap-3 pt-1'>
 				<Link
 					href={workHref}
 					variant='default'
 					size='lg'
-					className='group'
+					className='group min-w-[12rem]'
 				>
-					<span className='flex items-center'>{label}</span>
+					<span className='flex items-center justify-center'>
+						{label}
+					</span>
 				</Link>
 				<GitHubButton
 					ariaLabel={githubAriaLabel}
 					buttonText={githubText}
+					className='min-w-[10rem]'
 				/>
 				<LinkedInButton
 					ariaLabel={linkedinAriaLabel}
 					buttonText={linkedinText}
+					className='min-w-[10rem]'
 				/>
 			</div>
 		)
 	}
 
 	return (
-		<div className='md:hidden flex flex-col gap-3 mt-4 items-start'>
+		<div className='md:hidden flex w-full max-w-sm flex-col gap-3 pt-1 items-start'>
+			<Link
+				href={workHref}
+				variant='default'
+				size='lg'
+				className='group'
+			>
+				<span className='flex items-center justify-center'>
+					{label}
+				</span>
+			</Link>
 			<div className='flex gap-3'>
 				<GitHubButton
 					ariaLabel={githubAriaLabel}
@@ -56,11 +70,6 @@ export default function HeroActions({
 					buttonText={linkedinText}
 				/>
 			</div>
-			<Link href={workHref} variant='default' size='lg' className='group'>
-				<span className='flex items-center justify-center'>
-					{label}
-				</span>
-			</Link>
 		</div>
 	)
 }

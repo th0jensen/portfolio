@@ -2,12 +2,16 @@ interface ContactActionsProps {
 	email: string
 	githubLabel: string
 	linkedinLabel: string
+	resumeLabel: string
+	resumeHref: string
 }
 
 export default function ContactActions({
 	email,
 	githubLabel,
 	linkedinLabel,
+	resumeLabel,
+	resumeHref,
 }: ContactActionsProps) {
 	return (
 		<div className='flex flex-wrap items-center gap-3'>
@@ -16,6 +20,14 @@ export default function ContactActions({
 				className='inline-flex items-center justify-center h-12 rounded-xl px-8 bg-primary text-primary-foreground font-semibold smooth-transition hover:bg-primary/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50'
 			>
 				{email}
+			</a>
+			<a
+				href={resumeHref}
+				target='_blank'
+				rel='noopener noreferrer'
+				className='inline-flex items-center justify-center h-12 rounded-xl px-8 bg-secondary text-secondary-foreground font-semibold smooth-transition hover:bg-secondary/70 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50'
+			>
+				{resumeLabel}
 			</a>
 			<a
 				href='https://github.com/th0jensen'

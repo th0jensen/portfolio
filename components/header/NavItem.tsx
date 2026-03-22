@@ -5,10 +5,12 @@ interface NavItemProps {
 	label: string
 	className?: string
 	onClick?: () => void
+	target?: string
+	rel?: string
 }
 
 export default function NavItem(
-	{ href, label, className = '', onClick }: NavItemProps,
+	{ href, label, className = '', onClick, target, rel }: NavItemProps,
 ) {
 	return (
 		<Link
@@ -17,6 +19,8 @@ export default function NavItem(
 			href={href || '#'}
 			className={className}
 			onClick={onClick}
+			target={target}
+			rel={rel}
 		>
 			{label}
 		</Link>

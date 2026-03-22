@@ -1,6 +1,7 @@
 import Layout from '~/components/ComponentLayout.tsx'
 import SectionHeader from '~/components/SectionHeader.tsx'
 import ContactCard from '~/components/contact/ContactCard.tsx'
+import { toApiAssetUrl } from '~/lib/assets.ts'
 
 interface ContactPageProps {
 	t: (key: string, params?: Record<string, string>) => string
@@ -21,6 +22,8 @@ export default function ContactPage({ t }: ContactPageProps) {
 					email={email}
 					githubLabel={t('common.buttons.github')}
 					linkedinLabel={t('common.buttons.linkedin')}
+					resumeLabel={t('common.buttons.resume')}
+					resumeHref={toApiAssetUrl('/resume.pdf')}
 				/>
 			</div>
 		</Layout>
