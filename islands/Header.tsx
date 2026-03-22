@@ -50,6 +50,11 @@ export default function Header({
 		{ href: `${localeRoot}/contact`, label: translations.contact },
 	]
 	const desktopNavLinks = navLinks.slice(0, 2)
+	const mobileNavLinks = [
+		...desktopNavLinks,
+		{ href: resumeHref, label: translations.resume },
+		{ href: `${localeRoot}/contact`, label: translations.contact },
+	]
 
 	const buildLocaleHref = (code: string) => `/${code}${pathWithoutLocale}`
 	const localesWithHref = AVAILABLE_LOCALES.map((loc) => ({
@@ -95,11 +100,9 @@ export default function Header({
 						/>
 					</div>
 					<HeaderMobileMenu
-						navLinks={navLinks}
+						navLinks={mobileNavLinks}
 						locales={localesWithHref}
 						currentLocale={currentLocale}
-						resumeHref={resumeHref}
-						resumeLabel={translations.resume}
 						openMenuLabel={translations.openMenu}
 						closeMenuLabel={translations.closeMenu}
 						themeLight={translations.themeLight}

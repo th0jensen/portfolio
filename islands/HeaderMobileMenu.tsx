@@ -22,8 +22,6 @@ interface HeaderMobileMenuProps {
 	navLinks: NavLink[]
 	locales: LocaleOption[]
 	currentLocale: LocaleOption
-	resumeHref: string
-	resumeLabel: string
 	openMenuLabel: string
 	closeMenuLabel: string
 	themeLight: string
@@ -35,8 +33,6 @@ export default function HeaderMobileMenu({
 	navLinks,
 	locales,
 	currentLocale,
-	resumeHref,
-	resumeLabel,
 	openMenuLabel,
 	closeMenuLabel,
 	themeLight,
@@ -97,12 +93,6 @@ export default function HeaderMobileMenu({
 									onClick={handleNavLinkClick}
 								/>
 							))}
-							<NavItem
-								href={resumeHref}
-								label={resumeLabel}
-								className='flex items-center justify-center h-10 w-36 text-sm font-medium'
-								onClick={handleNavLinkClick}
-							/>
 						</div>
 						<div className='border-t border-border/20 pt-4 flex flex-col items-center'>
 							<button

@@ -33,10 +33,12 @@ export default define.layout(function Layout({ Component, state }) {
 				currentPath={requestPath}
 				resumeHref={toApiAssetUrl('/resume.pdf')}
 			/>
-			<main class='flex-1'>
-				<PageComponent />
-			</main>
-			<Footer t={t} />
+			<div class='site-page-content flex flex-1 flex-col transition-opacity duration-200'>
+				<main class='flex-1'>
+					<PageComponent />
+				</main>
+				<Footer t={t} />
+			</div>
 		</div>
 	)
 })

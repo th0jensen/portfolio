@@ -1,7 +1,7 @@
 {
 	"tasks": {
 		"start": "deno run -A vite",
-		"dev": "deno run -A --tunnel vite",
+		"dev": "deno run -A --host --tunnel vite",
 		"build": "deno run -A vite build",
 		"db:generate": "deno run -A npm:drizzle-kit generate --config=drizzle.config.ts",
 		"db:migrate": "deno run -A ./lib/db/migrate_sql.ts",
