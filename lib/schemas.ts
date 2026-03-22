@@ -109,6 +109,7 @@ export const FooterSchema = z.object({
 export const ButtonsSchema = z.object({
 	github: z.string(),
 	linkedin: z.string(),
+	resume: z.string(),
 })
 
 // Full common locale schema

@@ -6,7 +6,7 @@ import type {
 	Severity,
 } from '~/lib/bininspect.ts'
 
-const SAMPLE_BINARY_LOAD_URL = '/wasm/bininspect_wasm.wasm'
+const SAMPLE_BINARY_LOAD_URL = '/api/bininspect/wasm'
 const SAMPLE_BINARY_DOWNLOAD_URL =
 	'https://github.com/th0jensen/bininspect/releases/latest/download/bininspect_wasm.wasm'
 

@@ -1,105 +1,106 @@
 {
-  "meta": {
-    "description": "Thomas Jensen - Rust developer focused on systems, native tooling, and open source. Contributor to Zed and builder of Crabdash."
-  },
-  "nav": {
-    "about": "About",
-    "work": "Projects",
-    "experience": "Experience",
-    "contact": "Contact",
-    "openMenu": "Open menu",
-    "closeMenu": "Close menu"
-  },
-  "about": {
-    "firstName": "Thomas",
-    "lastName": "Jensen",
-    "birthday": "10-12-2003",
-    "humanLanguages": ["English", "Norwegian", "German", "Hebrew"],
-    "computerLanguages": ["Typescript", "Go", "Swift", "Rust"]
-  },
-  "metadata": {
-    "name": "Thomas Jensen",
-    "altName": "Thomas Jensen",
-    "description": "Thomas Jensen - Rust developer focused on systems, native tooling, and open source. Contributor to Zed and builder of Crabdash.",
-    "footerText": "{year} Thomas Jensen"
-  },
-  "hero": {
-    "role": "Rust Developer",
-    "description": "Focused on systems work, native tooling, and open source. I contribute to Zed and build desktop and backend tools with a strong bias toward performance, reliability, and control.",
-    "currentlyBuilding": "Currently building: Crabdash — a native homelab dashboard",
-    "exploreWork": "Explore my projects",
-    "github": "GitHub profile",
-    "linkedin": "LinkedIn profile",
-    "headshotAlt": "Headshot photo of Thomas Jensen"
-  },
-  "work": {
-    "subtitle": "Featured",
-    "title": "Projects",
-    "showMore": "Show more",
-    "showLess": "Show less",
-    "visitProject": "View {name} project",
-    "downloadAppStore": "Download on App Store",
-    "viewOnGitHub": "View on GitHub"
-  },
-  "projects": [
-    {
-      "name": "Zed Editor - Contributions",
-      "imageURL": "/images/zed.webp",
-      "technologies": {
-        "Rust": "#000000",
-        "GPUI": "#3178C6",
-        "JSON": "#ffffff"
-      },
-      "description": "- PR #26211: Implemented Extended Terminal Option in Zed (Rust + GPUI), including option wiring and validation.\n- PR #50653: Fixed Windows manifest path handling for extension uploads to WSL remotes in Zed's extension host.\n- Zed Guild member and maintainer of the Gruber Darker theme extension.",
-      "source": {
-        "type": "github",
-        "link": "https://github.com/zed-industries/zed/pull/26211"
-      }
-    },
-    {
-      "name": "Crabdash",
-      "imageURL": "/images/crabdash.webp",
-      "technologies": {
-        "Rust": "#000000",
-        "GPUI": "#3178C6",
-        "Docker": "#2496ED"
-      },
-      "description": "Crabdash is a native homelab dashboard built in Rust and GPUI to replace scattered terminal commands with one focused control surface for Docker containers, local services, disks, and remote Linux machines.",
-      "source": {
-        "type": "github",
-        "link": "https://github.com/th0jensen/crabdash"
-      }
-    },
-    {
-      "name": "Appleosophy",
-      "imageURL": "/images/appleosophy.webp",
-      "technologies": {
-        "Swift": "#F05138",
-        "Objective-C": "#007AFF",
-        "SwiftUI": "#F05138",
-        "WordPress": "#21759B"
-      },
-      "description": "Appleosophy was my first real shipping project: the place where I learned how to take a product from idea to App Store release, working across iOS, API integration, and the practical details of actually delivering software.",
-      "source": {
-        "type": "appstore",
-        "link": "https://apps.apple.com/us/app/appleosophy/id1635844078"
-      }
-    }
-  ],
-  "experience": {
-    "subtitle": "Contributions & Projects",
-    "title": "Experience",
-    "description": "Open-source contributions to Zed and selected personal Rust projects that reflect how I like to build."
-  },
-  "theme": {
-    "light": "Light",
-    "dark": "Dark"
-  },
-  "footer": {
-    "copyright": "{year} Thomas Jensen"
-  },
-  "buttons": {
-    "github": "GitHub",
-    "linkedin": "LinkedIn"
-  }
+	"meta": {
+		"description": "Thomas Jensen - Rust developer focused on systems, native tooling, and open source. Contributor to Zed and builder of Crabdash."
+	},
+	"nav": {
+		"about": "About",
+		"work": "Projects",
+		"experience": "Experience",
+		"contact": "Contact",
+		"openMenu": "Open menu",
+		"closeMenu": "Close menu"
+	},
+	"about": {
+		"firstName": "Thomas",
+		"lastName": "Jensen",
+		"birthday": "10-12-2003",
+		"humanLanguages": ["English", "Norwegian", "German", "Hebrew"],
+		"computerLanguages": ["Typescript", "Go", "Swift", "Rust"]
+	},
+	"metadata": {
+		"name": "Thomas Jensen",
+		"altName": "Thomas Jensen",
+		"description": "Thomas Jensen - Rust developer focused on systems, native tooling, and open source. Contributor to Zed and builder of Crabdash.",
+		"footerText": "{year} Thomas Jensen"
+	},
+	"hero": {
+		"role": "Rust Developer",
+		"description": "Focused on systems work, native tooling, and open source. I contribute to Zed and build desktop and backend tools with a strong bias toward performance, reliability, and control.",
+		"currentlyBuilding": "Currently building: Crabdash — a native homelab dashboard",
+		"exploreWork": "Explore my projects",
+		"github": "GitHub profile",
+		"linkedin": "LinkedIn profile",
+		"headshotAlt": "Headshot photo of Thomas Jensen"
+	},
+	"work": {
+		"subtitle": "Featured",
+		"title": "Projects",
+		"showMore": "Show more",
+		"showLess": "Show less",
+		"visitProject": "View {name} project",
+		"downloadAppStore": "Download on App Store",
+		"viewOnGitHub": "View on GitHub"
+	},
+	"projects": [
+		{
+			"name": "Zed Editor - Contributions",
+			"imageURL": "/images/zed.webp",
+			"technologies": {
+				"Rust": "#000000",
+				"GPUI": "#3178C6",
+				"JSON": "#ffffff"
+			},
+			"description": "- PR #26211: Implemented Extended Terminal Option in Zed (Rust + GPUI), including option wiring and validation.\n- PR #50653: Fixed Windows manifest path handling for extension uploads to WSL remotes in Zed's extension host.\n- Zed Guild member and maintainer of the Gruber Darker theme extension.",
+			"source": {
+				"type": "github",
+				"link": "https://github.com/zed-industries/zed/pull/26211"
+			}
+		},
+		{
+			"name": "Crabdash",
+			"imageURL": "/images/crabdash.webp",
+			"technologies": {
+				"Rust": "#000000",
+				"GPUI": "#3178C6",
+				"Docker": "#2496ED"
+			},
+			"description": "Crabdash is a native homelab dashboard built in Rust and GPUI to replace scattered terminal commands with one focused control surface for Docker containers, local services, disks, and remote Linux machines.",
+			"source": {
+				"type": "github",
+				"link": "https://github.com/th0jensen/crabdash"
+			}
+		},
+		{
+			"name": "Appleosophy",
+			"imageURL": "/images/appleosophy.webp",
+			"technologies": {
+				"Swift": "#F05138",
+				"Objective-C": "#007AFF",
+				"SwiftUI": "#F05138",
+				"WordPress": "#21759B"
+			},
+			"description": "Appleosophy was my first real shipping project: the place where I learned how to take a product from idea to App Store release, working across iOS, API integration, and the practical details of actually delivering software.",
+			"source": {
+				"type": "appstore",
+				"link": "https://apps.apple.com/us/app/appleosophy/id1635844078"
+			}
+		}
+	],
+	"experience": {
+		"subtitle": "Contributions & Projects",
+		"title": "Experience",
+		"description": "Open-source contributions to Zed and selected personal Rust projects that reflect how I like to build."
+	},
+	"theme": {
+		"light": "Light",
+		"dark": "Dark"
+	},
+	"footer": {
+		"copyright": "{year} Thomas Jensen"
+	},
+	"buttons": {
+		"github": "GitHub",
+		"linkedin": "LinkedIn",
+		"resume": "Resume"
+	}
 }

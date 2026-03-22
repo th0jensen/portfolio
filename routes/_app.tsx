@@ -1,5 +1,6 @@
 import { define } from '../utils.ts'
 import { createTranslator } from 'fresh-i18n'
+import { toApiAssetUrl } from '~/lib/assets.ts'
 
 export default define.page(function App({ Component, state }) {
 	const PageComponent = Component
@@ -58,6 +59,10 @@ export default define.page(function App({ Component, state }) {
 		url: siteOrigin,
 		inLanguage: localeLanguageTag,
 	}
+	const faviconUrl = toApiAssetUrl('/favicon.svg')
+	const appleTouchIconUrl = toApiAssetUrl('/headshot.jpg')
+	const regularFontUrl = toApiAssetUrl('/fonts/alef-400.ttf')
+	const boldFontUrl = toApiAssetUrl('/fonts/alef-700.ttf')
 
 	return (
 		<html lang={localeLanguageTag} dir={isRtl ? 'rtl' : 'ltr'}>
@@ -116,19 +121,19 @@ export default define.page(function App({ Component, state }) {
 				{assetOrigin
 					? <link rel='preconnect' href={assetOrigin} />
 					: null}
-				<link rel='icon' type='image/jpeg' href='/headshot.jpg' />
-				<link rel='shortcut icon' href='/headshot.jpg' />
-				<link rel='apple-touch-icon' href='/headshot.jpg' />
+				<link rel='icon' type='image/svg+xml' href={faviconUrl} />
+				<link rel='shortcut icon' href={faviconUrl} />
+				<link rel='apple-touch-icon' href={appleTouchIconUrl} />
 				<link
 					rel='preload'
-					href='/fonts/alef-400.ttf'
+					href={regularFontUrl}
 					as='font'
 					type='font/ttf'
 					crossOrigin='anonymous'
 				/>
 				<link
 					rel='preload'
-					href='/fonts/alef-700.ttf'
+					href={boldFontUrl}
 					as='font'
 					type='font/ttf'
 					crossOrigin='anonymous'

@@ -13,12 +13,14 @@ interface HeaderTranslations {
 	themeLight: string
 	themeDark: string
 	name: string
+	resume: string
 }
 
 interface HeaderProps {
 	translations: HeaderTranslations
 	locale: string
 	currentPath?: string
+	resumeHref: string
 }
 
 const AVAILABLE_LOCALES = [
@@ -31,6 +33,7 @@ export default function Header({
 	translations,
 	locale,
 	currentPath = '/',
+	resumeHref,
 }: HeaderProps) {
 	const displayNav = useSignal(false)
 
@@ -47,7 +50,6 @@ export default function Header({
 	const navLinks = [
 		{ href: `${localeRoot}/projects`, label: translations.work },
 		{ href: `${localeRoot}/experience`, label: translations.experience },
-		{ href: `${localeRoot}/contact`, label: translations.contact },
 	]
 
 	const buildLocaleHref = (code: string) => `/${code}${pathWithoutLocale}`
@@ -97,6 +99,8 @@ export default function Header({
 						navLinks={navLinks}
 						locales={localesWithHref}
 						currentLocale={currentLocale}
+						resumeHref={resumeHref}
+						resumeLabel={translations.resume}
 						openMenuLabel={translations.openMenu}
 						closeMenuLabel={translations.closeMenu}
 						themeLight={translations.themeLight}
@@ -113,6 +117,18 @@ export default function Header({
 								className='px-3 py-2 text-sm font-medium transition-colors hover:text-foreground/80'
 							/>
 						))}
+						<NavItem
+							href={resumeHref}
+							label={translations.resume}
+							target='_blank'
+							rel='noopener noreferrer'
+							className='px-3 py-2 text-sm font-medium transition-colors hover:text-foreground/80'
+						/>
+						<NavItem
+							href={`${localeRoot}/contact`}
+							label={translations.contact}
+							className='px-3 py-2 text-sm font-medium transition-colors hover:text-foreground/80'
+						/>
 						<details className='relative ml-2 group'>
 							<summary className='flex items-center gap-1.5 px-2 py-1 text-sm font-medium rounded-md transition-colors text-muted-foreground hover:text-foreground hover:bg-muted list-none cursor-pointer'>
 								<span>{currentLocale.flag}</span>

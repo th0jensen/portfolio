@@ -274,12 +274,14 @@ export async function upsertLocaleTranslation({
 				locale: dbLocale,
 				github: parsedPayload.buttons.github,
 				linkedin: parsedPayload.buttons.linkedin,
+				resume: parsedPayload.buttons.resume,
 			})
 			.onConflictDoUpdate({
 				target: [localeButtons.locale],
 				set: {
 					github: parsedPayload.buttons.github,
 					linkedin: parsedPayload.buttons.linkedin,
+					resume: parsedPayload.buttons.resume,
 					updatedAt: now,
 				},
 			})
@@ -421,6 +423,7 @@ async function findLocalePayload(
 			.select({
 				github: localeButtons.github,
 				linkedin: localeButtons.linkedin,
+				resume: localeButtons.resume,
 			})
 			.from(localeButtons)
 			.where(eq(localeButtons.locale, dbLocale))
@@ -528,6 +531,7 @@ async function findLocalePayload(
 		buttons: {
 			github: buttons.github,
 			linkedin: buttons.linkedin,
+			resume: buttons.resume,
 		},
 	}
 

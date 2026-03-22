@@ -9,7 +9,7 @@
 	font-display: swap;
 	src:
 		local('Alef'),
-		url('/fonts/alef-400.ttf') format('truetype');
+		url('/api/assets/fonts/alef-400.ttf') format('truetype');
 }
 
 @font-face {
@@ -20,7 +20,7 @@
 	src:
 		local('Alef Bold'),
 		local('Alef'),
-		url('/fonts/alef-700.ttf') format('truetype');
+		url('/api/assets/fonts/alef-700.ttf') format('truetype');
 }
 
 @layer base {

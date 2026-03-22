@@ -19,6 +19,7 @@ import * as $api_bininspect_index from './routes/api/bininspect/index.ts'
 import * as $api_bininspect_internal from './routes/api/bininspect/internal.ts'
 import * as $api_bininspect_types from './routes/api/bininspect/types.ts'
 import * as $api_bininspect_wasm from './routes/api/bininspect/wasm.ts'
+import * as $api_assets_path_ from './routes/api/assets/[...path].ts'
 import * as $api_github_repos from './routes/api/github/repos.ts'
 import * as $api_images_image_ from './routes/api/images/[image].ts'
 import * as $contact from './routes/contact.tsx'
@@ -50,6 +51,7 @@ const manifest = {
 		'./routes/api/bininspect/internal.ts': $api_bininspect_internal,
 		'./routes/api/bininspect/types.ts': $api_bininspect_types,
 		'./routes/api/bininspect/wasm.ts': $api_bininspect_wasm,
+		'./routes/api/assets/[...path].ts': $api_assets_path_,
 		'./routes/api/github/repos.ts': $api_github_repos,
 		'./routes/api/images/[image].ts': $api_images_image_,
 		'./routes/contact.tsx': $contact,

@@ -124,6 +124,7 @@ export const localeButtons = pgTable('locale_buttons', {
 	locale: localeCodeEnum('locale').primaryKey(),
 	github: text('github').notNull(),
 	linkedin: text('linkedin').notNull(),
+	resume: text('resume').notNull(),
 	updatedAt: withUpdatedAt(),
 })
 
