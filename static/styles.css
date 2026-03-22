@@ -100,3 +100,19 @@
 		@apply bg-card/80 backdrop-blur-xl border border-border/50;
 	}
 }
+
+@media (max-width: 767px) {
+	.mobile-nav-open .site-header-backdrop {
+		background-color: hsl(var(--background) / 0.9);
+		border-bottom: 1px solid hsl(var(--border) / 0.2);
+		backdrop-filter: blur(24px);
+	}
+
+	.mobile-nav-open .site-header-name {
+		color: hsl(var(--muted-foreground)) !important;
+	}
+
+	.mobile-nav-open .site-mobile-menu-trigger {
+		color: hsl(var(--muted-foreground)) !important;
+	}
+}

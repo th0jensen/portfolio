@@ -2,7 +2,6 @@ import NavItem from '~/components/header/NavItem.tsx'
 import ThemeToggle from '~/islands/ThemeToggle.tsx'
 import HeaderMobileMenu from '~/islands/HeaderMobileMenu.tsx'
 import { twMerge as tw } from 'tailwind-merge'
-import { useSignal } from '@preact/signals'
 
 interface HeaderTranslations {
 	work: string
@@ -35,8 +34,6 @@ export default function Header({
 	currentPath = '/',
 	resumeHref,
 }: HeaderProps) {
-	const displayNav = useSignal(false)
-
 	const localeRoot = `/${locale}`
 	const normalizedPath = currentPath.endsWith('/') && currentPath.length > 1
 		? currentPath.slice(0, -1)
@@ -50,7 +47,9 @@ export default function Header({
 	const navLinks = [
 		{ href: `${localeRoot}/projects`, label: translations.work },
 		{ href: `${localeRoot}/experience`, label: translations.experience },
+		{ href: `${localeRoot}/contact`, label: translations.contact },
 	]
+	const desktopNavLinks = navLinks.slice(0, 2)
 
 	const buildLocaleHref = (code: string) => `/${code}${pathWithoutLocale}`
 	const localesWithHref = AVAILABLE_LOCALES.map((loc) => ({
@@ -62,13 +61,13 @@ export default function Header({
 	const nameHref = localeRoot
 
 	const isIndexPath = normalizedPath === '/' || normalizedPath === localeRoot
-	const isTransparentHeader = isIndexPath && !displayNav.value
+	const isTransparentHeader = isIndexPath
 
 	return (
 		<div className='sticky top-0 left-0 right-0 z-50'>
 			<div
 				className={tw(
-					'pointer-events-none absolute left-0 right-0 top-0 z-0 h-16 transition-colors',
+					'site-header-backdrop pointer-events-none absolute left-0 right-0 top-0 z-0 h-16 transition-colors',
 					isTransparentHeader
 						? 'bg-transparent md:bg-background/80 md:border-b md:border-border/20 md:backdrop-blur-xl'
 						: 'bg-background/80 border-b border-border/20 backdrop-blur-xl',
@@ -88,7 +87,7 @@ export default function Header({
 							href={nameHref}
 							label={translations.name}
 							className={tw(
-								'font-medium tracking-tight text-lg transition-colors',
+								'site-header-name font-medium tracking-tight text-lg transition-colors',
 								isTransparentHeader
 									? 'text-black hover:text-black/80 md:text-foreground md:hover:text-foreground/80'
 									: 'text-foreground hover:text-foreground/80',
@@ -105,11 +104,10 @@ export default function Header({
 						closeMenuLabel={translations.closeMenu}
 						themeLight={translations.themeLight}
 						themeDark={translations.themeDark}
-						displayNav={displayNav}
 						isTransparentHeader={isTransparentHeader}
 					/>
 					<nav className='hidden md:flex md:items-center md:space-x-1'>
-						{navLinks.map((link) => (
+						{desktopNavLinks.map((link) => (
 							<NavItem
 								key={link.href}
 								href={link.href}
@@ -120,8 +118,6 @@ export default function Header({
 						<NavItem
 							href={resumeHref}
 							label={translations.resume}
-							target='_blank'
-							rel='noopener noreferrer'
 							className='px-3 py-2 text-sm font-medium transition-colors hover:text-foreground/80'
 						/>
 						<NavItem

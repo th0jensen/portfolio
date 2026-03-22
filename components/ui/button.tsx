@@ -61,29 +61,38 @@ export interface LinkProps extends NativeAnchorProps, ButtonVariantProps {
 }
 
 function Button(
-    { className, variant, size, asChild = false, type = 'button', ...props }: ButtonProps,
+	{
+		className,
+		variant,
+		size,
+		asChild = false,
+		type = 'button',
+		...props
+	}: ButtonProps,
 ) {
-    const Comp = asChild ? Slot : 'button'
-    return (
-        <Comp
-            type={type}
-            className={cn(buttonVariants({ variant, size, className }))}
-            {...props}
-        />
-    )
+	const Comp = asChild ? Slot : 'button'
+
+	return (
+		<Comp
+			type={type}
+			className={cn(buttonVariants({ variant, size, className }))}
+			{...props}
+		/>
+	)
 }
 
 function Link(
-    { className, variant, size, asChild = false, href = '#', ...props }: LinkProps,
+	{ className, variant, size, asChild = false, href = '#', ...props }: LinkProps,
 ) {
-    const Comp = asChild ? Slot : 'a'
-    return (
-        <Comp
-            href={href}
-            className={cn(buttonVariants({ variant, size, className }))}
-            {...props}
-        />
-    )
+	const Comp = asChild ? Slot : 'a'
+
+	return (
+		<Comp
+			href={href}
+			className={cn(buttonVariants({ variant, size, className }))}
+			{...props}
+		/>
+	)
 }
 
 export { Button, Link, buttonVariants }

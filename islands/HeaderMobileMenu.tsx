@@ -1,4 +1,5 @@
-import { Signal, useSignal } from '@preact/signals'
+import { useSignal } from '@preact/signals'
+import { useEffect } from 'preact/hooks'
 import NavItem from '~/components/header/NavItem.tsx'
 import ThemeToggle from '~/islands/ThemeToggle.tsx'
 import HamburgerIcon from '~/components/ui/icons/HamburgerIcon.tsx'
@@ -27,7 +28,6 @@ interface HeaderMobileMenuProps {
 	closeMenuLabel: string
 	themeLight: string
 	themeDark: string
-	displayNav: Signal<boolean>
 	isTransparentHeader: boolean
 }
 
@@ -41,10 +41,21 @@ export default function HeaderMobileMenu({
 	closeMenuLabel,
 	themeLight,
 	themeDark,
-	displayNav,
 	isTransparentHeader,
 }: HeaderMobileMenuProps) {
+	const displayNav = useSignal(false)
 	const displayLangMenu = useSignal(false)
+
+	useEffect(() => {
+		document.documentElement.classList.toggle(
+			'mobile-nav-open',
+			displayNav.value,
+		)
+
+		return () => {
+			document.documentElement.classList.remove('mobile-nav-open')
+		}
+	}, [displayNav.value])
 
 	const toggleNav = () => {
 		displayNav.value = !displayNav.value
@@ -62,8 +73,8 @@ export default function HeaderMobileMenu({
 		<div className='md:hidden'>
 			<button
 				className={tw(
-					'inline-flex h-9 w-9 items-center justify-center rounded-lg transition-colors',
-					isTransparentHeader
+					'site-mobile-menu-trigger inline-flex h-9 w-9 items-center justify-center rounded-lg transition-colors',
+					isTransparentHeader && !displayNav.value
 						? 'text-black hover:bg-black/10'
 						: 'text-foreground hover:bg-muted',
 				)}
@@ -75,7 +86,7 @@ export default function HeaderMobileMenu({
 			</button>
 			{displayNav.value && (
 				<div className='absolute top-16 -mt-px left-0 right-0 z-40 p-4'>
-					<nav className='flex flex-col space-y-4 rounded-2xl bg-background/90 backdrop-blur-xl border border-border/20 p-4'>
+					<nav className='flex flex-col space-y-4 rounded-2xl border border-border/20 bg-background/90 p-4 text-foreground backdrop-blur-xl'>
 						<div className='flex flex-col items-center gap-4'>
 							{navLinks.map((link) => (
 								<NavItem
@@ -86,16 +97,14 @@ export default function HeaderMobileMenu({
 									onClick={handleNavLinkClick}
 								/>
 							))}
+							<NavItem
+								href={resumeHref}
+								label={resumeLabel}
+								className='flex items-center justify-center h-10 w-36 text-sm font-medium'
+								onClick={handleNavLinkClick}
+							/>
 						</div>
 						<div className='border-t border-border/20 pt-4 flex flex-col items-center'>
-							<a
-								href={resumeHref}
-								target='_blank'
-								rel='noopener noreferrer'
-								className='mb-4 inline-flex h-10 w-36 items-center justify-center rounded-full border border-border/30 bg-background/80 px-4 text-sm font-medium text-foreground transition-colors hover:bg-muted'
-							>
-								{resumeLabel}
-							</a>
 							<button
 								type='button'
 								onClick={() =>
