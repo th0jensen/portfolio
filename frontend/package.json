@@ -1,0 +1,19 @@
+{
+  "name": "ilha-vite",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "@ilha/router": "^0.1.1",
+    "ilha": "^0.1.0"
+  },
+  "devDependencies": {
+    "typescript": "~5.9.3",
+    "vite": "^8.0.1"
+  }
+}

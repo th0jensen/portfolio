@@ -1,0 +1,54 @@
+{
+  "en": {
+    "meta": {
+      "description": "Thomas Jensen - Rust developer..."
+    },
+    "nav": {
+      "about": "About",
+      "work": "Projects",
+      "experience": "Experience",
+      "contact": "Contact"
+    },
+    "hero": {
+      "role": "Rust Developer",
+      "description": "...",
+      "currently_building": "Currently building: Crabdash",
+      "explore_work": "Explore my projects"
+    }
+  },
+  "no": {
+    "meta": {
+      "description": "Thomas Jensen - Rust developer..."
+    },
+    "nav": {
+      "about": "About",
+      "work": "Projects",
+      "experience": "Experience",
+      "contact": "Contact"
+    },
+    "hero": {
+      "role": "Rust Developer",
+      "description": "...",
+      "currently_building": "Currently building: Crabdash",
+      "explore_work": "Explore my projects"
+    }
+  },
+  "about": {
+    "first_name": "Thomas",
+    "last_name": "Jensen",
+    "birthday": "10-12-2003"
+  },
+  "projects": [
+    {
+      "name": "Crabdash",
+      "image_url": "/images/crabdash.webp",
+      "technologies": {
+        "Rust": "#000000",
+        "GPUI": "#3178C6"
+      },
+      "description": "...",
+      "source_type": "github",
+      "source_link": "https://github.com/th0jensen/crabdash"
+    }
+  ]
+}

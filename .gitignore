@@ -8,15 +8,9 @@
 # macOS Junk Files
 .DS_Store
 
-# Webstorm
-.idea
-
-# Fresh build directory
-_fresh/
-
 # npm dependencies
 node_modules/
-/target
+*/target
 
 # Rust
 *.lock
