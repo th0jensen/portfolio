@@ -10,7 +10,8 @@
   },
   "dependencies": {
     "@ilha/router": "^0.1.1",
-    "ilha": "^0.1.0"
+    "ilha": "^0.1.0",
+    "lucide": "^1.8.0"
   },
   "devDependencies": {
     "typescript": "~5.9.3",

@@ -1,4 +1,7 @@
 import "./app.css";
 import { pageRouter } from "ilha:pages";
+import { registry } from "ilha:registry";
+import { initLocale } from "./lib/locale";
 
-pageRouter.mount("#app");
+initLocale();
+pageRouter.mount("#app", { registry });

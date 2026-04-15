@@ -1,12 +1,17 @@
 use crate::types::Data;
-use axum::{Router, extract::State, routing::get};
+use axum::Router;
 use std::sync::Arc;
+use tower_http::services::ServeDir;
+mod routes;
 mod types;
 
 #[derive(Clone)]
 struct AppState {
     data: Arc<Data>,
 }
+
+const URL: &str = "0.0.0.0";
+const PORT: &str = "3000";
 
 #[tokio::main]
 async fn main() {
@@ -15,12 +20,12 @@ async fn main() {
     };
 
     let app: Router = Router::new()
-        .route(
-            "/",
-            get(|State(state): State<AppState>| async move { axum::Json((*state.data).clone()) }),
-        )
+        .nest("/api", routes::api::router())
+        .fallback_service(ServeDir::new("../frontend/dist"))
         .with_state(state);
 
-    let listener = tokio::net::TcpListener::bind("0.0.0.0:3000").await.unwrap();
+    let path = format!("{}:{}", URL, PORT);
+    let listener = tokio::net::TcpListener::bind(&path).await.unwrap();
+    println!("Listening on: http://{}", &path);
     axum::serve(listener, app).await.unwrap();
 }

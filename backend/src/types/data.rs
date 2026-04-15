@@ -2,7 +2,8 @@ use std::collections::HashMap;
 
 use serde::{Deserialize, Serialize};
 
-#[derive(Clone, Serialize, Deserialize)]
+#[derive(ts_rs::TS, Clone, Serialize, Deserialize)]
+#[ts(export)]
 pub struct Data {
     pub en: LocaleData,
     pub no: LocaleData,
@@ -10,7 +11,8 @@ pub struct Data {
     pub projects: Vec<Project>,
 }
 
-const DATA: &str = include_str!(concat!(env!("CARGO_MANIFEST_DIR"), "/data/data.json"));
+const DATA: &str =
+    include_str!(concat!(env!("CARGO_MANIFEST_DIR"), "/data/data.json"));
 
 impl Data {
     pub fn get() -> Self {
@@ -18,19 +20,19 @@ impl Data {
     }
 }
 
-#[derive(Clone, Serialize, Deserialize)]
+#[derive(ts_rs::TS, Clone, Serialize, Deserialize)]
 pub struct LocaleData {
     pub meta: Meta,
     pub nav: Nav,
     pub hero: Hero,
 }
 
-#[derive(Clone, Serialize, Deserialize)]
+#[derive(ts_rs::TS, Clone, Serialize, Deserialize)]
 pub struct Meta {
     pub description: String,
 }
 
-#[derive(Clone, Serialize, Deserialize)]
+#[derive(ts_rs::TS, Clone, Serialize, Deserialize)]
 pub struct Nav {
     pub about: String,
     pub work: String,
@@ -38,14 +40,14 @@ pub struct Nav {
     pub contact: String,
 }
 
-#[derive(Clone, Serialize, Deserialize)]
+#[derive(ts_rs::TS, Clone, Serialize, Deserialize)]
 pub struct About {
     pub first_name: String,
     pub last_name: String,
     pub birthday: String,
 }
 
-#[derive(Clone, Serialize, Deserialize)]
+#[derive(ts_rs::TS, Clone, Serialize, Deserialize)]
 pub struct Hero {
     pub role: String,
     pub description: String,
@@ -53,7 +55,7 @@ pub struct Hero {
     pub explore_work: String,
 }
 
-#[derive(Clone, Serialize, Deserialize)]
+#[derive(ts_rs::TS, Clone, Serialize, Deserialize)]
 pub struct Project {
     pub name: String,
     pub image_url: String,
