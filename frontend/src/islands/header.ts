@@ -1,21 +1,16 @@
 import ilha, { html, raw } from "ilha";
-import { routePath } from "@ilha/router";
 import { LOCALES, locale, setLocale } from "../lib/locale";
-import { t } from "../locales";
 import { ChevronDown, createIcons, Menu, Moon, Sun, X } from "lucide";
 import icon from "../lib/icon";
+import type { Data } from "../types/Data";
+import { getData } from "../lib/data";
 
-createIcons({
-  icons: {
-    Sun,
-    Moon,
-    Menu,
-    X,
-    ChevronDown,
-  },
-});
+if (typeof document !== "undefined") {
+  createIcons({ icons: { Sun, Moon, Menu, X, ChevronDown } });
+}
 
 export default ilha
+  .state("data", getData() as Data)
   .state("mobileOpen", false)
   .state("theme", "dark" as "light" | "dark")
   .effect(({ state }) => {
@@ -40,41 +35,58 @@ export default ilha
   })
   .on("[data-locale]@click", ({ target }) => {
     const code = target.getAttribute("data-locale") as "en" | "no" | null;
-    if (code) setLocale(code);
+    if (code) {
+      setLocale(code);
+      document.documentElement.dataset.locale = code;
+    }
   })
   .render(({ state }) => {
-    const path = routePath();
-    const isHome = path === "/" || path === "";
+    const data = state.data();
     const l = locale();
-    const strings = t(l);
+    const path = typeof window !== "undefined" ? window.location.pathname : "/";
+    const isHome = path === "/" || path === "";
     const isDark = state.theme() === "dark";
     const mobileOpen = state.mobileOpen();
 
-    const backdropClass = isHome
-      ? "site-header-backdrop"
-      : "site-header-backdrop site-header-backdrop--solid";
+    const loc = data[l];
 
     const navLinks = [
-      { href: "/projects", label: l === "no" ? "Prosjekter" : "Projects" },
-      { href: "/experience", label: l === "no" ? "Erfaring" : "Experience" },
-      { href: "/contact", label: l === "no" ? "Kontakt" : "Contact" },
+      { href: "/projects", label: loc.nav.work },
+      { href: "/experience", label: loc.nav.experience },
+      { href: "/contact", label: loc.nav.contact },
+      { href: "/static/resume.pdf", label: loc.buttons.resume, external: true },
     ];
 
+    const currentLocaleFlag = LOCALES.find((lo) => lo.code === l)?.flag ?? "🇬🇧";
+    const currentLocaleLabel =
+      LOCALES.find((lo) => lo.code === l)?.label ?? "English";
     const localeOptions = LOCALES.map(
-      (loc) => html`
+      (lo) => html`
         <a
           href="#"
-          data-locale="${loc.code}"
-          class="locale-option ${l === loc.code ? "locale-option--active" : ""}"
-          >${loc.flag} ${loc.label}</a
+          data-locale="${lo.code}"
+          class="locale-option ${l === lo.code ? "locale-option--active" : ""}"
+          >${lo.flag} ${lo.label}</a
         >
       `,
     );
 
-    const mobileLinks = [
-      ...navLinks,
-      { href: "/resume.pdf", label: strings.buttons.resume },
-    ];
+    const renderNavLinks = (mobile = false) =>
+      navLinks.map(
+        (link) => html`
+          <a
+            href="${link.href}"
+            class="${mobile ? "mobile-menu__link" : "nav-link"}"
+            ${link.external
+              ? raw('target="_blank" rel="noopener noreferrer"')
+              : ""}
+            ${mobile ? "data-menu-close" : ""}
+            >${link.label}</a
+          >
+        `,
+      );
+
+    const backdropClass = `site-header-backdrop${isHome ? "" : " site-header-backdrop--solid"}`;
 
     return html`
       <div class="site-header-wrap">
@@ -84,26 +96,12 @@ export default ilha
           <div class="container site-header__inner">
             <a href="/" class="site-header__name">Thomas Jensen</a>
 
-            <!-- Desktop nav -->
             <nav class="site-nav" aria-label="Main navigation">
-              ${navLinks.map(
-                (link) => html`
-                  <a href="${link.href}" class="nav-link">${link.label}</a>
-                `,
-              )}
-              <a
-                href="/resume.pdf"
-                class="nav-link"
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                ${strings.buttons.resume}
-              </a>
+              ${renderNavLinks()}
 
               <details class="locale-dropdown">
                 <summary class="locale-summary">
-                  ${LOCALES.find((loc) => loc.code === l)?.flag ?? "🇬🇧"}
-                  ${LOCALES.find((loc) => loc.code === l)?.label ?? "English"}
+                  ${currentLocaleFlag} ${currentLocaleLabel}
                   ${raw(icon(ChevronDown))}
                 </summary>
                 <div class="locale-menu">${localeOptions}</div>
@@ -112,54 +110,44 @@ export default ilha
               <button
                 class="theme-toggle"
                 data-theme-toggle
-                aria-label="${isDark
-                  ? strings.theme.light
-                  : strings.theme.dark}"
+                aria-label="${isDark ? loc.theme.light : loc.theme.dark}"
               >
                 ${isDark ? raw(icon(Sun)) : raw(icon(Moon))}
               </button>
             </nav>
 
-            <!-- Mobile trigger -->
             <button
               class="mobile-menu-btn"
               data-menu-toggle
               aria-label="${mobileOpen
-                ? strings.nav.closeMenu
-                : strings.nav.openMenu}"
+                ? loc.nav.close_menu
+                : loc.nav.open_menu}"
             >
               ${mobileOpen ? raw(icon(X)) : raw(icon(Menu))}
             </button>
           </div>
         </header>
 
-        <!-- Mobile drawer -->
         <nav
           class="mobile-menu"
           ${mobileOpen ? "" : "hidden"}
           aria-label="Mobile navigation"
         >
-          ${mobileLinks.map(
-            (link) => html`
-              <a href="${link.href}" class="mobile-menu__link" data-menu-close
-                >${link.label}</a
-              >
-            `,
-          )}
+          ${renderNavLinks(true)}
 
           <div class="mobile-menu__divider"></div>
 
           <div class="mobile-menu__locale">
             ${LOCALES.map(
-              (loc) => html`
+              (lo) => html`
                 <a
                   href="#"
-                  data-locale="${loc.code}"
-                  class="mobile-locale-btn ${l === loc.code
+                  data-locale="${lo.code}"
+                  class="mobile-locale-btn ${l === lo.code
                     ? "mobile-locale-btn--active"
                     : ""}"
                   data-menu-close
-                  >${loc.flag} ${loc.label}</a
+                  >${lo.flag} ${lo.label}</a
                 >
               `,
             )}
@@ -167,7 +155,7 @@ export default ilha
 
           <button class="mobile-menu__theme" data-theme-toggle>
             ${isDark ? raw(icon(Sun)) : raw(icon(Moon))}
-            ${isDark ? strings.theme.light : strings.theme.dark}
+            ${isDark ? loc.theme.light : loc.theme.dark}
           </button>
         </nav>
       </div>

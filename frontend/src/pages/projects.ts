@@ -1,30 +1,64 @@
 import ilha, { html } from "ilha";
-import type { Data } from "../types/Data";
 import type { Project } from "../types/Project";
 import { getData } from "../lib/data";
 import { locale } from "../lib/locale";
-import { t } from "../locales";
 
-function projectCard(project: Project, featured: boolean, visitLabel: string) {
-  const hasSrc = project.source_link && project.source_type !== "demo";
+function projectCard(
+  project: Project,
+  featured: boolean,
+  visitLabel: string,
+  appStoreLabel: string,
+) {
   const featuredClass = featured ? " project-card--featured" : "";
 
   const techPills = Object.keys(project.technologies).map(
-    (tech) => html`<span class="tech-pill">${tech}</span>`
+    (tech) => html`<span class="tech-pill">${tech}</span>`,
   );
 
+  const isAppStore = project.source_type === "appstore";
+  const isGithub = project.source_type === "github";
+  const hasSrc = !!project.source_link && !isAppStore;
+
   const title = hasSrc
-    ? html`<a href="${project.source_link}" class="project-card__name" target="_blank" rel="noopener noreferrer">${project.name}</a>`
+    ? html`<a
+        href="${project.source_link}"
+        class="project-card__name"
+        target="_blank"
+        rel="noopener noreferrer"
+        >${project.name}</a
+      >`
     : html`<span class="project-card__name">${project.name}</span>`;
 
-  const overlay = hasSrc
-    ? html`
-        <div class="project-card__overlay">
-          <a href="${project.source_link}" class="project-card__overlay-cta" target="_blank" rel="noopener noreferrer">
+  const overlay = isAppStore
+    ? html`<div class="project-card__overlay">
+        <a
+          href="${project.source_link}"
+          class="project-card__overlay-appstore"
+          target="_blank"
+          rel="noopener noreferrer"
+          aria-label="${appStoreLabel}"
+        >
+          <img
+            src="/static/appstore.svg"
+            alt="${appStoreLabel}"
+            width="120"
+            height="40"
+            class="project-card__appstore-badge"
+          />
+        </a>
+      </div>`
+    : isGithub
+      ? html`<div class="project-card__overlay">
+          <a
+            href="${project.source_link}"
+            class="project-card__overlay-cta"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
             ${visitLabel}
           </a>
         </div>`
-    : html`<div class="project-card__overlay"></div>`;
+      : html`<div class="project-card__overlay"></div>`;
 
   return html`
     <div class="glass-card project-card smooth-transition${featuredClass}">
@@ -49,37 +83,31 @@ function projectCard(project: Project, featured: boolean, visitLabel: string) {
   `;
 }
 
-export default ilha
-  .state("data", null as Data | null)
-  .onMount(({ state }) => {
-    getData().then((d) => state.data(d));
-  })
-  .render(({ state }) => {
-    const data = state.data();
-    const l = locale();
-    const strings = t(l);
+export default ilha.state("data", getData()).render(({ state }) => {
+  const data = state.data();
+  const l = locale();
 
-    if (!data) return html`<section class="section" id="work"><div class="container"></div></section>`;
+  const loc = data[l];
+  const visitLabel =
+    loc.work.visit_project.replace("{name}", "").trim() || "View project";
+  const appStoreLabel = loc.work.download_app_store;
 
-    const loc = data[l];
-    const visitLabel = strings.work.visitProject.replace("{name}", "");
+  const cards = data.projects.map(
+    (project, i) =>
+      html`<div class="${i === 0 ? "project-grid__item--featured" : ""}">
+        ${projectCard(project, i === 0, visitLabel, appStoreLabel)}
+      </div>`,
+  );
 
-    const cards = data.projects.map((project, i) =>
-      html`
-        <div class="${i === 0 ? "project-card--featured" : ""}">
-          ${projectCard(project, i === 0, visitLabel.trim() || "View project")}
-        </div>`
-    );
-
-    return html`
-      <section class="section" id="work">
-        <div class="container">
-          <div class="section-header">
-            <p class="section-eyebrow">${strings.work.subtitle}</p>
-            <h2 class="section-title">${loc.nav.work}</h2>
-          </div>
-          <div class="project-grid">${cards}</div>
+  return html`
+    <section class="section" id="work">
+      <div class="container">
+        <div class="section-header">
+          <p class="section-eyebrow">${loc.work.subtitle}</p>
+          <h2 class="section-title section-title--lg">${loc.nav.work}</h2>
         </div>
-      </section>
-    `;
-  });
+        <div class="project-grid">${cards}</div>
+      </div>
+    </section>
+  `;
+});

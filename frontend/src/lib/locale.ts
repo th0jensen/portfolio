@@ -1,6 +1,6 @@
 import { context } from "ilha";
 
-export type LocaleCode = "en" | "no";
+type LocaleCode = "en" | "no";
 
 export const LOCALES: { code: LocaleCode; label: string; flag: string }[] = [
   { code: "en" as const, label: "English", flag: "🇬🇧" },

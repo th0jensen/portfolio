@@ -5,7 +5,8 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "tsc && vite build",
+    "prerender": "bun run src/prerender.ts",
+    "build": "tsc && vite build && bun run src/prerender.ts",
     "preview": "vite preview"
   },
   "dependencies": {

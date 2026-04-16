@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <link rel="icon" type="image/svg+xml" href="/static/favicon.svg" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Thomas Jensen</title>
+        <script>
+            (function () {
+                var d = document.documentElement, t = "dark";
+                try { var s = localStorage.getItem("theme"); if (s === "light" || s === "dark") t = s; } catch (_) {}
+                if (t === "dark") { d.classList.add("dark"); d.style.backgroundColor = "hsl(220 15% 8%)"; d.style.colorScheme = "dark"; }
+                else { d.classList.remove("dark"); d.style.backgroundColor = "hsl(0 0% 99%)"; d.style.colorScheme = "light"; }
+            })();
+        </script>
+        <script>
+            (function () {
+                var d = document.documentElement;
+                try {
+                    var l = localStorage.getItem("locale");
+                    if (l === "en" || l === "no") { d.dataset.locale = l; return; }
+                    var lang = navigator.language.toLowerCase();
+                    d.dataset.locale = (lang === "no" || lang.startsWith("no-") || lang === "nb" || lang.startsWith("nb-") || lang === "nn" || lang.startsWith("nn-")) ? "no" : "en";
+                } catch (_) { d.dataset.locale = "en"; }
+            })();
+        </script>
+        <link rel="stylesheet" href="/assets/index.css" />
+    </head>
+    <body>
+        <script id="__DATA__" type="application/json">{{ data_json|safe }}</script>
+        <div class="site-layout">
+            {{ header_html|safe }}
+            <div class="site-page-content">
+                <div id="app" style="flex:1"></div>
+                <footer class="site-footer">
+                    <p data-locale-content="en">© {{ copyright_en }}</p>
+                    <p data-locale-content="no">© {{ copyright_no }}</p>
+                </footer>
+            </div>
+        </div>
+        <script type="module" src="/assets/index.js"></script>
+    </body>
+</html>
