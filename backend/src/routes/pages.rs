@@ -1,23 +1,39 @@
-use axum::extract::State;
+use axum::{
+    Router,
+    extract::State,
+    http::Uri,
+    response::{Html, IntoResponse},
+    routing::get,
+};
 
-use crate::{AppState, templates::PageTemplate};
+use crate::AppState;
 
-fn current_year() -> u32 {
-    let secs = std::time::SystemTime::now()
-        .duration_since(std::time::UNIX_EPOCH)
-        .unwrap_or_default()
-        .as_secs();
-    (1970 + secs / 31_557_600) as u32
+pub fn router() -> Router<AppState> {
+    Router::new()
+        .route("/", get(page_handler))
+        .route("/projects", get(page_handler))
+        .route("/experience", get(page_handler))
+        .route("/contact", get(page_handler))
+        .fallback(error_handler)
 }
 
-pub async fn page_handler(State(state): State<AppState>) -> PageTemplate {
-    let data = &state.data;
-    let year = current_year().to_string();
-    PageTemplate {
-        header_html: (*state.header_html).clone(),
-        data_json: serde_json::to_string(data.as_ref())
-            .expect("Data serialization cannot fail"),
-        copyright_en: data.en.footer.copyright.replace("{year}", &year),
-        copyright_no: data.no.footer.copyright.replace("{year}", &year),
+pub async fn page_handler(
+    State(state): State<AppState>,
+    uri: Uri,
+) -> impl IntoResponse {
+    let path = uri.path().trim_start_matches('/');
+    let filename = if path.is_empty() { "index" } else { path };
+    let file_path = format!("{}/{}.html", state.dist_dir, filename);
+    match tokio::fs::read_to_string(&file_path).await {
+        Ok(html) => Html(html).into_response(),
+        Err(_) => error_handler(State(state)).await.into_response(),
+    }
+}
+
+pub async fn error_handler(State(state): State<AppState>) -> impl IntoResponse {
+    let file_path = format!("{}/error.html", state.dist_dir);
+    match tokio::fs::read_to_string(&file_path).await {
+        Ok(html) => (axum::http::StatusCode::NOT_FOUND, Html(html)).into_response(),
+        Err(_) => (axum::http::StatusCode::NOT_FOUND, Html("<h1>Not Found</h1>".to_string())).into_response(),
     }
 }

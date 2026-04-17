@@ -44,7 +44,6 @@ pub struct LocaleData {
     pub work: Work,
     pub experience: Experience,
     pub theme: Theme,
-    pub footer: Footer,
     pub contact: Contact,
 }
 
@@ -112,11 +111,6 @@ pub struct Experience {
 pub struct Theme {
     pub light: String,
     pub dark: String,
-}
-
-#[derive(ts_rs::TS, Clone, Serialize, Deserialize)]
-pub struct Footer {
-    pub copyright: String,
 }
 
 #[derive(ts_rs::TS, Clone, Serialize, Deserialize)]

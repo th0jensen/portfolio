@@ -6,6 +6,6 @@ pub fn router() -> Router<AppState> {
     Router::new().route("/data", get(get_data))
 }
 
-async fn get_data(State(state): State<AppState>) -> axum::Json<Data> {
+pub async fn get_data(State(state): State<AppState>) -> axum::Json<Data> {
     axum::Json((*state.data).clone())
 }

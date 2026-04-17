@@ -1,12 +1,12 @@
 import ilha, { html } from "ilha";
-import { getData } from "../lib/data";
+import { dataSignal } from "../lib/data";
 import { locale } from "../lib/locale";
 
 const GITHUB_URL = "https://github.com/th0jensen";
 const LINKEDIN_URL = "https://www.linkedin.com/in/thomas-jensen-75a488208/";
 
-export default ilha.state("data", getData()).render(({ state }) => {
-  const data = state.data();
+export default ilha.render(() => {
+  const data = dataSignal()!;
   const l = locale();
 
   const loc = data[l];

@@ -17,7 +17,7 @@ export function initLocale() {
     return;
   }
   const lang = navigator.language.toLowerCase();
-  if (lang.startsWith("no") || lang.startsWith("nb") || lang.startsWith("nn")) {
+  if (lang.includes("no")) {
     locale("no");
   }
 }

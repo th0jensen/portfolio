@@ -1,5 +1,8 @@
+import { context } from "ilha";
 import type { Data } from "../types/Data";
 import type { HeaderData } from "../types/HeaderData";
+
+export const dataSignal = context("appData", null as unknown as Data);
 
 // Used by the prerender script to supply data without a DOM
 let _ssrData: Data | null = null;

@@ -1,6 +1,6 @@
 import ilha, { html } from "ilha";
 import type { Project } from "../types/Project";
-import { getData } from "../lib/data";
+import { dataSignal } from "../lib/data";
 import { locale } from "../lib/locale";
 
 function repoCard(project: Project, wide = false) {
@@ -34,8 +34,8 @@ function repoCard(project: Project, wide = false) {
   `;
 }
 
-export default ilha.state("data", getData()).render(({ state }) => {
-  const data = state.data();
+export default ilha.render(() => {
+  const data = dataSignal()!;
   const l = locale();
 
   const loc = data[l];

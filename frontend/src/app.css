@@ -10,12 +10,14 @@ html[data-locale="no"] [data-locale-content="en"] {
     src: url("/static/fonts/alef-400.ttf") format("truetype");
     font-weight: 400;
     font-style: normal;
+    font-display: optional;
 }
 @font-face {
     font-family: "Alef";
     src: url("/static/fonts/alef-700.ttf") format("truetype");
     font-weight: 700;
     font-style: normal;
+    font-display: optional;
 }
 
 /* ─── Reset ───────────────────────────────────────────────── */
@@ -490,7 +492,7 @@ details[open] .locale-chevron {
 /* ─── Hero ────────────────────────────────────────────────── */
 .hero-section {
     position: relative;
-    min-height: 100vh;
+    min-height: calc(100vh - 12rem);
     overflow-x: hidden;
 }
 .hero-bg-gradient {
@@ -568,7 +570,7 @@ details[open] .locale-chevron {
 .hero-inner {
     position: relative;
     z-index: 20;
-    height: calc(100vh - 4rem);
+    height: calc(100vh - 12rem);
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -627,6 +629,7 @@ details[open] .locale-chevron {
     line-height: 1.75;
     color: hsl(var(--foreground) / 0.85);
     margin-top: 1rem;
+    margin-bottom: 0.75rem;
 }
 .dark .hero-description {
     color: hsl(var(--muted-foreground));

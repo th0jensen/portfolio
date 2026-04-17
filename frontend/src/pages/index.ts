@@ -1,5 +1,5 @@
 import ilha, { html, raw } from "ilha";
-import { getData } from "../lib/data";
+import { dataSignal } from "../lib/data";
 import { locale } from "../lib/locale";
 
 const CRABDASH_URL = "https://github.com/th0jensen/crabdash";
@@ -33,8 +33,8 @@ function renderCurrentlyBuilding(text: string) {
     >${text.slice(idx + name.length)}`;
 }
 
-export default ilha.state("data", getData()).render(({ state }) => {
-  const data = state.data();
+export default ilha.render(() => {
+  const data = dataSignal()!;
   const l = locale();
 
   const loc = data[l];
@@ -47,7 +47,8 @@ export default ilha.state("data", getData()).render(({ state }) => {
       <img
         src="/static/headshot.jpg"
         alt="Headshot photo of ${data.about.first_name}"
-        ${mobile ? raw("width=1200 height=1600") : raw("width=360 height=540")}
+        fetchpriority="high"
+        ${mobile ? raw("width=1200 height=1391") : raw("width=360 height=418")}
       />
     </div>
   `;
