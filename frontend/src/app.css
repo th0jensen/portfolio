@@ -1000,6 +1000,8 @@ a.project-card__name:hover {
     font-size: 0.75rem;
     color: hsl(var(--muted-foreground));
     margin-top: auto;
+    border-top: 1px solid hsl(var(--border) / 0.3);
+    padding-top: 1rem;
 }
 .repo-card__lang-dot {
     display: inline-block;
@@ -1007,6 +1009,51 @@ a.project-card__name:hover {
     height: 0.75rem;
     border-radius: 9999px;
     flex-shrink: 0;
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+.download-spinner {
+    display: inline-block;
+    width: 0.7rem;
+    height: 0.7rem;
+    border: 1.5px solid hsl(var(--muted-foreground) / 0.35);
+    border-top-color: hsl(var(--muted-foreground));
+    border-radius: 9999px;
+    animation: spin 0.7s linear infinite;
+    vertical-align: middle;
+}
+
+.repo-card__pr-number {
+    color: hsl(var(--muted-foreground));
+    font-weight: 400;
+    margin-left: 0.25rem;
+}
+
+.pr-badge {
+    font-size: 0.6875rem;
+    font-weight: 500;
+    padding: 0.15rem 0.5rem;
+    border-radius: 9999px;
+    text-transform: capitalize;
+    flex-shrink: 0;
+    margin-left: auto;
+}
+.pr-badge--open {
+    background: hsl(142 60% 15% / 0.15);
+    color: hsl(142 60% 40%);
+}
+.pr-badge--merged {
+    background: hsl(265 60% 60% / 0.15);
+    color: hsl(265 60% 50%);
+}
+
+.pr-additions {
+    color: hsl(142 60% 35%);
+}
+.pr-deletions {
+    color: hsl(0 70% 45%);
 }
 
 /* ─── Contact ─────────────────────────────────────────────── */

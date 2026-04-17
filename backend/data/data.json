@@ -112,5 +112,64 @@
       "source_type": "appstore",
       "source_link": "https://apps.apple.com/us/app/appleosophy/id1635844078"
     }
+  ],
+  "experience_items": [
+    {
+      "name": "zed-industries/zed",
+      "description": "Release Notes:\n- Added path normalization to manifest paths using `RelPath::new(manifest.path, PathStyle::Windows)` to resolve issue with uploading extensions to WSL remote.",
+      "url": "https://github.com/zed-industries/zed/pull/50653",
+      "stars": 77542,
+      "forks": 7473,
+      "language": "Rust",
+      "language_color": "#c25a3c",
+      "type": "pr",
+      "downloads": 18404131,
+      "pr_number": 50653,
+      "pr_state": "open",
+      "additions": 139,
+      "deletions": 58,
+      "zed_extension_id": "zed"
+    },
+    {
+      "name": "zed-industries/zed",
+      "description": "Release Notes:\n- Configuration of bottom_dock_layout in settings.json\n- Layout Mode button in Title Bar\n- 4 different layout modes for the bottom dock: contained (default), full, left-aligned, right-aligned",
+      "url": "https://github.com/zed-industries/zed/pull/26211",
+      "stars": 77542,
+      "forks": 7473,
+      "language": "Rust",
+      "language_color": "#c25a3c",
+      "type": "pr",
+      "downloads": 18404131,
+      "pr_number": 26211,
+      "pr_state": "merged",
+      "additions": 409,
+      "deletions": 79,
+      "zed_extension_id": "zed"
+    },
+    {
+      "name": "th0jensen/gruber-darker.zed",
+      "description": "A port of Rexim's amazing Gruber Darker theme from emacs to Zed. Available for download in the Zed code editor.",
+      "url": "https://github.com/th0jensen/gruber-darker.zed",
+      "stars": 5,
+      "forks": 3,
+      "language": "JSON",
+      "language_color": "#f1e05a",
+      "type": "zed-extension",
+      "downloads": 41879,
+      "zed_extension_url": "zed://extension/gruber-darker",
+      "github_url": "https://github.com/th0jensen/gruber-darker.zed",
+      "zed_extension_id": "gruber-darker"
+    },
+    {
+      "name": "th0jensen/crabdash",
+      "description": "Crabdash is a cross-platform homelab dashboard built in Rust with GPUI",
+      "url": "https://github.com/th0jensen/crabdash",
+      "stars": 2,
+      "forks": 0,
+      "language": "Rust",
+      "language_color": "#c25a3c",
+      "type": "repo",
+      "downloads": null
+    }
   ]
 }

@@ -1,8 +1,10 @@
 import { context } from "ilha";
 import type { Data } from "../types/Data";
 import type { HeaderData } from "../types/HeaderData";
+import type { ExperienceItem } from "../types/ExperienceItem";
 
 export const dataSignal = context("appData", null as unknown as Data);
+export const experienceSignal = context("experience", null as ExperienceItem[] | null);
 
 // Used by the prerender script to supply data without a DOM
 let _ssrData: Data | null = null;

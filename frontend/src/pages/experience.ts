@@ -1,34 +1,39 @@
 import ilha, { html } from "ilha";
-import type { Project } from "../types/Project";
+import type { ExperienceItem } from "../types/ExperienceItem";
 import { dataSignal } from "../lib/data";
 import { locale } from "../lib/locale";
 
-function repoCard(project: Project, wide = false) {
-  const lang = Object.keys(project.technologies)[0] ?? "";
-  const wideClass = wide ? " repo-card--wide" : "";
+function prBadge(state: string | null | undefined) {
+  if (!state) return html``;
+  return html`<span class="pr-badge pr-badge--${state}">${state}</span>`;
+}
 
-  const techPills = Object.keys(project.technologies).map(
-    (tech) => html`<span class="tech-pill">${tech}</span>`,
-  );
+function experienceCard(item: ExperienceItem) {
+  const nameEl = html`<a
+    href="${item.url}"
+    class="repo-card__name"
+    target="_blank"
+    rel="noopener noreferrer"
+    >${item.name}${item.pr_number ? html`<span class="repo-card__pr-number">#${item.pr_number}</span>` : html``}</a
+  >`;
 
-  const nameEl = project.source_link
-    ? html`<a
-        href="${project.source_link}"
-        class="repo-card__name"
-        target="_blank"
-        rel="noopener noreferrer"
-        >${project.name}</a
-      >`
-    : html`<span class="repo-card__name">${project.name}</span>`;
+  const prStats =
+    item.additions != null
+      ? html`<span class="pr-additions">+${item.additions}</span><span class="pr-deletions">−${item.deletions}</span>`
+      : html``;
 
   return html`
-    <div class="glass-card repo-card smooth-transition${wideClass}">
+    <div class="glass-card repo-card smooth-transition">
       ${nameEl}
-      <p class="repo-card__desc">${project.description}</p>
-      <div class="tech-pills">${techPills}</div>
+      <p class="repo-card__desc">${item.description}</p>
       <div class="repo-card__stats">
-        <span class="repo-card__lang-dot"></span>
-        <span>${lang}</span>
+        <span
+          class="repo-card__lang-dot"
+          style="background:${item.language_color}"
+        ></span>
+        <span>${item.language}</span>
+        ${prStats}
+        ${prBadge(item.pr_state)}
       </div>
     </div>
   `;
@@ -37,9 +42,8 @@ function repoCard(project: Project, wide = false) {
 export default ilha.render(() => {
   const data = dataSignal()!;
   const l = locale();
-
   const loc = data[l];
-  const cards = data.projects.map((project, i) => repoCard(project, i === 0));
+  const cards = data.experience_items.map((item) => experienceCard(item));
 
   return html`
     <section class="section" id="experience">

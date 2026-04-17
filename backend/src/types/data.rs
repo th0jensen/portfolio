@@ -24,6 +24,38 @@ pub struct Data {
     pub no: LocaleData,
     pub about: About,
     pub projects: Vec<Project>,
+    pub experience_items: Vec<ExperienceItem>,
+}
+
+#[derive(ts_rs::TS, Clone, Serialize, Deserialize)]
+#[ts(export)]
+pub struct ExperienceItem {
+    pub name: String,
+    pub description: String,
+    pub url: String,
+    pub stars: i64,
+    pub forks: i64,
+    pub language: String,
+    pub language_color: String,
+    #[serde(rename = "type")]
+    #[ts(rename = "type")]
+    pub item_type: String,
+    pub downloads: Option<i64>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub pr_number: Option<i64>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub pr_state: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub additions: Option<i64>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub deletions: Option<i64>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub zed_extension_url: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub github_url: Option<String>,
+    #[serde(skip_serializing, default)]
+    #[ts(skip)]
+    pub zed_extension_id: Option<String>,
 }
 
 const DATA: &str =
