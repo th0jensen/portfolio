@@ -2,7 +2,7 @@
 
 # build.rs spawns `bun run build` automatically before compiling.
 dev:
-	cd backend && cargo run
+	cd backend && RUST_LOG=INFO cargo run
 
 build:
 	cd backend && cargo build --release

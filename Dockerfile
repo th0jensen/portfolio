@@ -28,5 +28,6 @@ COPY --from=backend /app/backend/static ./static
 COPY --from=backend /app/backend/frontend_dist ./frontend/dist
 ENV STATIC_DIR=/app/static
 ENV DIST_DIR=/app/frontend/dist
+ENV RUST_LOG=info
 EXPOSE 8080
 CMD ["./backend"]

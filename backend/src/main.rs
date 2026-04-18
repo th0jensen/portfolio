@@ -1,11 +1,14 @@
 use crate::types::Data;
 use axum::{Router, extract::State};
 use http::{HeaderValue, header};
-use std::sync::Arc;
+use std::{net::SocketAddr, sync::Arc};
 use tower::ServiceBuilder;
 use tower_http::{
     compression::CompressionLayer, set_header::SetResponseHeaderLayer,
+    trace::TraceLayer,
 };
+use tracing::info;
+use tracing_subscriber::EnvFilter;
 mod routes;
 mod types;
 
@@ -15,9 +18,6 @@ struct AppState {
     dist_dir: Arc<String>,
     static_dir: Arc<String>,
 }
-
-const URL: &str = "0.0.0.0";
-const PORT: &str = "8080";
 
 #[tokio::main]
 async fn main() {
@@ -45,16 +45,30 @@ async fn main() {
         ),
     );
 
+    tracing_subscriber::fmt()
+        .with_env_filter(
+            EnvFilter::try_from_default_env()
+                .or_else(|_| {
+                    EnvFilter::try_new(
+                        "axum__tracing_example=error,tower_http=warn",
+                    )
+                })
+                .unwrap(),
+        )
+        .init();
+
     let app: Router = Router::new()
         .merge(routes::pages::router())
         .merge(routes::assets::router(State(&state)))
         .nest("/api", routes::api::router())
         .fallback(routes::pages::error_handler)
         .route_layer(headers)
+        .layer(TraceLayer::new_for_http())
         .with_state(state);
 
-    let path = format!("{}:{}", URL, PORT);
-    let listener = tokio::net::TcpListener::bind(&path).await.unwrap();
-    println!("Listening on: http://{}", &path);
+    let addr = SocketAddr::from(([127, 0, 0, 1], 8080));
+    info!("Starting server on {}", addr);
+
+    let listener = tokio::net::TcpListener::bind("0.0.0.0:8080").await.unwrap();
     axum::serve(listener, app).await.unwrap();
 }

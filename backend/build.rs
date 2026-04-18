@@ -6,7 +6,7 @@ include!("src/types/data.rs");
 fn main() {
     println!("cargo:rerun-if-changed=data/data.json");
     println!("cargo:rerun-if-changed=build.rs");
-    println!("cargo:rerun-if-changed=templates/shell.html");
+    println!("cargo:rerun-if-changed=base.html");
     println!("cargo:rerun-if-changed=../frontend/src");
     println!("cargo:rerun-if-changed=../frontend/package.json");
     println!("cargo:rerun-if-changed=../frontend/vite.config.ts");
