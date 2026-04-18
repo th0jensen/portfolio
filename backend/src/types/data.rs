@@ -2,6 +2,7 @@ use std::collections::HashMap;
 
 use serde::{Deserialize, Serialize};
 
+#[allow(dead_code)]
 #[derive(ts_rs::TS, Clone, Serialize, Deserialize)]
 #[ts(export)]
 pub struct HeaderData {
