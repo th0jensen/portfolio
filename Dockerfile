@@ -4,7 +4,7 @@ COPY frontend/package.json frontend/bun.lock ./
 RUN bun install
 COPY frontend/ .
 COPY backend/data /app/backend/data
-RUN bun run build
+RUN bunx vite build && bun run src/prerender.ts
 
 FROM rust:latest AS backend
 WORKDIR /app/backend
