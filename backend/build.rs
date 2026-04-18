@@ -11,6 +11,10 @@ fn main() {
     println!("cargo:rerun-if-changed=../frontend/package.json");
     println!("cargo:rerun-if-changed=../frontend/vite.config.ts");
 
+    if std::env::var("CI").is_ok() {
+        return;
+    }
+
     let dist_dir = std::env::var("DIST_DIR")
         .unwrap_or_else(|_| "../frontend/dist".to_string());
 
