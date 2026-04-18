@@ -1,12 +1,10 @@
 use crate::types::Data;
-use axum::Router;
+use axum::{Router, extract::State};
 use http::{HeaderValue, header};
 use std::sync::Arc;
 use tower::ServiceBuilder;
 use tower_http::{
-    compression::CompressionLayer,
-    services::{ServeDir, ServeFile},
-    set_header::SetResponseHeaderLayer,
+    compression::CompressionLayer, set_header::SetResponseHeaderLayer,
 };
 mod routes;
 mod types;
@@ -15,6 +13,7 @@ mod types;
 struct AppState {
     data: Arc<Data>,
     dist_dir: Arc<String>,
+    static_dir: Arc<String>,
 }
 
 const URL: &str = "0.0.0.0";
@@ -30,6 +29,7 @@ async fn main() {
     let state = AppState {
         data: Arc::new(Data::get()),
         dist_dir: Arc::new(dist_dir.clone()),
+        static_dir: Arc::new(static_dir.clone()),
     };
 
     let compression = CompressionLayer::new()
@@ -38,22 +38,19 @@ async fn main() {
         .deflate(true)
         .zstd(true);
 
+    let headers = ServiceBuilder::new().layer(compression).layer(
+        SetResponseHeaderLayer::overriding(
+            header::CACHE_CONTROL,
+            HeaderValue::from_static("public, max-age=300"),
+        ),
+    );
+
     let app: Router = Router::new()
         .merge(routes::pages::router())
+        .merge(routes::assets::router(State(&state)))
         .nest("/api", routes::api::router())
-        .nest_service(
-            "/robots.txt",
-            ServeFile::new(format!("{}/robots.txt", static_dir)),
-        )
-        .nest_service("/static", ServeDir::new(static_dir))
-        .nest_service("/assets", ServeDir::new(format!("{}/assets", &dist_dir)))
         .fallback(routes::pages::error_handler)
-        .route_layer(ServiceBuilder::new().layer(compression).layer(
-            SetResponseHeaderLayer::overriding(
-                header::CACHE_CONTROL,
-                HeaderValue::from_static("public, max-age=300"),
-            ),
-        ))
+        .route_layer(headers)
         .with_state(state);
 
     let path = format!("{}:{}", URL, PORT);
