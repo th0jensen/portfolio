@@ -108,7 +108,7 @@ export default ilha
         `,
       );
 
-    const backdropClass = `site-header-backdrop${isSolid ? " site-header-backdrop--solid" : ""}`;
+    const backdropClass = `site-header-backdrop site-header-backdrop--solid`;
 
     return html`
       <div class="${wrapClass}">

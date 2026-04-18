@@ -526,7 +526,7 @@ details[open] .locale-chevron {
 /* ─── Hero ────────────────────────────────────────────────── */
 .hero-section {
     position: relative;
-    min-height: calc(100vh - 8rem);
+    min-height: calc(100vh - 9.5rem);
     overflow-x: hidden;
 }
 @media (max-width: 767px) {

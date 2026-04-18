@@ -30,8 +30,8 @@ fn main() {
 
     let data_str =
         fs::read_to_string("data/data.json").expect("data/data.json not found");
-    let data: Data =
-        serde_json::from_str(&data_str).expect("data/data.json does not match schema");
+    let data: Data = serde_json::from_str(&data_str)
+        .expect("data/data.json does not match schema");
 
     let header_html =
         fs::read_to_string(format!("{dist_dir}/prerendered/header.html"))
