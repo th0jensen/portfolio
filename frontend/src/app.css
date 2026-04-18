@@ -107,8 +107,8 @@ img {
 
 .glass-card {
     background: hsl(var(--card) / 0.8);
-    backdrop-filter: blur(24px);
-    -webkit-backdrop-filter: blur(24px);
+    backdrop-filter: blur(40px);
+    -webkit-backdrop-filter: blur(40px);
     border: 1px solid hsl(var(--border) / 0.5);
 }
 
@@ -194,18 +194,18 @@ img {
 }
 
 /* ─── Header ──────────────────────────────────────────────── */
-.site-header-wrap {
+[data-ilha="header"] {
     position: sticky;
     top: 0;
-    left: 0;
-    right: 0;
     z-index: 50;
+}
+.site-header-wrap {
+    position: relative;
 }
 .site-header-backdrop {
     pointer-events: none;
     position: absolute;
     inset: 0;
-    height: 4rem;
     z-index: 0;
     transition:
         background-color 0.2s,
@@ -214,13 +214,14 @@ img {
 .site-header-backdrop--solid {
     background-color: hsl(var(--background) / 0.85);
     border-bottom: 1px solid hsl(var(--border) / 0.2);
-    backdrop-filter: blur(24px);
-    -webkit-backdrop-filter: blur(24px);
+    backdrop-filter: blur(40px);
+    -webkit-backdrop-filter: blur(40px);
 }
 .site-header {
     position: relative;
     z-index: 50;
     height: 4rem;
+    transition: color 0.2s;
 }
 .site-header__inner {
     display: flex;
@@ -389,26 +390,38 @@ details[open] .locale-chevron {
 
 /* Mobile drawer */
 .mobile-menu {
-    position: fixed;
-    inset: 0;
+    position: absolute;
+    top: 100%;
+    left: 0.75rem;
+    right: 0.75rem;
     z-index: 40;
-    background: hsl(var(--background));
-    padding: 5rem 1.5rem 2rem;
+    margin-top: 0.375rem;
+    background: hsl(var(--background) / 0.92);
+    backdrop-filter: blur(40px);
+    -webkit-backdrop-filter: blur(40px);
+    border: 1px solid hsl(var(--border) / 0.2);
+    border-radius: var(--radius);
+    padding: 0.5rem;
     display: flex;
     flex-direction: column;
-    gap: 0.375rem;
-    overflow-y: auto;
+    gap: 0.25rem;
+    box-shadow: 0 8px 32px hsl(0 0% 0% / 0.12);
+}
+@media (min-width: 768px) {
+    .mobile-menu {
+        display: none;
+    }
 }
 .mobile-menu[hidden] {
     display: none;
 }
 .mobile-menu__link {
-    padding: 0.8125rem 1rem;
-    font-size: 1rem;
+    padding: 0.75rem 1rem;
+    font-size: 0.9375rem;
     font-weight: 500;
     text-decoration: none;
     color: hsl(var(--foreground));
-    border-radius: var(--radius);
+    border-radius: calc(var(--radius) - 2px);
     display: block;
     transition: background 0.2s;
 }
@@ -418,49 +431,58 @@ details[open] .locale-chevron {
 .mobile-menu__divider {
     height: 1px;
     background: hsl(var(--border) / 0.5);
-    margin: 0.5rem 0;
+    margin: 0.25rem 0;
 }
-.mobile-menu__locale {
-    display: flex;
-    gap: 0.5rem;
-    padding: 0.5rem 0;
-    flex-wrap: wrap;
+.mobile-locale-details {
+    list-style: none;
 }
-.mobile-locale-btn {
+.mobile-locale-summary {
     display: flex;
     align-items: center;
-    gap: 0.375rem;
-    padding: 0.4375rem 0.875rem;
-    font-size: 0.875rem;
+    justify-content: space-between;
+    padding: 0.75rem 1rem;
+    font-size: 0.9375rem;
     font-weight: 500;
-    text-decoration: none;
-    border-radius: calc(var(--radius) - 2px);
+    cursor: pointer;
     color: hsl(var(--muted-foreground));
-    transition:
-        color 0.2s,
-        background 0.2s;
+    border-radius: calc(var(--radius) - 2px);
+    list-style: none;
+    transition: background 0.2s, color 0.2s;
 }
-.mobile-locale-btn:hover {
-    color: hsl(var(--foreground));
+.mobile-locale-summary::-webkit-details-marker {
+    display: none;
+}
+.mobile-locale-summary:hover {
     background: hsl(var(--muted));
-}
-.mobile-locale-btn--active {
-    background: hsl(var(--primary) / 0.1);
     color: hsl(var(--foreground));
-    font-weight: 600;
+}
+.mobile-locale-summary svg {
+    width: 0.875rem;
+    height: 0.875rem;
+    flex-shrink: 0;
+    transition: transform 0.2s;
+}
+.mobile-locale-details[open] .mobile-locale-summary svg {
+    transform: rotate(180deg);
+}
+.mobile-locale-submenu {
+    display: flex;
+    flex-direction: column;
+    gap: 0.125rem;
+    padding: 0 0 0.25rem;
 }
 .mobile-menu__theme {
     display: flex;
     align-items: center;
     gap: 0.75rem;
-    padding: 0.875rem 1rem;
+    padding: 0.75rem 1rem;
     font-size: 0.9375rem;
     font-weight: 500;
     background: none;
     border: none;
     cursor: pointer;
     color: hsl(var(--foreground));
-    border-radius: var(--radius);
+    border-radius: calc(var(--radius) - 2px);
     width: 100%;
     font-family: inherit;
     transition: background 0.2s;
@@ -482,18 +504,36 @@ details[open] .locale-chevron {
         opacity: 0.5;
         pointer-events: none;
     }
-    .mobile-nav-open .site-header-backdrop {
-        background-color: hsl(var(--background) / 0.9);
-        border-bottom: 1px solid hsl(var(--border) / 0.2);
-        backdrop-filter: blur(24px);
+
+    /* Transparent header on mobile (home page, not scrolled, menu closed) */
+    .site-header-wrap--mobile-transparent .site-header-backdrop {
+        background: transparent;
+        backdrop-filter: none;
+        -webkit-backdrop-filter: none;
+        border-bottom: none;
+    }
+    .site-header-wrap--mobile-transparent .site-header {
+        color: #000;
+    }
+    .site-header-wrap--mobile-transparent .mobile-menu-btn {
+        color: #000;
+    }
+    .site-header-wrap--mobile-transparent .mobile-menu-btn:hover {
+        background: rgba(0, 0, 0, 0.1);
     }
 }
 
 /* ─── Hero ────────────────────────────────────────────────── */
 .hero-section {
     position: relative;
-    min-height: calc(100vh - 12rem);
+    min-height: calc(100vh - 8rem);
     overflow-x: hidden;
+}
+@media (max-width: 767px) {
+    .hero-section {
+        margin-top: -4rem;
+        min-height: auto;
+    }
 }
 .hero-bg-gradient {
     position: absolute;
@@ -672,12 +712,16 @@ details[open] .locale-chevron {
     align-items: center;
 }
 .hero-actions--mobile {
+    display: inline-flex;
     flex-direction: column;
-    align-items: flex-start;
+    align-items: stretch;
 }
 .hero-actions--mobile .social-row {
     display: flex;
     gap: 0.75rem;
+}
+.hero-actions--mobile .social-row .btn {
+    flex: 1;
 }
 .hero-actions--desktop {
     display: none;

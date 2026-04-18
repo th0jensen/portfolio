@@ -1,4 +1,5 @@
 import ilha, { html, raw } from "ilha";
+import { routePath } from "@ilha/router";
 import { LOCALES, locale, setLocale } from "../lib/locale";
 import { ChevronDown, createIcons, Menu, Moon, Sun, X } from "lucide";
 import icon from "../lib/icon";
@@ -13,9 +14,17 @@ export default ilha
   .state("data", getData() as Data)
   .state("mobileOpen", false)
   .state("theme", "dark" as "light" | "dark")
+  .state("scrolled", false)
   .effect(({ state }) => {
     const saved = localStorage.getItem("theme") as "light" | "dark" | null;
     state.theme(saved ?? "dark");
+  })
+  .effect(({ state }) => {
+    if (typeof window === "undefined") return;
+    const onScroll = () => state.scrolled(window.scrollY > 8);
+    window.addEventListener("scroll", onScroll, { passive: true });
+    onScroll();
+    return () => window.removeEventListener("scroll", onScroll);
   })
   .on("[data-theme-toggle]@click", ({ state }) => {
     const next = state.theme() === "dark" ? "light" : "dark";
@@ -33,20 +42,31 @@ export default ilha
     state.mobileOpen(false);
     document.documentElement.classList.remove("mobile-nav-open");
   })
-  .on("[data-locale]@click", ({ target }) => {
+  .on("[data-locale]@click", ({ target, event, state }) => {
+    event.preventDefault();
     const code = target.getAttribute("data-locale") as "en" | "no" | null;
     if (code) {
       setLocale(code);
       document.documentElement.dataset.locale = code;
     }
+    // Close the locale <details> dropdown
+    const details = (target as Element).closest("details");
+    if (details) details.removeAttribute("open");
+    // Close mobile menu if open
+    if (state.mobileOpen()) {
+      state.mobileOpen(false);
+      document.documentElement.classList.remove("mobile-nav-open");
+    }
   })
   .render(({ state }) => {
     const data = state.data();
     const l = locale();
-    const path = typeof window !== "undefined" ? window.location.pathname : "/";
-    const isHome = path === "/" || path === "";
+    const isHome = routePath() === "/";
     const isDark = state.theme() === "dark";
     const mobileOpen = state.mobileOpen();
+    const scrolled = state.scrolled();
+    const isSolid = !isHome || scrolled || mobileOpen;
+    const wrapClass = `site-header-wrap${isSolid ? "" : " site-header-wrap--mobile-transparent"}`;
 
     const loc = data[l];
 
@@ -60,16 +80,18 @@ export default ilha
     const currentLocaleFlag = LOCALES.find((lo) => lo.code === l)?.flag ?? "🇬🇧";
     const currentLocaleLabel =
       LOCALES.find((lo) => lo.code === l)?.label ?? "English";
-    const localeOptions = LOCALES.map(
-      (lo) => html`
-        <a
-          href="#"
-          data-locale="${lo.code}"
-          class="locale-option ${l === lo.code ? "locale-option--active" : ""}"
-          >${lo.flag} ${lo.label}</a
-        >
-      `,
-    );
+
+    const localeOptions = (mobile = false) =>
+      LOCALES.filter((lo) => lo.code !== l).map(
+        (lo) => html`
+          <a
+            href="#"
+            data-locale="${lo.code}"
+            class="${mobile ? "mobile-menu__link" : "locale-option"}"
+            >${lo.flag} ${lo.label}</a
+          >
+        `,
+      );
 
     const renderNavLinks = (mobile = false) =>
       navLinks.map(
@@ -86,15 +108,15 @@ export default ilha
         `,
       );
 
-    const backdropClass = `site-header-backdrop${isHome ? "" : " site-header-backdrop--solid"}`;
+    const backdropClass = `site-header-backdrop${isSolid ? " site-header-backdrop--solid" : ""}`;
 
     return html`
-      <div class="site-header-wrap">
+      <div class="${wrapClass}">
         <div class="${backdropClass}"></div>
 
         <header class="site-header">
           <div class="container site-header__inner">
-            <a href="/" class="site-header__name">Thomas Jensen</a>
+            <a href="/" class="site-header__name" data-menu-close>Thomas Jensen</a>
 
             <nav class="site-nav" aria-label="Main navigation">
               ${renderNavLinks()}
@@ -104,7 +126,7 @@ export default ilha
                   ${currentLocaleFlag} ${currentLocaleLabel}
                   ${raw(icon(ChevronDown))}
                 </summary>
-                <div class="locale-menu">${localeOptions}</div>
+                <div class="locale-menu">${localeOptions()}</div>
               </details>
 
               <button
@@ -137,21 +159,13 @@ export default ilha
 
           <div class="mobile-menu__divider"></div>
 
-          <div class="mobile-menu__locale">
-            ${LOCALES.map(
-              (lo) => html`
-                <a
-                  href="#"
-                  data-locale="${lo.code}"
-                  class="mobile-locale-btn ${l === lo.code
-                    ? "mobile-locale-btn--active"
-                    : ""}"
-                  data-menu-close
-                  >${lo.flag} ${lo.label}</a
-                >
-              `,
-            )}
-          </div>
+          <details class="mobile-locale-details">
+            <summary class="mobile-locale-summary">
+              <span>${currentLocaleFlag} ${currentLocaleLabel}</span>
+              ${raw(icon(ChevronDown))}
+            </summary>
+            <div class="mobile-locale-submenu">${localeOptions(true)}</div>
+          </details>
 
           <button class="mobile-menu__theme" data-theme-toggle>
             ${isDark ? raw(icon(Sun)) : raw(icon(Moon))}
