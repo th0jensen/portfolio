@@ -78,7 +78,7 @@ async fn main() {
         .layer(TraceLayer::new_for_http())
         .with_state(state);
 
-    let addr = SocketAddr::from(([127, 0, 0, 1], 8080));
+    let addr = SocketAddr::from(([0, 0, 0, 0], 8080));
     info!("Starting server on {}", addr);
 
     let listener = tokio::net::TcpListener::bind("0.0.0.0:8080").await.unwrap();
