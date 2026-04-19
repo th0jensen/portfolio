@@ -21,6 +21,7 @@ ENV SKIP_BUN_BUILD=1
 RUN cargo build --release
 
 FROM debian:bookworm-slim AS runtime
+RUN apt-get update && apt-get install -y libssl3 ca-certificates && rm -rf /var/lib/apt/lists/*
 WORKDIR /app
 COPY --from=backend /app/backend/target/release/backend ./backend
 COPY --from=backend /app/backend/static ./static
