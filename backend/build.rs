@@ -25,7 +25,10 @@ fn main() {
             .current_dir("../frontend")
             .status()
             .expect("Failed to spawn bun — is bun installed?");
-        assert!(status.success(), "Frontend build failed");
+        assert!(
+            status.success(),
+            "Frontend build failed, try running with SKIP_BUN_BUILD if frontend does not need to be compiled"
+        );
     }
 
     let data_str =

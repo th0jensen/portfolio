@@ -7,14 +7,14 @@ use axum::{
 };
 use tracing::info;
 
-use crate::AppState;
+use crate::{AppState, routes::mail::dispatch_email};
 
 pub fn router() -> Router<AppState> {
     Router::new()
         .route("/", get(page_handler))
         .route("/projects", get(page_handler))
         .route("/experience", get(page_handler))
-        .route("/contact", get(page_handler))
+        .route("/contact", get(page_handler).post(dispatch_email))
         .fallback(error_handler)
 }
 

@@ -2,11 +2,10 @@
 import type { Buttons } from "./Buttons";
 import type { Contact } from "./Contact";
 import type { Experience } from "./Experience";
-import type { Footer } from "./Footer";
 import type { Hero } from "./Hero";
 import type { Meta } from "./Meta";
 import type { Nav } from "./Nav";
 import type { Theme } from "./Theme";
 import type { Work } from "./Work";
 
-export type LocaleData = { meta: Meta, nav: Nav, hero: Hero, buttons: Buttons, work: Work, experience: Experience, theme: Theme, footer: Footer, contact: Contact, };
+export type LocaleData = { meta: Meta, nav: Nav, hero: Hero, buttons: Buttons, work: Work, experience: Experience, theme: Theme, contact: Contact, };

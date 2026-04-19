@@ -1,3 +1,6 @@
+include .env
+export
+
 .PHONY: dev build deploy
 
 # build.rs spawns `bun run build` automatically before compiling.

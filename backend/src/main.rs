@@ -13,7 +13,10 @@ mod routes;
 mod types;
 
 #[derive(Clone)]
-struct AppState {
+pub struct AppState {
+    resend_api_key: Arc<String>,
+    contact_mail: Arc<String>,
+    sender_mail: Arc<String>,
     data: Arc<Data>,
     dist_dir: Arc<String>,
     static_dir: Arc<String>,
@@ -27,6 +30,15 @@ async fn main() {
         .unwrap_or_else(|_| "../frontend/dist".to_string());
 
     let state = AppState {
+        resend_api_key: Arc::new(
+            std::env::var("RESEND_API_KEY").expect("Missing RESEND_API_KEY"),
+        ),
+        contact_mail: Arc::new(
+            std::env::var("CONTACT_MAIL").expect("Missing CONTACT_MAIL"),
+        ),
+        sender_mail: Arc::new(
+            std::env::var("SENDER_MAIL").expect("Missing SENDER_MAIL"),
+        ),
         data: Arc::new(Data::get()),
         dist_dir: Arc::new(dist_dir.clone()),
         static_dir: Arc::new(static_dir.clone()),
