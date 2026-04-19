@@ -28,6 +28,7 @@ pub struct Data {
     pub experience_items: Vec<ExperienceItem>,
 }
 
+#[allow(dead_code)]
 #[derive(ts_rs::TS, Clone, Serialize, Deserialize)]
 #[ts(export)]
 pub struct ExperienceItem {
