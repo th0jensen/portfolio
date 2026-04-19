@@ -16,7 +16,7 @@ http = "=1.4.0"
 resend-rs = "0.24.0"
 serde = { version = "1.0.228", features = ["derive"]}
 serde_json = "1.0.149"
-tokio = { version = "1.51.1", features = ["rt-multi-thread"]}
+tokio = { version = "1.51.1", features = ["rt-multi-thread"] }
 tower = "0.5"
 tower-http = { version = "0.6", features = ["fs", "compression-full", "set-header", "trace"] }
 tracing = "=0.1.44"

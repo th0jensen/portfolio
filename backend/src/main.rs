@@ -14,6 +14,7 @@ mod types;
 
 #[derive(Clone)]
 pub struct AppState {
+    github_api_key: Arc<String>,
     resend_api_key: Arc<String>,
     contact_mail: Arc<String>,
     sender_mail: Arc<String>,
@@ -28,8 +29,10 @@ async fn main() {
         .unwrap_or_else(|_| "../backend/static".to_string());
     let dist_dir = std::env::var("DIST_DIR")
         .unwrap_or_else(|_| "../frontend/dist".to_string());
-
     let state = AppState {
+        github_api_key: Arc::new(
+            std::env::var("GITHUB_API_KEY").expect("Missing GITHUB_API_KEY"),
+        ),
         resend_api_key: Arc::new(
             std::env::var("RESEND_API_KEY").expect("Missing RESEND_API_KEY"),
         ),

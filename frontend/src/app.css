@@ -844,11 +844,7 @@ details[open] .locale-chevron {
     align-items: center;
     overflow: hidden;
     height: 12.5rem;
-    background: hsl(var(--muted));
-}
-.project-card--featured .project-card__media {
-    height: 15rem;
-    padding: 2rem;
+    background: transparent;
 }
 @media (min-width: 768px) {
     .project-card--featured .project-card__media {
@@ -944,8 +940,10 @@ details[open] .locale-chevron {
     color: hsl(var(--foreground));
     text-decoration: none;
 }
-.project-card--featured .project-card__name {
-    font-size: 1.5rem;
+@media (min-width: 768px) {
+    .project-card--featured .project-card__name {
+        font-size: 1.5rem;
+    }
 }
 a.project-card__name {
     display: inline-flex;
@@ -965,9 +963,11 @@ a.project-card__name:hover {
     white-space: pre-line;
     flex: 1;
 }
-.project-card--featured .project-card__desc {
-    font-size: 1rem;
-    max-width: 42rem;
+@media (min-width: 768px) {
+    .project-card--featured .project-card__desc {
+        font-size: 1rem;
+        max-width: 42rem;
+    }
 }
 
 .tech-pills {

@@ -5,11 +5,11 @@ export
 
 # build.rs spawns `bun run build` automatically before compiling.
 dev:
-	cd backend && RUST_LOG=INFO cargo run
+	cd backend && RUST_LOG=DEBUG cargo run
 
 build:
-	cd backend && cargo build --release
+	cd backend && RUST_LOG=INFO cargo build --release
 
 deploy:
 	cd backend && cargo build --release
-	./backend/target/release/backend
+	RUST_LOG=INFO ./backend/target/release/backend
