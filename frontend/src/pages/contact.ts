@@ -1,34 +1,16 @@
 import ilha, { html } from "ilha";
-import { createForm, type FormErrors, type StandardSchemaV1 } from "@ilha/form";
+import { createForm, type FormErrors } from "@ilha/form";
 import { dataSignal } from "../lib/data";
 import { locale } from "../lib/locale";
-import type { EmailPayload } from "../types/EmailPayload";
+import z from "zod";
 
 type Status = "idle" | "loading" | "success" | "error";
 
-const emailSchema: StandardSchemaV1<Record<string, unknown>, EmailPayload> = {
-  "~standard": {
-    version: 1,
-    vendor: "contact-form",
-    validate(value) {
-      const raw = value as Record<string, unknown>;
-      const full_name = String(raw.full_name ?? "").trim();
-      const email = String(raw.email ?? "").trim();
-      const content = String(raw.content ?? "").trim();
-      const issues: StandardSchemaV1.Issue[] = [];
-      if (!full_name)
-        issues.push({ message: "Name is required.", path: ["full_name"] });
-      if (!email)
-        issues.push({ message: "Email is required.", path: ["email"] });
-      else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email))
-        issues.push({ message: "Invalid email address.", path: ["email"] });
-      if (!content)
-        issues.push({ message: "Message is required.", path: ["content"] });
-      if (issues.length) return { issues };
-      return { value: { full_name, email, content } };
-    },
-  },
-};
+const emailSchema = z.object({
+  full_name: z.string().min(1, "Name is required."),
+  email: z.email("Invalid email address."),
+  content: z.string().min(1, "Message is required."),
+});
 
 export default ilha
   .state("errors", {} as FormErrors)
@@ -65,8 +47,8 @@ export default ilha
   })
   .render(({ state }) => {
     const data = dataSignal()!;
-    const l = locale();
-    const loc = data[l];
+    const loc = data[locale()];
+    const { full_name, email, content } = loc.contact;
 
     const errors = state.errors();
     const status = state.status();
@@ -82,21 +64,35 @@ export default ilha
             <form class="contact-form">
               <div class="form-group">
                 <label for="full_name">Name</label>
-                <input type="text" id="full_name" name="full_name" />
+                <input
+                  type="text"
+                  id="full_name"
+                  name="full_name"
+                  placeholder="${full_name}"
+                />
                 ${errors.full_name
                   ? html`<span class="form-error">${errors.full_name[0]}</span>`
                   : ""}
               </div>
               <div class="form-group">
                 <label for="email">Email</label>
-                <input type="email" id="email" name="email" />
+                <input
+                  type="email"
+                  id="email"
+                  name="email"
+                  placeholder="${email}"
+                />
                 ${errors.email
                   ? html`<span class="form-error">${errors.email[0]}</span>`
                   : ""}
               </div>
               <div class="form-group">
                 <label for="content">Message</label>
-                <textarea id="content" name="content"></textarea>
+                <textarea
+                  id="content"
+                  name="content"
+                  placeholder="${content}"
+                ></textarea>
                 ${errors.content
                   ? html`<span class="form-error">${errors.content[0]}</span>`
                   : ""}

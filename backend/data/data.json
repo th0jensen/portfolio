@@ -32,7 +32,11 @@
       "description": "Open-source contributions to Zed and selected personal Rust projects that reflect how I like to build."
     },
     "theme": { "light": "Light", "dark": "Dark" },
-    "contact": { "email": "thomas.jensen_@outlook.com" }
+    "contact": {
+      "full_name": "John Doe",
+      "email": "john.doe@hotmail.com",
+      "content": "Compose your message..."
+    }
   },
   "no": {
     "meta": {
@@ -67,7 +71,11 @@
       "description": "Åpen kildekode-bidrag til Zed og utvalgte Rust-prosjekter som viser hvordan jeg liker å bygge."
     },
     "theme": { "light": "Lys", "dark": "Mørk" },
-    "contact": { "email": "thomas.jensen_@outlook.com" }
+    "contact": {
+      "full_name": "Ola Nordmann",
+      "email": "ola.nordmann@online.no",
+      "content": "Skriv din melding her..."
+    }
   },
   "about": {
     "first_name": "Thomas",

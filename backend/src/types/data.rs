@@ -149,5 +149,7 @@ pub struct Theme {
 
 #[derive(ts_rs::TS, Clone, Serialize, Deserialize)]
 pub struct Contact {
+    pub full_name: String,
     pub email: String,
+    pub content: String,
 }
