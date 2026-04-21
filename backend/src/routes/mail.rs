@@ -1,4 +1,7 @@
+use std::sync::LazyLock;
+
 use axum::{Json, extract::State, response::IntoResponse};
+use regex::Regex;
 use resend_rs::{Resend, types::CreateEmailBaseOptions};
 use serde::{Deserialize, Serialize};
 use tracing::{error, info};
@@ -19,6 +22,13 @@ struct ApiResponse {
     message: &'static str,
 }
 
+static EMAIL_RE: LazyLock<Option<Regex>> =
+    LazyLock::new(|| Regex::new(r"^[^\s@]+@[^\s@]+\.[^\s@]+$").ok());
+
+fn is_email(email: &String) -> bool {
+    EMAIL_RE.as_ref().map_or(false, |re| re.is_match(email))
+}
+
 pub async fn dispatch_email(
     State(state): State<AppState>,
     Json(payload): Json<EmailPayload>,
@@ -30,6 +40,17 @@ pub async fn dispatch_email(
         email,
         content,
     } = &payload;
+
+    if full_name.trim().is_empty()
+        || email.trim().is_empty()
+        || !is_email(email)
+        || content.trim().is_empty()
+    {
+        return Json(ApiResponse {
+            ok: false,
+            message: "All fields are required to be non-empty and valid.",
+        });
+    }
 
     let client = Resend::new(&state.resend_api_key);
 
