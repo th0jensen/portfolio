@@ -26,7 +26,7 @@ static EMAIL_RE: LazyLock<Option<Regex>> =
     LazyLock::new(|| Regex::new(r"^[^\s@]+@[^\s@]+\.[^\s@]+$").ok());
 
 fn is_email(email: &str) -> bool {
-    EMAIL_RE.as_ref().map_or(false, |re| re.is_match(email))
+    EMAIL_RE.as_ref().is_some_and(|re| re.is_match(email))
 }
 
 pub async fn dispatch_email(
