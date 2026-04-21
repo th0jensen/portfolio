@@ -25,7 +25,7 @@ struct ApiResponse {
 static EMAIL_RE: LazyLock<Option<Regex>> =
     LazyLock::new(|| Regex::new(r"^[^\s@]+@[^\s@]+\.[^\s@]+$").ok());
 
-fn is_email(email: &String) -> bool {
+fn is_email(email: &str) -> bool {
     EMAIL_RE.as_ref().map_or(false, |re| re.is_match(email))
 }
 
@@ -46,6 +46,7 @@ pub async fn dispatch_email(
         || !is_email(email)
         || content.trim().is_empty()
     {
+        error!("Failed to send email: ValidationError {{ {:?} }}", &payload);
         return Json(ApiResponse {
             ok: false,
             message: "All fields are required to be non-empty and valid.",
