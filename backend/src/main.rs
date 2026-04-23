@@ -85,8 +85,8 @@ async fn main() {
         .nest("/api", routes::api::router())
         .fallback(routes::pages::error_handler)
         .route_layer(headers)
-        .layer(TraceLayer::new_for_http())
         .layer(prometheus_layer)
+        .layer(TraceLayer::new_for_http())
         .with_state(state);
 
     let addr = SocketAddr::from(([0, 0, 0, 0], 8080));
