@@ -10,6 +10,10 @@ primary_region = 'arn'
   STATIC_DIR = "static"
   DIST_DIR = "frontend/dist"
 
+[metrics]
+  port = 8080
+  path = "/api/metrics"
+
 [http_service]
   internal_port = 8080
   force_https = true
