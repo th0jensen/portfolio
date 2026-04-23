@@ -4,7 +4,6 @@ use axum::{Json, extract::State, response::IntoResponse};
 use regex::Regex;
 use resend_rs::{Resend, types::CreateEmailBaseOptions};
 use serde::{Deserialize, Serialize};
-use tracing::{error, info};
 
 use crate::AppState;
 
@@ -33,20 +32,20 @@ pub async fn dispatch_email(
     State(state): State<AppState>,
     Json(payload): Json<EmailPayload>,
 ) -> impl IntoResponse {
-    info!("Handling contact form request: {:?}", &payload);
-
     let EmailPayload {
         full_name,
         email,
         content,
     } = &payload;
 
+    tracing::info!(name = %full_name, "contact form received");
+
     if full_name.trim().is_empty()
         || email.trim().is_empty()
         || !is_email(email)
         || content.trim().is_empty()
     {
-        error!("Failed to send email: ValidationError {{ {:?} }}", &payload);
+        tracing::warn!(name = %full_name, "contact form validation failed");
         return Json(ApiResponse {
             ok: false,
             message: "All fields are required to be non-empty and valid.",
@@ -65,14 +64,14 @@ pub async fn dispatch_email(
 
     match client.emails.send(email).await {
         Ok(email) => {
-            info!("Successfully sent email: {:?}", email);
+            tracing::info!("Successfully sent email: {:?}", email);
             Json(ApiResponse {
                 ok: true,
                 message: "Mail was successfully sent!",
             })
         }
         Err(email) => {
-            error!("Failed to send email: {:?}", email);
+            tracing::error!("Failed to send email: {:?}", email);
             Json(ApiResponse {
                 ok: false,
                 message: "Something went wrong while sending the mail...",

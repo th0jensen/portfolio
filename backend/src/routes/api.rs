@@ -24,6 +24,7 @@ pub fn router() -> Router<AppState> {
 }
 
 pub async fn get_data(State(state): State<AppState>) -> axum::Json<Data> {
+    tracing::debug!("serving data");
     axum::Json((*state.data).clone())
 }
 
@@ -46,8 +47,8 @@ async fn fetch_extension_downloads(
     client: &reqwest::Client,
     extension_id: &str,
 ) -> Option<i64> {
+    tracing::trace!(extension_id, "fetching extension downloads");
     let url = format!("https://api.zed.dev/extensions/{}", extension_id);
-    tracing::debug!(extension_id, %url, "Fetching extension downloads");
 
     let response = client
         .get(&url)
@@ -70,8 +71,8 @@ async fn fetch_repo_stars(
     client: reqwest::Client,
     repo: String,
 ) -> (String, Option<i64>) {
+    tracing::trace!(repo = %repo, "fetching repo stars");
     let url = format!("https://api.github.com/repos/{}", repo);
-    tracing::debug!(repo, %url, "Fetching repo stars");
 
     let stars = async {
         let response = client
@@ -97,6 +98,7 @@ async fn fetch_repo_stars(
 pub async fn get_experience(
     State(state): State<AppState>,
 ) -> axum::Json<Vec<ExperienceItem>> {
+    tracing::debug!("fetching experience data");
     let client = reqwest::Client::builder()
         .user_agent("portfolio-backend")
         .build()

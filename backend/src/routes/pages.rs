@@ -5,7 +5,6 @@ use axum::{
     response::{Html, IntoResponse},
     routing::get,
 };
-use tracing::info;
 
 use crate::{AppState, routes::mail::dispatch_email};
 
@@ -22,13 +21,12 @@ pub async fn page_handler(
     State(state): State<AppState>,
     uri: Uri,
 ) -> impl IntoResponse {
-    info!("Handling page request for: {:?}", uri);
     let path = uri.path().trim_start_matches('/');
-    let filename = if path.is_empty() { "index" } else { path };
-    let file_path = format!("{}/{}.html", state.dist_dir, filename);
-    match tokio::fs::read_to_string(&file_path).await {
-        Ok(html) => Html(html).into_response(),
-        Err(_) => error_handler(State(state), uri).await.into_response(),
+    let path = if path.is_empty() { "index" } else { path };
+    tracing::info!(path, "serving page");
+    match state.page_store.pages.get(path) {
+        Some(html) => Html(html.to_owned()).into_response(),
+        None => error_handler(State(state), uri).await.into_response(),
     }
 }
 
@@ -36,16 +34,19 @@ pub async fn error_handler(
     State(state): State<AppState>,
     uri: Uri,
 ) -> impl IntoResponse {
-    info!("Handling error page request. Attempted Uri: {:?}", uri);
-    let file_path = format!("{}/error.html", state.dist_dir);
-    match tokio::fs::read_to_string(&file_path).await {
-        Ok(html) => {
-            (axum::http::StatusCode::NOT_FOUND, Html(html)).into_response()
+    tracing::info!(uri = %uri, "serving 404");
+    match state.page_store.pages.get("error") {
+        Some(html) => {
+            (axum::http::StatusCode::NOT_FOUND, Html(html.to_owned()))
+                .into_response()
         }
-        Err(_) => (
-            axum::http::StatusCode::NOT_FOUND,
-            Html("<h1>Not Found</h1>".to_string()),
-        )
-            .into_response(),
+        None => {
+            tracing::error!(uri = %uri, "error page missing from page store");
+            (
+                axum::http::StatusCode::NOT_FOUND,
+                Html("<h1>Not Found</h1>".to_string()),
+            )
+                .into_response()
+        }
     }
 }
