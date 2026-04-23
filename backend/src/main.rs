@@ -1,5 +1,8 @@
 use crate::types::Data;
 use axum::{Router, extract::State};
+use axum_prometheus::{
+    PrometheusMetricLayer, metrics_exporter_prometheus::PrometheusHandle,
+};
 use http::{HeaderValue, header};
 use std::{net::SocketAddr, sync::Arc};
 use tower::ServiceBuilder;
@@ -21,10 +24,13 @@ pub struct AppState {
     data: Arc<Data>,
     dist_dir: Arc<String>,
     static_dir: Arc<String>,
+    metric_handle: Arc<PrometheusHandle>,
 }
 
 #[tokio::main]
 async fn main() {
+    let (prometheus_layer, metric_handle) = PrometheusMetricLayer::pair();
+
     let static_dir = std::env::var("STATIC_DIR")
         .unwrap_or_else(|_| "../backend/static".to_string());
     let dist_dir = std::env::var("DIST_DIR")
@@ -45,6 +51,7 @@ async fn main() {
         data: Arc::new(Data::get()),
         dist_dir: Arc::new(dist_dir.clone()),
         static_dir: Arc::new(static_dir.clone()),
+        metric_handle: Arc::new(metric_handle.clone()),
     };
 
     let compression = CompressionLayer::new()
@@ -79,6 +86,7 @@ async fn main() {
         .fallback(routes::pages::error_handler)
         .route_layer(headers)
         .layer(TraceLayer::new_for_http())
+        .layer(prometheus_layer)
         .with_state(state);
 
     let addr = SocketAddr::from(([0, 0, 0, 0], 8080));

@@ -1,4 +1,7 @@
-use std::{collections::{HashMap, HashSet}, sync::Arc};
+use std::{
+    collections::{HashMap, HashSet},
+    sync::Arc,
+};
 
 use axum::{Router, extract::State, routing::get};
 use serde::Deserialize;
@@ -12,6 +15,12 @@ pub fn router() -> Router<AppState> {
     Router::new()
         .route("/data", get(get_data))
         .route("/experience", get(get_experience))
+        .route(
+            "/metrics",
+            get(|State(state): State<AppState>| async move {
+                state.metric_handle.render()
+            }),
+        )
 }
 
 pub async fn get_data(State(state): State<AppState>) -> axum::Json<Data> {
@@ -33,7 +42,10 @@ struct ZedExtensionResponse {
     data: Vec<ZedExtensionEntry>,
 }
 
-async fn fetch_extension_downloads(client: &reqwest::Client, extension_id: &str) -> Option<i64> {
+async fn fetch_extension_downloads(
+    client: &reqwest::Client,
+    extension_id: &str,
+) -> Option<i64> {
     let url = format!("https://api.zed.dev/extensions/{}", extension_id);
     tracing::debug!(extension_id, %url, "Fetching extension downloads");
 
@@ -92,19 +104,25 @@ pub async fn get_experience(
 
     let unique_repos: Vec<String> = {
         let mut seen = HashSet::new();
-        state.data.experience_items.iter()
+        state
+            .data
+            .experience_items
+            .iter()
             .map(|item| item.name.clone())
             .filter(|name| seen.insert(name.clone()))
             .collect()
     };
 
-    let handles: Vec<_> = unique_repos.iter().map(|repo| {
-        tokio::spawn(fetch_repo_stars(
-            state.github_api_key.clone(),
-            client.clone(),
-            repo.clone(),
-        ))
-    }).collect();
+    let handles: Vec<_> = unique_repos
+        .iter()
+        .map(|repo| {
+            tokio::spawn(fetch_repo_stars(
+                state.github_api_key.clone(),
+                client.clone(),
+                repo.clone(),
+            ))
+        })
+        .collect();
 
     let (gruber_dl, stars) = tokio::join!(
         fetch_extension_downloads(&client, "gruber-darker"),
@@ -119,16 +137,21 @@ pub async fn get_experience(
         }
     );
 
-    let items = state.data.experience_items.iter().map(|item| {
-        let mut item = item.clone();
-        if let Some(&s) = stars.get(&item.name) {
-            item.stars = s;
-        }
-        if item.zed_extension_id.as_deref() == Some("gruber-darker") {
-            item.downloads = gruber_dl.or(item.downloads);
-        }
-        item
-    }).collect();
+    let items = state
+        .data
+        .experience_items
+        .iter()
+        .map(|item| {
+            let mut item = item.clone();
+            if let Some(&s) = stars.get(&item.name) {
+                item.stars = s;
+            }
+            if item.zed_extension_id.as_deref() == Some("gruber-darker") {
+                item.downloads = gruber_dl.or(item.downloads);
+            }
+            item
+        })
+        .collect();
 
     axum::Json(items)
 }
