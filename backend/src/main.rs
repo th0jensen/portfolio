@@ -63,10 +63,10 @@ async fn main() {
             let key = if path.is_empty() { "index" } else { path };
             let file_path = format!("{}/{}.html", dist_dir, key);
             match tokio::fs::read_to_string(&file_path).await {
-                Ok(html) => return (key.to_owned(), html),
+                Ok(html) => (key.to_owned(), html),
                 Err(e) => {
                     tracing::warn!(path = %file_path, error = %e, "failed to load page");
-                    return (key.to_owned(), String::new());
+                    (key.to_owned(), String::new())
                 }
             }
         }
