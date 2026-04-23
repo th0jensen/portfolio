@@ -39,6 +39,7 @@ async fn main() {
     tracing_subscriber::fmt()
         .json()
         .with_level(true)
+        .flatten_event(true)
         .with_env_filter(EnvFilter::try_from_default_env().unwrap_or_else(
             |_| EnvFilter::new("backend=info,tower_http=warn,axum=warn"),
         ))
