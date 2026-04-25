@@ -20,10 +20,12 @@ use tracing_subscriber::EnvFilter;
 mod routes;
 mod types;
 
+type ExperienceCache = Arc<RwLock<Option<(Instant, Vec<ExperienceItem>)>>>;
+
 #[derive(Clone)]
 pub struct AppState {
     page_store: Arc<PageStore>,
-    experience_cache: Arc<RwLock<Option<(Instant, Vec<ExperienceItem>)>>>,
+    experience_cache: ExperienceCache,
     github_api_key: Arc<String>,
     resend_api_key: Arc<String>,
     contact_mail: Arc<String>,
