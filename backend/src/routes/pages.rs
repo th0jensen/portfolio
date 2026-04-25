@@ -34,7 +34,7 @@ pub async fn error_handler(
     State(state): State<AppState>,
     uri: Uri,
 ) -> impl IntoResponse {
-    tracing::info!(uri = %uri, "serving 404");
+    tracing::debug!(uri = %uri, "serving 404");
     match state.page_store.pages.get("error") {
         Some(html) => {
             (axum::http::StatusCode::NOT_FOUND, Html(html.to_owned()))
