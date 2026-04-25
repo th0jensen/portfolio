@@ -12,6 +12,10 @@ types:
 	rm -rf frontend/src/types/
 	cd backend && SKIP_BUN_BUILD=1 cargo test
 
+lint:
+	cd backend && cargo clippy
+	cd frontend && bunx tsc --noEmit
+
 dev:
 	cd backend && RUST_LOG=DEBUG cargo run
 
