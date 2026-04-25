@@ -1,6 +1,7 @@
 use std::{
     collections::{HashMap, HashSet},
     sync::Arc,
+    time::{Duration, Instant},
 };
 
 use axum::{Router, extract::State, routing::get};
@@ -98,7 +99,20 @@ async fn fetch_repo_stars(
 pub async fn get_experience(
     State(state): State<AppState>,
 ) -> axum::Json<Vec<ExperienceItem>> {
-    tracing::debug!("fetching experience data");
+    const TTL: Duration = Duration::from_secs(3 * 24 * 60 * 60);
+
+    let cached = state.experience_cache.read().ok().and_then(|guard| {
+        guard
+            .as_ref()
+            .and_then(|(at, items)| (at.elapsed() < TTL).then(|| items.clone()))
+    });
+
+    if let Some(items) = cached {
+        tracing::debug!("serving experience from cache");
+        return axum::Json(items);
+    }
+
+    tracing::info!("fetching experience data");
     let client = reqwest::Client::builder()
         .user_agent("portfolio-backend")
         .build()
@@ -139,7 +153,7 @@ pub async fn get_experience(
         }
     );
 
-    let items = state
+    let items: Vec<ExperienceItem> = state
         .data
         .experience_items
         .iter()
@@ -154,6 +168,10 @@ pub async fn get_experience(
             item
         })
         .collect();
+
+    if let Ok(mut cache) = state.experience_cache.write() {
+        *cache = Some((Instant::now(), items.clone()));
+    }
 
     axum::Json(items)
 }

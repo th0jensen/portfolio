@@ -1,11 +1,16 @@
-use crate::types::Data;
+use crate::types::{Data, ExperienceItem};
 use axum::{Router, extract::State};
 use axum_prometheus::{
     PrometheusMetricLayer, metrics_exporter_prometheus::PrometheusHandle,
 };
 use futures::future::join_all;
 use http::{HeaderValue, header};
-use std::{collections::HashMap, net::SocketAddr, sync::Arc};
+use std::{
+    collections::HashMap,
+    net::SocketAddr,
+    sync::{Arc, RwLock},
+    time::Instant,
+};
 use tower::ServiceBuilder;
 use tower_http::{
     compression::CompressionLayer, set_header::SetResponseHeaderLayer,
@@ -18,6 +23,7 @@ mod types;
 #[derive(Clone)]
 pub struct AppState {
     page_store: Arc<PageStore>,
+    experience_cache: Arc<RwLock<Option<(Instant, Vec<ExperienceItem>)>>>,
     github_api_key: Arc<String>,
     resend_api_key: Arc<String>,
     contact_mail: Arc<String>,
@@ -84,6 +90,7 @@ async fn main() {
 
     let state = AppState {
         page_store: Arc::new(PageStore { pages }),
+        experience_cache: Arc::new(RwLock::new(None)),
         github_api_key: Arc::new(
             std::env::var("GITHUB_API_KEY").expect("Missing GITHUB_API_KEY"),
         ),
