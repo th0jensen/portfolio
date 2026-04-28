@@ -142,9 +142,9 @@ async fn main() {
     let app: Router = Router::new()
         .merge(routes::pages::router())
         .merge(routes::assets::router(State(&state)))
-        .nest("/api", routes::api::router())
         .fallback(routes::pages::error_handler)
         .route_layer(headers)
+        .nest("/api", routes::api::router())
         .layer(prometheus_layer)
         .layer(TraceLayer::new_for_http())
         .with_state(state);

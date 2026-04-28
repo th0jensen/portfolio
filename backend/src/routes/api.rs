@@ -5,7 +5,12 @@ use std::{
 };
 
 use axum::{Router, extract::State, routing::get};
+use http::{HeaderValue, header};
 use serde::Deserialize;
+use tower::ServiceBuilder;
+use tower_http::{
+    compression::CompressionLayer, set_header::SetResponseHeaderLayer,
+};
 
 use crate::{
     AppState,
@@ -13,16 +18,30 @@ use crate::{
 };
 
 pub fn router() -> Router<AppState> {
+    let compression = CompressionLayer::new()
+        .gzip(true)
+        .br(true)
+        .deflate(true)
+        .zstd(true);
+
+    let headers = ServiceBuilder::new().layer(compression).layer(
+        SetResponseHeaderLayer::overriding(
+            header::CACHE_CONTROL,
+            HeaderValue::from_static("public, max-age=86400"),
+        ),
+    );
+
     Router::new()
         .route("/data", get(get_data))
         .route("/experience", get(get_experience))
-        .route("/scrobbling", get(get_lastfm))
+        .route_layer(headers)
         .route(
             "/metrics",
             get(|State(state): State<AppState>| async move {
                 state.metric_handle.render()
             }),
         )
+        .route("/scrobbling", get(get_lastfm))
 }
 
 pub async fn get_lastfm(
