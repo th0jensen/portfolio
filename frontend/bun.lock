@@ -5,10 +5,10 @@
     "": {
       "name": "ilha-vite",
       "dependencies": {
-        "@ilha/form": "^0.2.0",
         "@ilha/router": "^0.2.0",
+        "@ilha/store": "^0.2.0",
         "@types/bun": "^1.3.12",
-        "ilha": "^0.2.0",
+        "ilha": "^0.3.0",
         "lucide": "^1.8.0",
         "zod": "^4.3.6",
       },
@@ -25,9 +25,9 @@
 
     "@emnapi/wasi-threads": ["@emnapi/wasi-threads@1.2.1", "", { "dependencies": { "tslib": "^2.4.0" } }, "sha512-uTII7OYF+/Mes/MrcIOYp5yOtSMLBWSIoLPpcgwipoiKbli6k322tcoFsxoIIxPDqW01SQGAgko4EzZi2BNv2w=="],
 
-    "@ilha/form": ["@ilha/form@0.2.0", "", {}, "sha512-Fw9rohDnCoCQyw/XDlpU4YlOPgpBDvClRAt77YftvkKdRGeRJKnzLILp8B5Gv9mExgOXxjnrGjumExUYqryDTQ=="],
-
     "@ilha/router": ["@ilha/router@0.2.0", "", { "dependencies": { "ilha": "0.2.0", "rou3": "0.8.1" } }, "sha512-d2U5rBIubbtUwEreHZwas9Aolxv63GSGczw+Jx7OS/2HHkzCDskm8nFDDPu74sD7A2NPXRneGaHfFdl+wigUbg=="],
+
+    "@ilha/store": ["@ilha/store@0.2.0", "", { "dependencies": { "alien-signals": "3.1.2", "ilha": "0.3.1" } }, "sha512-Uz3uNXaI3WDp5MnOp8sIywH0VUiZR+mQf3SMlHMqRUWQVqvEJGBwoDv/LvT4Mq3hgEF0BUXna855ANNR5aCrgw=="],
 
     "@napi-rs/wasm-runtime": ["@napi-rs/wasm-runtime@1.1.4", "", { "dependencies": { "@tybys/wasm-util": "^0.10.1" }, "peerDependencies": { "@emnapi/core": "^1.7.1", "@emnapi/runtime": "^1.7.1" } }, "sha512-3NQNNgA1YSlJb/kMH1ildASP9HW7/7kYnRI2szWJaofaS1hWmbGI4H+d3+22aGzXXN9IJ+n+GiFVcGipJP18ow=="],
 
@@ -81,7 +81,7 @@
 
     "fsevents": ["fsevents@2.3.3", "", { "os": "darwin" }, "sha512-5xoDfX+fL7faATnagmWPpbFtwh/R77WmMMqqHGS65C3vvB0YHrgF+B1YmZ3441tMj5n63k0212XNoJwzlhffQw=="],
 
-    "ilha": ["ilha@0.2.0", "", { "dependencies": { "alien-signals": "3.1.2" } }, "sha512-uKXR0uqMwXEEAnVqVpOUN+G3BN8rT2dMS9XqDqZrmelrsUzug2vSY6gmPUhDGPW4+UXJDCuG0PV8xRf6iEshTg=="],
+    "ilha": ["ilha@0.3.1", "", { "dependencies": { "alien-signals": "3.1.2" } }, "sha512-xI/Y4P53RsFSdDdw4MoraQjbHu1uNuDavx/H1DOCQtYCqdq1jNdzdBuxZV/eIH4Ml/8iTZHszclPv2300YknCg=="],
 
     "lightningcss": ["lightningcss@1.32.0", "", { "dependencies": { "detect-libc": "^2.0.3" }, "optionalDependencies": { "lightningcss-android-arm64": "1.32.0", "lightningcss-darwin-arm64": "1.32.0", "lightningcss-darwin-x64": "1.32.0", "lightningcss-freebsd-x64": "1.32.0", "lightningcss-linux-arm-gnueabihf": "1.32.0", "lightningcss-linux-arm64-gnu": "1.32.0", "lightningcss-linux-arm64-musl": "1.32.0", "lightningcss-linux-x64-gnu": "1.32.0", "lightningcss-linux-x64-musl": "1.32.0", "lightningcss-win32-arm64-msvc": "1.32.0", "lightningcss-win32-x64-msvc": "1.32.0" } }, "sha512-NXYBzinNrblfraPGyrbPoD19C1h9lfI/1mzgWYvXUTe414Gz/X1FD2XBZSZM7rRTrMA8JL3OtAaGifrIKhQ5yQ=="],
 
@@ -134,5 +134,7 @@
     "vite": ["vite@8.0.8", "", { "dependencies": { "lightningcss": "^1.32.0", "picomatch": "^4.0.4", "postcss": "^8.5.8", "rolldown": "1.0.0-rc.15", "tinyglobby": "^0.2.15" }, "optionalDependencies": { "fsevents": "~2.3.3" }, "peerDependencies": { "@types/node": "^20.19.0 || >=22.12.0", "@vitejs/devtools": "^0.1.0", "esbuild": "^0.27.0 || ^0.28.0", "jiti": ">=1.21.0", "less": "^4.0.0", "sass": "^1.70.0", "sass-embedded": "^1.70.0", "stylus": ">=0.54.8", "sugarss": "^5.0.0", "terser": "^5.16.0", "tsx": "^4.8.1", "yaml": "^2.4.2" }, "optionalPeers": ["@types/node", "@vitejs/devtools", "esbuild", "jiti", "less", "sass", "sass-embedded", "stylus", "sugarss", "terser", "tsx", "yaml"], "bin": { "vite": "bin/vite.js" } }, "sha512-dbU7/iLVa8KZALJyLOBOQ88nOXtNG8vxKuOT4I2mD+Ya70KPceF4IAmDsmU0h1Qsn5bPrvsY9HJstCRh3hG6Uw=="],
 
     "zod": ["zod@4.3.6", "", {}, "sha512-rftlrkhHZOcjDwkGlnUtZZkvaPHCsDATp4pGpuOOMDaTdDDXF91wuVDJoWoPsKX/3YPQ5fHuF3STjcYyKr+Qhg=="],
+
+    "@ilha/router/ilha": ["ilha@0.2.0", "", { "dependencies": { "alien-signals": "3.1.2" } }, "sha512-uKXR0uqMwXEEAnVqVpOUN+G3BN8rT2dMS9XqDqZrmelrsUzug2vSY6gmPUhDGPW4+UXJDCuG0PV8xRf6iEshTg=="],
   }
 }
