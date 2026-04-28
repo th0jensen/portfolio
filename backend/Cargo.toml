@@ -15,6 +15,7 @@ axum-core = "=0.5.6"
 axum-prometheus = "0.10.0"
 futures = "0.3.32"
 http = "=1.4.0"
+lastfm = "0.10.0"
 regex = "1.12.3"
 resend-rs = "0.24.0"
 serde = { version = "1.0.228", features = ["derive"]}

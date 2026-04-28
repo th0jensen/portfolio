@@ -26,6 +26,7 @@ type ExperienceCache = Arc<RwLock<Option<(Instant, Vec<ExperienceItem>)>>>;
 pub struct AppState {
     page_store: Arc<PageStore>,
     experience_cache: ExperienceCache,
+    lastfm_client: Arc<lastfm::Client<String, String>>,
     github_api_key: Arc<String>,
     resend_api_key: Arc<String>,
     contact_mail: Arc<String>,
@@ -90,9 +91,23 @@ async fn main() {
         "page store initialized"
     );
 
+    let lastfm_client = Arc::new(
+        lastfm::Client::builder()
+            .api_key(
+                std::env::var("LASTFM_API_KEY")
+                    .expect("Missing LASTFM_API_KEY"),
+            )
+            .username(
+                std::env::var("LASTFM_USERNAME")
+                    .expect("Missing LASTFM_USERNAME"),
+            )
+            .build(),
+    );
+
     let state = AppState {
         page_store: Arc::new(PageStore { pages }),
         experience_cache: Arc::new(RwLock::new(None)),
+        lastfm_client,
         github_api_key: Arc::new(
             std::env::var("GITHUB_API_KEY").expect("Missing GITHUB_API_KEY"),
         ),

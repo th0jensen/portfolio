@@ -9,19 +9,32 @@ use serde::Deserialize;
 
 use crate::{
     AppState,
-    types::{Data, ExperienceItem},
+    types::{Data, ExperienceItem, NowPlayingTrack},
 };
 
 pub fn router() -> Router<AppState> {
     Router::new()
         .route("/data", get(get_data))
         .route("/experience", get(get_experience))
+        .route("/scrobbling", get(get_lastfm))
         .route(
             "/metrics",
             get(|State(state): State<AppState>| async move {
                 state.metric_handle.render()
             }),
         )
+}
+
+pub async fn get_lastfm(
+    State(state): State<AppState>,
+) -> axum::Json<Option<NowPlayingTrack>> {
+    match state.lastfm_client.now_playing().await {
+        Ok(np) => axum::Json(np.map(Into::into)),
+        Err(e) => {
+            tracing::error!(e = %e, "failed to reach last.fm");
+            axum::Json(None)
+        }
+    }
 }
 
 pub async fn get_data(State(state): State<AppState>) -> axum::Json<Data> {
