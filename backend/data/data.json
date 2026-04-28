@@ -15,6 +15,8 @@
       "role": "Rust Developer",
       "description": "Focused on systems work, native tooling, and open source. I contribute to Zed and build desktop and backend tools with a strong bias toward performance, reliability, and control.",
       "currently_building": "Currently building: Crabdash",
+      "now_playing": "Listening to",
+      "by": "by",
       "explore_work": "Explore my projects"
     },
     "buttons": {
@@ -54,6 +56,8 @@
       "role": "Rust-utvikler",
       "description": "Fokusert på systemdesign, native verktøy og åpen kildekode. Jeg bidrar til Zed og bygger desktop- og backendverktøy med sterk vekt på ytelse, pålitelighet og kontroll.",
       "currently_building": "Bygger for øyeblikket: Crabdash",
+      "now_playing": "Hører på",
+      "by": "av",
       "explore_work": "Se prosjektene mine"
     },
     "buttons": {

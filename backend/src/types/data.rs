@@ -108,6 +108,8 @@ pub struct Hero {
     pub role: String,
     pub description: String,
     pub currently_building: String,
+    pub now_playing: String,
+    pub by: String,
     pub explore_work: String,
 }
 
