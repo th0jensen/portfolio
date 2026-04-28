@@ -1,48 +1,48 @@
-import ilha, { html } from "ilha";
+import ilha, { html } from 'ilha';
 import {
   extractFormData,
   issuesToErrors,
   validateWithSchema,
   type FormErrors,
-} from "@ilha/store/form";
-import { dataSignal } from "../lib/data";
-import { locale } from "../lib/locale";
-import z from "zod";
-import { createStore } from "@ilha/store";
+} from '@ilha/store/form';
+import { dataSignal } from '../lib/data';
+import { locale } from '../lib/locale';
+import z from 'zod';
+import { createStore } from '@ilha/store';
 
-type Status = "idle" | "loading" | "success" | "error";
+type Status = 'idle' | 'loading' | 'success' | 'error';
 
 const emailSchema = z.object({
-  full_name: z.string().min(1, "Name is required."),
-  email: z.email("Invalid email address."),
-  content: z.string().min(1, "Message is required."),
+  full_name: z.string().min(1, 'Name is required.'),
+  email: z.email('Invalid email address.'),
+  content: z.string().min(1, 'Message is required.'),
 });
 
 const contactFormStore = createStore(
-  { status: "idle" as Status, message: "", errors: {} as FormErrors },
+  { status: 'idle' as Status, message: '', errors: {} as FormErrors },
   (set) => ({
     async submit(event: SubmitEvent) {
       const form = event.target as HTMLFormElement;
       const result = validateWithSchema(emailSchema, extractFormData(form));
 
       if (result.ok) {
-        set({ status: "loading" });
+        set({ status: 'loading' });
         try {
-          const res = await fetch("/contact", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
+          const res = await fetch('/contact', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(result.data),
           });
           const json = (await res.json()) as { ok: boolean; message: string };
-          set({ message: json.message, status: json.ok ? "success" : "error" });
+          set({ message: json.message, status: json.ok ? 'success' : 'error' });
           if (json.ok) form.reset();
         } catch {
-          set({ status: "error", message: "Network error. Please try again." });
+          set({ status: 'error', message: 'Network error. Please try again.' });
         }
         set({ errors: {} });
 
         setTimeout(() => {
-          set({ status: "idle", message: "" });
+          set({ status: 'idle', message: '' });
         }, 2 * 1000 /* 2 seconds */);
       } else {
         set({ errors: issuesToErrors(result.issues) });
@@ -52,7 +52,7 @@ const contactFormStore = createStore(
 );
 
 export default ilha
-  .on("form@submit", ({ event }) => {
+  .on('form@submit', ({ event }) => {
     event.preventDefault();
     contactFormStore.getState().submit(event);
   })
@@ -81,7 +81,7 @@ export default ilha
                 />
                 ${errors.full_name
                   ? html`<span class="form-error">${errors.full_name[0]}</span>`
-                  : ""}
+                  : ''}
               </div>
               <div class="form-group">
                 <label for="email">Email</label>
@@ -93,7 +93,7 @@ export default ilha
                 />
                 ${errors.email
                   ? html`<span class="form-error">${errors.email[0]}</span>`
-                  : ""}
+                  : ''}
               </div>
               <div class="form-group">
                 <label for="content">Message</label>
@@ -104,18 +104,18 @@ export default ilha
                 ></textarea>
                 ${errors.content
                   ? html`<span class="form-error">${errors.content[0]}</span>`
-                  : ""}
+                  : ''}
               </div>
-              ${status === "error"
+              ${status === 'error'
                 ? html`<p class="form-error">${message}</p>`
-                : ""}
-              ${status === "success"
+                : ''}
+              ${status === 'success'
                 ? html`<p class="form-success">${message}</p>`
-                : ""}
+                : ''}
               <button
                 type="submit"
                 class="btn btn-primary"
-                ${status === "loading" ? "disabled" : ""}
+                ${status === 'loading' ? 'disabled' : ''}
               >
                 Send
               </button>

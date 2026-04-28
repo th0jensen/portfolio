@@ -1,17 +1,17 @@
-import ilha, { html } from "ilha";
-import type { ExperienceItem } from "../types/ExperienceItem";
-import { dataSignal, experienceSignal } from "../lib/data";
-import { locale } from "../lib/locale";
+import ilha, { html } from 'ilha';
+import type { ExperienceItem } from '../types/ExperienceItem';
+import { dataSignal, experienceSignal } from '../lib/data';
+import { locale } from '../lib/locale';
 
-fetch("/api/experience")
+fetch('/api/experience')
   .then((r) => r.json() as Promise<ExperienceItem[]>)
   .then((items) => experienceSignal(items))
   .catch(() => {});
 
 function formatCompact(n: bigint | number): string {
-  const v = typeof n === "bigint" ? Number(n) : n;
-  if (v >= 1_000_000) return (v / 1_000_000).toFixed(1) + "m";
-  if (v >= 1_000) return (v / 1_000).toFixed(1) + "k";
+  const v = typeof n === 'bigint' ? Number(n) : n;
+  if (v >= 1_000_000) return (v / 1_000_000).toFixed(1) + 'm';
+  if (v >= 1_000) return (v / 1_000).toFixed(1) + 'k';
   return v.toString();
 }
 
@@ -34,7 +34,10 @@ function experienceCard(item: ExperienceItem) {
 
   const prStats =
     item.additions != null
-      ? html`<span style="display:inline-flex;align-items:center;gap:0.25rem"><span class="pr-additions">+${item.additions}</span><span class="pr-deletions">−${item.deletions}</span></span>`
+      ? html`<span style="display:inline-flex;align-items:center;gap:0.25rem"
+          ><span class="pr-additions">+${item.additions}</span
+          ><span class="pr-deletions">−${item.deletions}</span></span
+        >`
       : html``;
 
   return html`
@@ -48,8 +51,20 @@ function experienceCard(item: ExperienceItem) {
         ></span>
         <span>${item.language}</span>
         <span class="repo-card__stars">★ ${formatCompact(item.stars)}</span>
-        ${item.downloads != null && item.type === "zed-extension" ? html`<span class="repo-card__downloads">↓ ${formatCompact(item.downloads)}</span>` : html``}
-        ${item.additions != null ? html`<span class="repo-card__pr-info" style="display:inline-flex;align-items:center;gap:0.75rem;margin-left:auto">${prStats}${prBadge(item.pr_state)}</span>` : html`<span style="margin-left:auto">${prBadge(item.pr_state)}</span>`}
+        ${item.downloads != null && item.type === 'zed-extension'
+          ? html`<span class="repo-card__downloads"
+              >↓ ${formatCompact(item.downloads)}</span
+            >`
+          : html``}
+        ${item.additions != null
+          ? html`<span
+              class="repo-card__pr-info"
+              style="display:inline-flex;align-items:center;gap:0.75rem;margin-left:auto"
+              >${prStats}${prBadge(item.pr_state)}</span
+            >`
+          : html`<span style="margin-left:auto"
+              >${prBadge(item.pr_state)}</span
+            >`}
       </div>
     </div>
   `;

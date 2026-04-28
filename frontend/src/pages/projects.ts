@@ -1,7 +1,7 @@
-import ilha, { html } from "ilha";
-import type { Project } from "../types/Project";
-import { dataSignal } from "../lib/data";
-import { locale } from "../lib/locale";
+import ilha, { html } from 'ilha';
+import type { Project } from '../types/Project';
+import { dataSignal } from '../lib/data';
+import { locale } from '../lib/locale';
 
 function projectCard(
   project: Project,
@@ -9,14 +9,14 @@ function projectCard(
   visitLabel: string,
   appStoreLabel: string,
 ) {
-  const featuredClass = featured ? " project-card--featured" : "";
+  const featuredClass = featured ? ' project-card--featured' : '';
 
   const techPills = Object.keys(project.technologies).map(
     (tech) => html`<span class="tech-pill">${tech}</span>`,
   );
 
-  const isAppStore = project.source_type === "appstore";
-  const isGithub = project.source_type === "github";
+  const isAppStore = project.source_type === 'appstore';
+  const isGithub = project.source_type === 'github';
   const hasSrc = !!project.source_link && !isAppStore;
 
   const title = hasSrc
@@ -89,12 +89,12 @@ export default ilha.render(() => {
 
   const loc = data[l];
   const visitLabel =
-    loc.work.visit_project.replace("{name}", "").trim() || "View project";
+    loc.work.visit_project.replace('{name}', '').trim() || 'View project';
   const appStoreLabel = loc.work.download_app_store;
 
   const cards = data.projects.map(
     (project, i) =>
-      html`<div class="${i === 0 ? "project-grid__item--featured" : ""}">
+      html`<div class="${i === 0 ? 'project-grid__item--featured' : ''}">
         ${projectCard(project, i === 0, visitLabel, appStoreLabel)}
       </div>`,
   );

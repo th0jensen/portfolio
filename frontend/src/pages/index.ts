@@ -1,13 +1,13 @@
-import ilha, { html, raw } from "ilha";
-import { dataSignal } from "../lib/data";
-import { locale } from "../lib/locale";
+import ilha, { html, raw } from 'ilha';
+import { dataSignal } from '../lib/data';
+import { locale } from '../lib/locale';
 
-const CRABDASH_URL = "https://github.com/th0jensen/crabdash";
-const GITHUB_URL = "https://github.com/th0jensen";
-const LINKEDIN_URL = "https://www.linkedin.com/in/thomas-jensen-75a488208/";
+const CRABDASH_URL = 'https://github.com/th0jensen/crabdash';
+const GITHUB_URL = 'https://github.com/th0jensen';
+const LINKEDIN_URL = 'https://www.linkedin.com/in/thomas-jensen-75a488208/';
 
 function calculateAge(birthday: string): number {
-  const [month, day, year] = birthday.split("-").map(Number);
+  const [month, day, year] = birthday.split('-').map(Number);
   const birth = new Date(year, month - 1, day);
   const today = new Date();
   let age = today.getFullYear() - birth.getFullYear();
@@ -17,7 +17,7 @@ function calculateAge(birthday: string): number {
 }
 
 function renderCurrentlyBuilding(text: string) {
-  const name = "Crabdash";
+  const name = 'Crabdash';
   const idx = text.indexOf(name);
   if (idx === -1) {
     return html`${text}
@@ -33,22 +33,29 @@ function renderCurrentlyBuilding(text: string) {
     >${text.slice(idx + name.length)}`;
 }
 
+async function nowPlaying() {
+  const track = await fetch('/api/scrobbling');
+  if (!track.ok) {
+    return html``;
+  }
+}
+
 export default ilha.render(() => {
   const data = dataSignal()!;
   const l = locale();
 
   const loc = data[l];
   const age = calculateAge(data.about.birthday);
-  const description = loc.hero.description.replace("{age}", String(age));
+  const description = loc.hero.description.replace('{age}', String(age));
   const name = `${data.about.first_name} ${data.about.last_name}`;
 
   const headshot = (mobile = false) => html`
-    <div class="${mobile ? "hero-mobile-image" : "hero-portrait"}">
+    <div class="${mobile ? 'hero-mobile-image' : 'hero-portrait'}">
       <img
         src="/static/headshot.jpg"
         alt="Headshot photo of ${data.about.first_name}"
         fetchpriority="high"
-        ${mobile ? raw("width=1200 height=1391") : raw("width=360 height=418")}
+        ${mobile ? raw('width=1200 height=1391') : raw('width=360 height=418')}
       />
     </div>
   `;

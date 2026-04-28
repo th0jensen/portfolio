@@ -1,10 +1,13 @@
-import { context } from "ilha";
-import type { Data } from "../types/Data";
-import type { HeaderData } from "../types/HeaderData";
-import type { ExperienceItem } from "../types/ExperienceItem";
+import { context } from 'ilha';
+import type { Data } from '../types/Data';
+import type { HeaderData } from '../types/HeaderData';
+import type { ExperienceItem } from '../types/ExperienceItem';
 
-export const dataSignal = context("appData", null as unknown as Data);
-export const experienceSignal = context("experience", null as ExperienceItem[] | null);
+export const dataSignal = context('appData', null as unknown as Data);
+export const experienceSignal = context(
+  'experience',
+  null as ExperienceItem[] | null,
+);
 
 // Used by the prerender script to supply data without a DOM
 let _ssrData: Data | null = null;
@@ -15,7 +18,7 @@ export function setData(d: Data): void {
 // Used by page components (prerender script only — tree-shaken from browser bundle)
 export function getData(): Data {
   if (_ssrData) return _ssrData;
-  const el = document.getElementById("__DATA__")!;
+  const el = document.getElementById('__DATA__')!;
   return JSON.parse(el.textContent!) as Data;
 }
 
@@ -25,12 +28,20 @@ export function getHeaderData(): HeaderData {
   if (_headerCache) return _headerCache;
   if (_ssrData) {
     _headerCache = {
-      en: { nav: _ssrData.en.nav, buttons: _ssrData.en.buttons, theme: _ssrData.en.theme },
-      no: { nav: _ssrData.no.nav, buttons: _ssrData.no.buttons, theme: _ssrData.no.theme },
+      en: {
+        nav: _ssrData.en.nav,
+        buttons: _ssrData.en.buttons,
+        theme: _ssrData.en.theme,
+      },
+      no: {
+        nav: _ssrData.no.nav,
+        buttons: _ssrData.no.buttons,
+        theme: _ssrData.no.theme,
+      },
     };
     return _headerCache;
   }
-  const el = document.getElementById("__DATA__")!;
+  const el = document.getElementById('__DATA__')!;
   _headerCache = JSON.parse(el.textContent!) as HeaderData;
   return _headerCache;
 }
