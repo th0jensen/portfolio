@@ -10,6 +10,7 @@ use serde::Serialize;
 #[allow(dead_code)]
 /// A Last.fm track that is currently playing.
 #[derive(ts_rs::TS, Serialize, Debug, Clone, PartialEq, Eq, Hash)]
+#[ts(export)]
 pub struct NowPlayingTrack {
     pub artist: String,
     pub name: String,
