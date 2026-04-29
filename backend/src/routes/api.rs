@@ -15,6 +15,7 @@ pub fn router() -> Router<AppState> {
         .handler(experience)
         .handler(lastfm);
 
+    #[cfg(debug_assertions)]
     router.write_bindings_to_dir("../frontend/src/bindings");
     router
 }
