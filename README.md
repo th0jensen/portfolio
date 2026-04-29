@@ -1,7 +1,5 @@
 # Portfolio
 
-My personal portfolio. Rust/Axum is used for the backend, Ilha on the frontend.
-
 > [!NOTE]
 > Ilha is a new island architecture library you've probably not heard of. Visit [ilha.build](https://ilha.build) for info.
 
