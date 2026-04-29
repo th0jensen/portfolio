@@ -20,8 +20,14 @@
       "explore_work": "Explore my projects"
     },
     "buttons": {
-      "github": "GitHub",
-      "linkedin": "LinkedIn",
+      "github": {
+        "label": "GitHub",
+        "url": "https://github.com/th0jensen"
+      },
+      "linkedin": {
+        "label": "LinkedIn",
+        "url": "https://www.linkedin.com/in/thomas-jensen-75a488208/"
+      },
       "resume": "Resume"
     },
     "work": {
@@ -61,8 +67,14 @@
       "explore_work": "Se prosjektene mine"
     },
     "buttons": {
-      "github": "GitHub",
-      "linkedin": "LinkedIn",
+      "github": {
+        "label": "GitHub",
+        "url": "https://github.com/th0jensen"
+      },
+      "linkedin": {
+        "label": "LinkedIn",
+        "url": "https://www.linkedin.com/in/thomas-jensen-75a488208/"
+      },
       "resume": "CV"
     },
     "work": {
@@ -182,6 +194,18 @@
       "language_color": "#c25a3c",
       "type": "repo",
       "downloads": null
+    }
+  ],
+  "locales": [
+    {
+      "code": "en",
+      "label": "English",
+      "flag": "🇬🇧"
+    },
+    {
+      "code": "no",
+      "label": "Norsk",
+      "flag": "🇳🇴"
     }
   ]
 }

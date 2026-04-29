@@ -26,6 +26,7 @@ pub struct Data {
     pub about: About,
     pub projects: Vec<Project>,
     pub experience_items: Vec<ExperienceItem>,
+    pub locales: Vec<Locale>,
 }
 
 #[allow(dead_code)]
@@ -124,9 +125,15 @@ pub struct Project {
 
 #[derive(ts_rs::TS, Clone, Serialize, Deserialize)]
 pub struct Buttons {
-    pub github: String,
-    pub linkedin: String,
+    pub github: SocialButton,
+    pub linkedin: SocialButton,
     pub resume: String,
+}
+
+#[derive(ts_rs::TS, Clone, Serialize, Deserialize)]
+pub struct SocialButton {
+    label: String,
+    url: String,
 }
 
 #[derive(ts_rs::TS, Clone, Serialize, Deserialize)]
@@ -153,4 +160,11 @@ pub struct Contact {
     pub full_name: String,
     pub email: String,
     pub content: String,
+}
+
+#[derive(ts_rs::TS, Clone, Serialize, Deserialize)]
+pub struct Locale {
+    pub code: String,
+    pub label: String,
+    pub flag: String,
 }
