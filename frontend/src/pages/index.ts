@@ -1,8 +1,8 @@
 import ilha, { html, raw } from 'ilha';
-import { dataSignal } from '../lib/data';
 import { locale } from '../lib/locale';
-import type { NowPlayingTrack } from '../types/NowPlayingTrack';
-import type { Hero } from '../types/Hero';
+import api from '../lib/rpc';
+import type { Data, NowPlayingTrack } from '../bindings';
+import type { Hero } from '../bindings/Hero';
 
 const CRABDASH_URL = 'https://github.com/th0jensen/crabdash';
 const GITHUB_URL = 'https://github.com/th0jensen';
@@ -42,18 +42,27 @@ function renderCurrentlyBuilding(text: string) {
 }
 
 export default ilha
+  .state('data', null as Data | null)
   .state('nowPlaying', null as NowPlayingTrack | null)
   .effect(({ state }) => {
-    fetch('/api/scrobbling')
-      .then((r) => (r.ok ? r.json() : null))
-      .then((result: NowPlayingTrack | null) => state.nowPlaying(result))
-      .catch(() => {});
+    (async () => {
+      try {
+        const result = await api.data.query();
+        state.data(result);
+      } catch {}
+    })();
+    (async () => {
+      try {
+        const result = await api.lastfm.query();
+        state.nowPlaying(result);
+      } catch {}
+    })();
   })
   .render(({ state }) => {
-    const data = dataSignal()!;
-    const l = locale();
+    const data = state.data();
+    if (!data) return html``;
 
-    const loc = data[l];
+    const loc = data[locale()];
     const age = calculateAge(data.about.birthday);
     const description = loc.hero.description.replace('{age}', String(age));
     const name = `${data.about.first_name} ${data.about.last_name}`;

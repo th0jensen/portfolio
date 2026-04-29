@@ -43,19 +43,18 @@ pub struct ExperienceItem {
     #[ts(rename = "type")]
     pub item_type: String,
     pub downloads: Option<i64>,
-    #[serde(skip_serializing_if = "Option::is_none")]
+    #[ts(optional)]
     pub pr_number: Option<i64>,
-    #[serde(skip_serializing_if = "Option::is_none")]
+    #[ts(optional)]
     pub pr_state: Option<String>,
-    #[serde(skip_serializing_if = "Option::is_none")]
+    #[ts(optional)]
     pub additions: Option<i64>,
-    #[serde(skip_serializing_if = "Option::is_none")]
+    #[ts(optional)]
     pub deletions: Option<i64>,
-    #[serde(skip_serializing_if = "Option::is_none")]
+    #[ts(optional)]
     pub zed_extension_url: Option<String>,
-    #[serde(skip_serializing_if = "Option::is_none")]
+    #[ts(optional)]
     pub github_url: Option<String>,
-    #[serde(skip_serializing, default)]
     #[ts(skip)]
     pub zed_extension_id: Option<String>,
 }

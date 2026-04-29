@@ -57,15 +57,8 @@ fn main() {
             fs::read_to_string(format!("{dist_dir}/prerendered/{name}.html"))
                 .unwrap_or_else(|_| panic!("prerendered/{name}.html missing"));
 
-        let data_json = data_str.replace("</script", "<\\/script");
-
-        let html = page_shell(
-            &fragment,
-            &header_html,
-            &footer_html,
-            &data_json,
-            &description,
-        );
+        let html =
+            page_shell(&fragment, &header_html, &footer_html, &description);
 
         fs::write(format!("{dist_dir}/{name}.html"), html)
             .unwrap_or_else(|_| panic!("Failed to write {name}.html"));
@@ -85,12 +78,10 @@ fn page_shell(
     app_html: &str,
     header_html: &str,
     footer_html: &str,
-    data_json: &str,
     description: &str,
 ) -> String {
     include_str!("base.html")
         .replace("%%DESC%%", description)
-        .replace("%%DATA_JSON%%", data_json)
         .replace("%%HEADER%%", header_html)
         .replace("%%APP%%", app_html)
         .replace("%%FOOTER%%", footer_html)

@@ -1,5 +1,5 @@
 use crate::types::{Data, ExperienceItem};
-use axum::{Router, extract::State};
+use axum::{Router, extract::State, routing::get};
 use axum_prometheus::{
     PrometheusMetricLayer, metrics_exporter_prometheus::PrometheusHandle,
 };
@@ -139,12 +139,21 @@ async fn main() {
         ),
     );
 
+    let (qubit_service, qubit_handle) =
+        routes::api::router().to_service(state.clone());
+
     let app: Router = Router::new()
         .merge(routes::pages::router())
         .merge(routes::assets::router(State(&state)))
         .fallback(routes::pages::error_handler)
         .route_layer(headers)
-        .nest("/api", routes::api::router())
+        .nest_service("/rpc", qubit_service)
+        .route(
+            "/api/metrics",
+            get(|State(state): State<AppState>| async move {
+                state.metric_handle.render()
+            }),
+        )
         .layer(prometheus_layer)
         .layer(TraceLayer::new_for_http())
         .with_state(state);
@@ -152,6 +161,7 @@ async fn main() {
     let addr = SocketAddr::from(([0, 0, 0, 0], 8080));
     tracing::info!(addr = %addr, "server starting");
 
-    let listener = tokio::net::TcpListener::bind("0.0.0.0:8080").await.unwrap();
+    let listener = tokio::net::TcpListener::bind(&addr).await.unwrap();
     axum::serve(listener, app).await.unwrap();
+    qubit_handle.stop().unwrap();
 }

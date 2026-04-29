@@ -3,18 +3,26 @@ import { routePath } from '@ilha/router';
 import { LOCALES, locale, setLocale } from '../lib/locale';
 import { ChevronDown, createIcons, Menu, Moon, Sun, X } from 'lucide';
 import icon from '../lib/icon';
-import type { Data } from '../types/Data';
-import { getData } from '../lib/data';
+import type { Data } from '../bindings';
+import api from '../lib/rpc';
 
 if (typeof document !== 'undefined') {
   createIcons({ icons: { Sun, Moon, Menu, X, ChevronDown } });
 }
 
 export default ilha
-  .state('data', getData() as Data)
+  .state('data', null as Data | null)
   .state('mobileOpen', false)
   .state('theme', 'dark' as 'light' | 'dark')
   .state('scrolled', false)
+  .effect(({ state }) => {
+    (async () => {
+      try {
+        const result = await api.data.query();
+        state.data(result);
+      } catch {}
+    })();
+  })
   .effect(({ state }) => {
     const saved = localStorage.getItem('theme') as 'light' | 'dark' | null;
     state.theme(saved ?? 'dark');
@@ -60,15 +68,15 @@ export default ilha
   })
   .render(({ state }) => {
     const data = state.data();
-    const l = locale();
+    if (!data) return html``;
+
+    const loc = data[locale()];
     const isHome = routePath() === '/';
     const isDark = state.theme() === 'dark';
     const mobileOpen = state.mobileOpen();
     const scrolled = state.scrolled();
     const isSolid = !isHome || scrolled || mobileOpen;
     const wrapClass = `site-header-wrap${isSolid ? '' : ' site-header-wrap--mobile-transparent'}`;
-
-    const loc = data[l];
 
     const navLinks = [
       { href: '/projects', label: loc.nav.work },
@@ -77,12 +85,13 @@ export default ilha
       { href: '/static/resume.pdf', label: loc.buttons.resume, external: true },
     ];
 
-    const currentLocaleFlag = LOCALES.find((lo) => lo.code === l)?.flag ?? '🇬🇧';
+    const currentLocaleFlag =
+      LOCALES.find((lo) => lo.code === locale())?.flag ?? '🇬🇧';
     const currentLocaleLabel =
-      LOCALES.find((lo) => lo.code === l)?.label ?? 'English';
+      LOCALES.find((lo) => lo.code === locale())?.label ?? 'English';
 
     const localeOptions = (mobile = false) =>
-      LOCALES.filter((lo) => lo.code !== l).map(
+      LOCALES.filter((lo) => lo.code !== locale()).map(
         (lo) => html`
           <a
             href="#"

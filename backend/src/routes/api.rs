@@ -4,61 +4,114 @@ use std::{
     time::{Duration, Instant},
 };
 
-use axum::{Router, extract::State, routing::get};
-use http::{HeaderValue, header};
+use qubit::{Router, handler};
 use serde::Deserialize;
-use tower::ServiceBuilder;
-use tower_http::{
-    compression::CompressionLayer, set_header::SetResponseHeaderLayer,
-};
 
-use crate::{
-    AppState,
-    types::{Data, ExperienceItem, NowPlayingTrack},
-};
+use crate::{AppState, types};
 
 pub fn router() -> Router<AppState> {
-    let compression = CompressionLayer::new()
-        .gzip(true)
-        .br(true)
-        .deflate(true)
-        .zstd(true);
+    let router = Router::new()
+        .handler(data)
+        .handler(experience)
+        .handler(lastfm);
 
-    let headers = ServiceBuilder::new().layer(compression).layer(
-        SetResponseHeaderLayer::overriding(
-            header::CACHE_CONTROL,
-            HeaderValue::from_static("public, max-age=86400"),
-        ),
-    );
-
-    Router::new()
-        .route("/data", get(get_data))
-        .route("/experience", get(get_experience))
-        .route_layer(headers)
-        .route(
-            "/metrics",
-            get(|State(state): State<AppState>| async move {
-                state.metric_handle.render()
-            }),
-        )
-        .route("/scrobbling", get(get_lastfm))
+    router.write_bindings_to_dir("../frontend/src/bindings");
+    router
 }
 
-pub async fn get_lastfm(
-    State(state): State<AppState>,
-) -> axum::Json<Option<NowPlayingTrack>> {
-    match state.lastfm_client.now_playing().await {
-        Ok(np) => axum::Json(np.map(Into::into)),
+#[handler(query)]
+async fn lastfm(ctx: AppState) -> Option<types::NowPlayingTrack> {
+    match ctx.lastfm_client.now_playing().await {
+        Ok(track) => track.map(Into::into),
         Err(e) => {
             tracing::error!(e = %e, "failed to reach last.fm");
-            axum::Json(None)
+            None
         }
     }
 }
 
-pub async fn get_data(State(state): State<AppState>) -> axum::Json<Data> {
+#[handler(query)]
+async fn data(ctx: AppState) -> types::Data {
     tracing::debug!("serving data");
-    axum::Json((*state.data).clone())
+    (*ctx.data).clone()
+}
+
+#[handler(query)]
+async fn experience(ctx: AppState) -> Vec<types::ExperienceItem> {
+    const TTL: Duration = Duration::from_secs(3 * 24 * 60 * 60);
+
+    let cached = ctx.experience_cache.read().ok().and_then(|guard| {
+        guard
+            .as_ref()
+            .and_then(|(at, items)| (at.elapsed() < TTL).then(|| items.clone()))
+    });
+
+    if let Some(items) = cached {
+        tracing::debug!("serving experience from cache");
+        return items;
+    }
+
+    tracing::info!("fetching experience data");
+    let client = reqwest::Client::builder()
+        .user_agent("portfolio-backend")
+        .build()
+        .expect("Failed to build HTTP client");
+
+    let unique_repos: Vec<String> = {
+        let mut seen = HashSet::new();
+        ctx.data
+            .experience_items
+            .iter()
+            .map(|item| item.name.clone())
+            .filter(|name| seen.insert(name.clone()))
+            .collect()
+    };
+
+    let handles: Vec<_> = unique_repos
+        .iter()
+        .map(|repo| {
+            tokio::spawn(fetch_repo_stars(
+                ctx.github_api_key.clone(),
+                client.clone(),
+                repo.clone(),
+            ))
+        })
+        .collect();
+
+    let (gruber_dl, stars) = tokio::join!(
+        fetch_extension_downloads(&client, "gruber-darker"),
+        async {
+            let mut stars: HashMap<String, i64> = HashMap::new();
+            for handle in handles {
+                if let Ok((repo, Some(count))) = handle.await {
+                    stars.insert(repo, count);
+                }
+            }
+            stars
+        }
+    );
+
+    let items: Vec<types::ExperienceItem> = ctx
+        .data
+        .experience_items
+        .iter()
+        .map(|item| {
+            let mut item = item.clone();
+            if let Some(&s) = stars.get(&item.name) {
+                item.stars = s;
+            }
+            if item.zed_extension_id.as_deref() == Some("gruber-darker") {
+                item.downloads = gruber_dl.or(item.downloads);
+            }
+            item
+        })
+        .collect();
+
+    if let Ok(mut cache) = ctx.experience_cache.write() {
+        *cache = Some((Instant::now(), items.clone()));
+    }
+
+    items
 }
 
 #[derive(Deserialize)]
@@ -126,84 +179,4 @@ async fn fetch_repo_stars(
     .await;
 
     (repo, stars)
-}
-
-pub async fn get_experience(
-    State(state): State<AppState>,
-) -> axum::Json<Vec<ExperienceItem>> {
-    const TTL: Duration = Duration::from_secs(3 * 24 * 60 * 60);
-
-    let cached = state.experience_cache.read().ok().and_then(|guard| {
-        guard
-            .as_ref()
-            .and_then(|(at, items)| (at.elapsed() < TTL).then(|| items.clone()))
-    });
-
-    if let Some(items) = cached {
-        tracing::debug!("serving experience from cache");
-        return axum::Json(items);
-    }
-
-    tracing::info!("fetching experience data");
-    let client = reqwest::Client::builder()
-        .user_agent("portfolio-backend")
-        .build()
-        .expect("Failed to build HTTP client");
-
-    let unique_repos: Vec<String> = {
-        let mut seen = HashSet::new();
-        state
-            .data
-            .experience_items
-            .iter()
-            .map(|item| item.name.clone())
-            .filter(|name| seen.insert(name.clone()))
-            .collect()
-    };
-
-    let handles: Vec<_> = unique_repos
-        .iter()
-        .map(|repo| {
-            tokio::spawn(fetch_repo_stars(
-                state.github_api_key.clone(),
-                client.clone(),
-                repo.clone(),
-            ))
-        })
-        .collect();
-
-    let (gruber_dl, stars) = tokio::join!(
-        fetch_extension_downloads(&client, "gruber-darker"),
-        async {
-            let mut stars: HashMap<String, i64> = HashMap::new();
-            for handle in handles {
-                if let Ok((repo, Some(count))) = handle.await {
-                    stars.insert(repo, count);
-                }
-            }
-            stars
-        }
-    );
-
-    let items: Vec<ExperienceItem> = state
-        .data
-        .experience_items
-        .iter()
-        .map(|item| {
-            let mut item = item.clone();
-            if let Some(&s) = stars.get(&item.name) {
-                item.stars = s;
-            }
-            if item.zed_extension_id.as_deref() == Some("gruber-darker") {
-                item.downloads = gruber_dl.or(item.downloads);
-            }
-            item
-        })
-        .collect();
-
-    if let Ok(mut cache) = state.experience_cache.write() {
-        *cache = Some((Instant::now(), items.clone()));
-    }
-
-    axum::Json(items)
 }

@@ -5,10 +5,11 @@ import {
   validateWithSchema,
   type FormErrors,
 } from '@ilha/store/form';
-import { dataSignal } from '../lib/data';
 import { locale } from '../lib/locale';
 import z from 'zod';
 import { createStore } from '@ilha/store';
+import type { Data } from '../bindings';
+import api from '../lib/rpc';
 
 type Status = 'idle' | 'loading' | 'success' | 'error';
 
@@ -52,15 +53,25 @@ const contactFormStore = createStore(
 );
 
 export default ilha
+  .state('data', null as Data | null)
+  .effect(({ state }) => {
+    (async () => {
+      try {
+        const result = await api.data.query();
+        state.data(result);
+      } catch {}
+    })();
+  })
   .on('form@submit', ({ event }) => {
     event.preventDefault();
     contactFormStore.getState().submit(event);
   })
-  .render(() => {
-    const data = dataSignal()!;
+  .render(({ state }) => {
+    const data = state.data();
+    if (!data) return html``;
+
     const loc = data[locale()];
     const { full_name, email, content } = loc.contact;
-
     const { errors, status, message } = contactFormStore.getState();
 
     return html`

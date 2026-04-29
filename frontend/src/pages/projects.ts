@@ -1,7 +1,7 @@
 import ilha, { html } from 'ilha';
-import type { Project } from '../types/Project';
-import { dataSignal } from '../lib/data';
 import { locale } from '../lib/locale';
+import type { Data, Project } from '../bindings';
+import api from '../lib/rpc';
 
 function projectCard(
   project: Project,
@@ -83,31 +83,41 @@ function projectCard(
   `;
 }
 
-export default ilha.render(() => {
-  const data = dataSignal()!;
-  const l = locale();
+export default ilha
+  .state('data', null as Data | null)
+  .effect(({ state }) => {
+    (async () => {
+      try {
+        const result = await api.data.query();
+        state.data(result);
+      } catch {}
+    })();
+  })
+  .render(({ state }) => {
+    const data = state.data();
+    if (!data) return html``;
 
-  const loc = data[l];
-  const visitLabel =
-    loc.work.visit_project.replace('{name}', '').trim() || 'View project';
-  const appStoreLabel = loc.work.download_app_store;
+    const loc = data[locale()];
+    const visitLabel =
+      loc.work.visit_project.replace('{name}', '').trim() || 'View project';
+    const appStoreLabel = loc.work.download_app_store;
 
-  const cards = data.projects.map(
-    (project, i) =>
-      html`<div class="${i === 0 ? 'project-grid__item--featured' : ''}">
-        ${projectCard(project, i === 0, visitLabel, appStoreLabel)}
-      </div>`,
-  );
+    const cards = data.projects.map(
+      (project, i) =>
+        html`<div class="${i === 0 ? 'project-grid__item--featured' : ''}">
+          ${projectCard(project, i === 0, visitLabel, appStoreLabel)}
+        </div>`,
+    );
 
-  return html`
-    <section class="section" id="work">
-      <div class="container">
-        <div class="section-header">
-          <p class="section-eyebrow">${loc.work.subtitle}</p>
-          <h2 class="section-title section-title--lg">${loc.nav.work}</h2>
+    return html`
+      <section class="section" id="work">
+        <div class="container">
+          <div class="section-header">
+            <p class="section-eyebrow">${loc.work.subtitle}</p>
+            <h2 class="section-title section-title--lg">${loc.nav.work}</h2>
+          </div>
+          <div class="project-grid">${cards}</div>
         </div>
-        <div class="project-grid">${cards}</div>
-      </div>
-    </section>
-  `;
-});
+      </section>
+    `;
+  });

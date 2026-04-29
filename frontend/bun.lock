@@ -7,6 +7,7 @@
       "dependencies": {
         "@ilha/router": "^0.2.0",
         "@ilha/store": "^0.2.0",
+        "@qubit-rs/client": "^0.4.5",
         "@types/bun": "^1.3.12",
         "ilha": "^0.3.0",
         "lucide": "^1.8.0",
@@ -32,6 +33,8 @@
     "@napi-rs/wasm-runtime": ["@napi-rs/wasm-runtime@1.1.4", "", { "dependencies": { "@tybys/wasm-util": "^0.10.1" }, "peerDependencies": { "@emnapi/core": "^1.7.1", "@emnapi/runtime": "^1.7.1" } }, "sha512-3NQNNgA1YSlJb/kMH1ildASP9HW7/7kYnRI2szWJaofaS1hWmbGI4H+d3+22aGzXXN9IJ+n+GiFVcGipJP18ow=="],
 
     "@oxc-project/types": ["@oxc-project/types@0.124.0", "", {}, "sha512-VBFWMTBvHxS11Z5Lvlr3IWgrwhMTXV+Md+EQF0Xf60+wAdsGFTBx7X7K/hP4pi8N7dcm1RvcHwDxZ16Qx8keUg=="],
+
+    "@qubit-rs/client": ["@qubit-rs/client@0.4.5", "", {}, "sha512-L7pBAUs1sPWCkuoRq7rdwqXy1+iLOmOVhADxj+QoNY24yu4J1aiTUSlJJllK9rXRxfvkjRNEPSeUE5H+U3ncug=="],
 
     "@rolldown/binding-android-arm64": ["@rolldown/binding-android-arm64@1.0.0-rc.15", "", { "os": "android", "cpu": "arm64" }, "sha512-YYe6aWruPZDtHNpwu7+qAHEMbQ/yRl6atqb/AhznLTnD3UY99Q1jE7ihLSahNWkF4EqRPVC4SiR4O0UkLK02tA=="],
 
