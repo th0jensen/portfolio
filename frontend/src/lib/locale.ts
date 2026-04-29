@@ -2,11 +2,6 @@ import { context } from 'ilha';
 
 type LocaleCode = 'en' | 'no';
 
-export const LOCALES: { code: LocaleCode; label: string; flag: string }[] = [
-  { code: 'en' as const, label: 'English', flag: '🇬🇧' },
-  { code: 'no' as const, label: 'Norsk', flag: '🇳🇴' },
-];
-
 export const locale = context('locale', 'en' as LocaleCode);
 
 export function initLocale() {

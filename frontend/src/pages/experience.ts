@@ -27,14 +27,6 @@ function experienceCard(item: ExperienceItem) {
       : html``}</a
   >`;
 
-  const prStats =
-    item.additions != null
-      ? html`<span style="display:inline-flex;align-items:center;gap:0.25rem"
-          ><span class="pr-additions">+${item.additions}</span
-          ><span class="pr-deletions">−${item.deletions}</span></span
-        >`
-      : html``;
-
   return html`
     <div class="glass-card repo-card smooth-transition">
       ${nameEl}
@@ -55,7 +47,10 @@ function experienceCard(item: ExperienceItem) {
           ? html`<span
               class="repo-card__pr-info"
               style="display:inline-flex;align-items:center;gap:0.75rem;margin-left:auto"
-              >${prStats}${prBadge(item.pr_state)}</span
+              ><span style="display:inline-flex;align-items:center;gap:0.25rem"
+                ><span class="pr-additions">+${item.additions}</span
+                ><span class="pr-deletions">−${item.deletions}</span></span
+              >${prBadge(item.pr_state)}</span
             >`
           : html`<span style="margin-left:auto"
               >${prBadge(item.pr_state)}</span

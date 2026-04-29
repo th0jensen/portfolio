@@ -1,6 +1,6 @@
 import ilha, { html, raw } from 'ilha';
 import { routePath } from '@ilha/router';
-import { LOCALES, locale, setLocale } from '../lib/locale';
+import { locale, setLocale } from '../lib/locale';
 import { ChevronDown, createIcons, Menu, Moon, Sun, X } from 'lucide';
 import icon from '../lib/icon';
 import type { Data } from '../bindings';
@@ -71,6 +71,7 @@ export default ilha
     if (!data) return html``;
 
     const loc = data[locale()];
+    const locales = data.locales;
     const isHome = routePath() === '/';
     const isDark = state.theme() === 'dark';
     const mobileOpen = state.mobileOpen();
@@ -86,21 +87,23 @@ export default ilha
     ];
 
     const currentLocaleFlag =
-      LOCALES.find((lo) => lo.code === locale())?.flag ?? '🇬🇧';
+      locales.find((lo) => lo.code === locale())?.flag ?? '🇬🇧';
     const currentLocaleLabel =
-      LOCALES.find((lo) => lo.code === locale())?.label ?? 'English';
+      locales.find((lo) => lo.code === locale())?.label ?? 'English';
 
     const localeOptions = (mobile = false) =>
-      LOCALES.filter((lo) => lo.code !== locale()).map(
-        (lo) => html`
-          <a
-            href="#"
-            data-locale="${lo.code}"
-            class="${mobile ? 'mobile-menu__link' : 'locale-option'}"
-            >${lo.flag} ${lo.label}</a
-          >
-        `,
-      );
+      locales
+        .filter((lo) => lo.code !== locale())
+        .map(
+          (lo) => html`
+            <a
+              href="#"
+              data-locale="${lo.code}"
+              class="${mobile ? 'mobile-menu__link' : 'locale-option'}"
+              >${lo.flag} ${lo.label}</a
+            >
+          `,
+        );
 
     const renderNavLinks = (mobile = false) =>
       navLinks.map(
@@ -117,11 +120,9 @@ export default ilha
         `,
       );
 
-    const backdropClass = `site-header-backdrop site-header-backdrop--solid`;
-
     return html`
       <div class="${wrapClass}">
-        <div class="${backdropClass}"></div>
+        <div class="site-header-backdrop site-header-backdrop--solid"></div>
 
         <header class="site-header">
           <div class="container site-header__inner">
