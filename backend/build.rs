@@ -62,8 +62,6 @@ fn main() {
 
         fs::write(format!("{dist_dir}/{name}.html"), html)
             .unwrap_or_else(|_| panic!("Failed to write {name}.html"));
-
-        println!("cargo:warning=assembled: {name}.html");
     }
 }
 
