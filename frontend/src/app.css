@@ -145,18 +145,6 @@ img {
     padding: 0 2rem;
     font-size: 1rem;
 }
-.btn-sm {
-    height: 2.25rem;
-    padding: 0 0.875rem;
-    font-size: 0.8125rem;
-}
-.btn-icon {
-    height: 2.25rem;
-    width: 2.25rem;
-    padding: 0;
-    border-radius: 9999px;
-}
-
 .btn-primary {
     background: hsl(var(--primary));
     color: hsl(var(--primary-foreground));
@@ -171,14 +159,6 @@ img {
 }
 .btn-secondary:hover {
     background: hsl(var(--secondary) / 0.7);
-}
-
-.btn-ghost {
-    background: transparent;
-    color: hsl(var(--foreground));
-}
-.btn-ghost:hover {
-    background: hsl(var(--muted));
 }
 
 /* ─── Site layout ─────────────────────────────────────────── */
@@ -291,15 +271,6 @@ img {
 .locale-summary:hover {
     color: hsl(var(--foreground));
     background: hsl(var(--muted));
-}
-.locale-chevron {
-    width: 0.75rem;
-    height: 0.75rem;
-    transition: transform 0.2s;
-    flex-shrink: 0;
-}
-details[open] .locale-chevron {
-    transform: rotate(180deg);
 }
 .locale-menu {
     position: absolute;
@@ -1021,10 +992,6 @@ a.project-card__name:hover {
     box-shadow: 0 10px 24px -5px hsl(0 0% 0% / 0.1);
     border-color: hsl(var(--border) / 0.6);
 }
-.repo-card--wide {
-    grid-column: 1 / -1;
-}
-
 .repo-card__name {
     font-size: 0.9375rem;
     font-weight: 600;
@@ -1062,22 +1029,6 @@ a.project-card__name:hover {
     height: 0.75rem;
     border-radius: 9999px;
     flex-shrink: 0;
-}
-
-@keyframes spin {
-    to {
-        transform: rotate(360deg);
-    }
-}
-.download-spinner {
-    display: inline-block;
-    width: 0.7rem;
-    height: 0.7rem;
-    border: 1.5px solid hsl(var(--muted-foreground) / 0.35);
-    border-top-color: hsl(var(--muted-foreground));
-    border-radius: 9999px;
-    animation: spin 0.7s linear infinite;
-    vertical-align: middle;
 }
 
 .repo-card__pr-number {
@@ -1123,17 +1074,6 @@ a.project-card__name:hover {
     .contact-card {
         padding: 2.5rem;
     }
-}
-.contact-desc {
-    color: hsl(var(--muted-foreground));
-    line-height: 1.75;
-    max-width: 42rem;
-}
-.contact-actions {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    gap: 0.75rem;
 }
 .contact-form {
     display: flex;
