@@ -6,11 +6,6 @@ export
 # build.rs spawns `bun run build` automatically before compiling.
 init:
 	cd frontend && bun install && bunx vite build
-	CI=true $(MAKE) types
-
-types:
-	rm -rf frontend/src/types/
-	cd backend && SKIP_BUN_BUILD=1 cargo test
 
 lint:
 	cd backend && cargo clippy
