@@ -1,7 +1,9 @@
-import ilha, { html } from 'ilha';
+import ilha, { html, raw } from 'ilha';
 import { locale } from '../lib/locale';
 import api from '../lib/rpc';
 import type { Data, ExperienceItem } from '../bindings';
+import { GitFork } from 'lucide';
+import icon from '../lib/icon';
 
 function formatCompact(n: bigint | number): string {
   const v = typeof n === 'bigint' ? Number(n) : n;
@@ -38,6 +40,17 @@ function experienceCard(item: ExperienceItem) {
         ></span>
         <span>${item.language}</span>
         <span class="repo-card__stars">★ ${formatCompact(item.stars)}</span>
+        ${item.forks
+          ? html`<span class="repo-card__stars"
+              >${raw(
+                icon(
+                  GitFork,
+                  13,
+                  'class="repo-card__stat-icon" aria-hidden="true"',
+                ),
+              )}${formatCompact(item.forks)}</span
+            >`
+          : html``}
         ${item.downloads != null && item.type === 'zed-extension'
           ? html`<span class="repo-card__downloads"
               >↓ ${formatCompact(item.downloads)}</span

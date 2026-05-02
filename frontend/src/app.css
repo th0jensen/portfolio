@@ -968,17 +968,14 @@ a.project-card__name:hover {
 
 /* ─── Experience ──────────────────────────────────────────── */
 .repo-grid {
-  display: grid;
-  grid-template-columns: 1fr;
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
   gap: 1.5rem;
-}
-@media (min-width: 768px) {
-  .repo-grid {
-    grid-template-columns: 1fr 1fr;
-  }
 }
 
 .repo-card {
+  flex: 1 1 100%;
   border-radius: 1rem;
   padding: 1.5rem;
   display: flex;
@@ -987,6 +984,24 @@ a.project-card__name:hover {
   transition:
     box-shadow 0.2s,
     border-color 0.2s;
+}
+@media (min-width: 768px) {
+  .repo-card {
+    flex: 0 1 calc((100% - 3rem) / 3);
+    min-height: 13rem;
+  }
+  .repo-card:nth-child(5n + 1),
+  .repo-card:nth-child(5n + 2) {
+    flex-basis: calc((100% - 1.5rem) / 2);
+  }
+  .repo-card:nth-child(5n + 3),
+  .repo-card:nth-child(5n + 4),
+  .repo-card:nth-child(5n + 5) {
+    flex-basis: calc((100% - 3rem) / 3);
+  }
+  .repo-card:last-child {
+    flex-grow: 1;
+  }
 }
 .repo-card:hover {
   box-shadow: 0 10px 24px -5px hsl(0 0% 0% / 0.1);
@@ -1022,6 +1037,18 @@ a.project-card__name:hover {
   margin-top: auto;
   border-top: 1px solid hsl(var(--border) / 0.3);
   padding-top: 1rem;
+}
+.repo-card__stars,
+.repo-card__downloads {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  line-height: 1;
+}
+.repo-card__stat-icon {
+  display: block;
+  flex-shrink: 0;
+  stroke-width: 2.25;
 }
 .repo-card__lang-dot {
   display: inline-block;
