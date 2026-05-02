@@ -171,6 +171,28 @@
       "zed_extension_id": "zed"
     },
     {
+      "name": "th0jensen/crabdash",
+      "description": "Crabdash is a cross-platform homelab dashboard built in Rust with GPUI",
+      "url": "https://github.com/th0jensen/crabdash",
+      "stars": 2,
+      "forks": 0,
+      "language": "Rust",
+      "language_color": "#c25a3c",
+      "type": "repo",
+      "downloads": null
+    },
+    {
+      "name": "th0jensen/fff-gpui",
+      "description": "UI harness for dmtrKovalenko/fff made in GPUI. System-wide file finder that integrates well with the Zed editor.",
+      "url": "https://github.com/th0jensen/fff-gpui",
+      "stars": 0,
+      "forks": 0,
+      "language": "Rust",
+      "language_color": "#c25a3c",
+      "type": "repo",
+      "downloads": null
+    },
+    {
       "name": "th0jensen/gruber-darker.zed",
       "description": "A port of Rexim's amazing Gruber Darker theme from emacs to Zed. Available for download in the Zed code editor.",
       "url": "https://github.com/th0jensen/gruber-darker.zed",
@@ -183,17 +205,6 @@
       "zed_extension_url": "zed://extension/gruber-darker",
       "github_url": "https://github.com/th0jensen/gruber-darker.zed",
       "zed_extension_id": "gruber-darker"
-    },
-    {
-      "name": "th0jensen/crabdash",
-      "description": "Crabdash is a cross-platform homelab dashboard built in Rust with GPUI",
-      "url": "https://github.com/th0jensen/crabdash",
-      "stars": 2,
-      "forks": 0,
-      "language": "Rust",
-      "language_color": "#c25a3c",
-      "type": "repo",
-      "downloads": null
     }
   ],
   "locales": [

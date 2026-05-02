@@ -71,7 +71,7 @@ async fn experience(ctx: AppState) -> Vec<types::ExperienceItem> {
     let handles: Vec<_> = unique_repos
         .iter()
         .map(|repo| {
-            tokio::spawn(fetch_repo_stars(
+            tokio::spawn(fetch_repo_info(
                 ctx.github_api_key.clone(),
                 client.clone(),
                 repo.clone(),
@@ -79,16 +79,16 @@ async fn experience(ctx: AppState) -> Vec<types::ExperienceItem> {
         })
         .collect();
 
-    let (gruber_dl, stars) = tokio::join!(
+    let (gruber_dl, repo_info) = tokio::join!(
         fetch_extension_downloads(&client, "gruber-darker"),
         async {
-            let mut stars: HashMap<String, i64> = HashMap::new();
+            let mut info: HashMap<String, GitHubRepoInfo> = HashMap::new();
             for handle in handles {
-                if let Ok((repo, Some(count))) = handle.await {
-                    stars.insert(repo, count);
+                if let Ok((repo, Some(repo_info))) = handle.await {
+                    info.insert(repo, repo_info);
                 }
             }
-            stars
+            info
         }
     );
 
@@ -98,8 +98,9 @@ async fn experience(ctx: AppState) -> Vec<types::ExperienceItem> {
         .iter()
         .map(|item| {
             let mut item = item.clone();
-            if let Some(&s) = stars.get(&item.name) {
-                item.stars = s;
+            if let Some(info) = repo_info.get(&item.name) {
+                item.stars = info.stargazers_count;
+                item.forks = info.forks_count;
             }
             if item.zed_extension_id.as_deref() == Some("gruber-darker") {
                 item.downloads = gruber_dl.or(item.downloads);
@@ -118,6 +119,7 @@ async fn experience(ctx: AppState) -> Vec<types::ExperienceItem> {
 #[derive(Deserialize)]
 struct GitHubRepoInfo {
     stargazers_count: i64,
+    forks_count: i64,
 }
 
 #[derive(Deserialize)]
@@ -153,15 +155,15 @@ async fn fetch_extension_downloads(
     parsed.data.into_iter().next().map(|e| e.download_count)
 }
 
-async fn fetch_repo_stars(
+async fn fetch_repo_info(
     api_key: Arc<String>,
     client: reqwest::Client,
     repo: String,
-) -> (String, Option<i64>) {
-    tracing::trace!(repo = %repo, "fetching repo stars");
+) -> (String, Option<GitHubRepoInfo>) {
+    tracing::trace!(repo = %repo, "fetching repo info");
     let url = format!("https://api.github.com/repos/{}", repo);
 
-    let stars = async {
+    let repo_info = async {
         let response = client
             .get(&url)
             .bearer_auth(api_key.as_str())
@@ -175,9 +177,8 @@ async fn fetch_repo_stars(
             .await
             .map_err(|e| tracing::error!(repo, error = %e, "Failed to deserialize repo info"))
             .ok()
-            .map(|r| r.stargazers_count)
     }
     .await;
 
-    (repo, stars)
+    (repo, repo_info)
 }
