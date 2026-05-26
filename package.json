@@ -1,0 +1,10 @@
+{
+  "name": "portfolio",
+  "private": true,
+  "workspaces": [
+    "frontend"
+  ],
+  "devDependencies": {
+    "nx": "^22"
+  }
+}

@@ -1,0 +1,18 @@
+{
+  "name": "frontend",
+  "sourceRoot": "frontend/src",
+  "targets": {
+    "build": {
+      "command": "bunx vite build",
+      "options": { "cwd": "frontend" }
+    },
+    "typecheck": {
+      "command": "bunx tsc --noEmit",
+      "options": { "cwd": "frontend" }
+    },
+    "install": {
+      "command": "bun install",
+      "options": { "cwd": "frontend" }
+    }
+  }
+}

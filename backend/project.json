@@ -1,0 +1,19 @@
+{
+  "name": "backend",
+  "sourceRoot": "backend/src",
+  "targets": {
+    "build": {
+      "command": "cargo build --release",
+      "options": { "cwd": "backend" }
+    },
+    "dev": {
+      "continuous": true,
+      "command": "RUST_LOG=DEBUG cargo run",
+      "options": { "cwd": "backend" }
+    },
+    "lint": {
+      "command": "cargo clippy",
+      "options": { "cwd": "backend" }
+    }
+  }
+}

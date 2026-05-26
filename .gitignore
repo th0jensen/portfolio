@@ -17,3 +17,6 @@ node_modules/
 
 # Scripts
 manual_bininspect_update.nu
+
+# Nx cache
+.nx

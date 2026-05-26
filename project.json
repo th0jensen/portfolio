@@ -1,0 +1,17 @@
+{
+  "name": "portfolio",
+  "targets": {
+    "dev": {
+      "dependsOn": ["backend:dev"]
+    },
+    "build": {
+      "dependsOn": ["frontend:build", "backend:build"]
+    },
+    "lint": {
+      "dependsOn": ["backend:lint", "frontend:typecheck"]
+    },
+    "init": {
+      "dependsOn": ["frontend:install", "frontend:build"]
+    }
+  }
+}
