@@ -11,21 +11,18 @@ on:
       - master
 
 jobs:
-  typecheck-frontend:
-    name: TypeScript
+  lint-frontend:
+    name: Frontend Linting
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
       - uses: oven-sh/setup-bun@v2
-      - run: bun install
-        working-directory: frontend
-      - run: bunx vite build
-        working-directory: frontend
-      - run: bunx tsc --noEmit
-        working-directory: frontend
+      - run: bun install --frozen-lockfile
+      - run: bunx nx run init
+      - run: bunx nx run frontend:lint
 
   lint-backend:
-    name: Clippy
+    name: Backend Linting
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -35,13 +32,15 @@ jobs:
       - uses: Swatinem/rust-cache@v2
         with:
           workspaces: backend
-      - run: cargo clippy -- -D warnings
-        working-directory: backend
+      - uses: oven-sh/setup-bun@v2
+      - run: bun install --frozen-lockfile
+      - run: bunx nx run init
+      - run: bunx nx run backend:lint
 
   deploy:
     name: Deploy app
     runs-on: ubuntu-latest
-    needs: [typecheck-frontend, lint-backend]
+    needs: [lint-frontend, lint-backend]
     if: github.event_name == 'push'
     concurrency: deploy-group
     steps:

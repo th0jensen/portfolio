@@ -12,7 +12,7 @@
       "options": { "cwd": "backend" }
     },
     "lint": {
-      "command": "cargo clippy",
+      "command": "cargo clippy -- -D warnings",
       "options": { "cwd": "backend" }
     }
   }

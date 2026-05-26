@@ -8,7 +8,7 @@
       "dependsOn": ["frontend:build", "backend:build"]
     },
     "lint": {
-      "dependsOn": ["backend:lint", "frontend:typecheck"]
+      "dependsOn": ["backend:lint", "frontend:lint"]
     },
     "init": {
       "dependsOn": ["frontend:install", "frontend:build"]
