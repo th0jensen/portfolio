@@ -4,7 +4,9 @@ ENV PATH="/root/.bun/bin:$PATH"
 WORKDIR /app
 COPY . .
 RUN touch .env
-RUN make init && make build
+RUN bun install
+RUN bunx nx run init
+RUN bunx nx run build
 
 FROM debian:bookworm-slim AS runtime
 RUN apt-get update && apt-get install -y libssl3 ca-certificates && rm -rf /var/lib/apt/lists/*
