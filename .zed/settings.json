@@ -5,6 +5,7 @@
 {
   "languages": {
     "TypeScript": {
+      "language_servers": ["!deno", "..."],
       "formatter": "prettier",
     },
   },
