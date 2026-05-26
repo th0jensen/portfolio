@@ -10,11 +10,11 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@ilha/router": "^0.2.0",
-    "@ilha/store": "^0.2.0",
+    "@ilha/router": "^0.3.6",
+    "@ilha/store": "^0.3.5",
     "@qubit-rs/client": "^0.4.5",
     "@types/bun": "^1.3.12",
-    "ilha": "^0.4.1",
+    "ilha": "^0.6.0",
     "lucide": "^1.8.0",
     "zod": "^4.3.6"
   },

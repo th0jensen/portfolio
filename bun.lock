@@ -11,11 +11,11 @@
       "name": "ilha-vite",
       "version": "0.0.0",
       "dependencies": {
-        "@ilha/router": "^0.2.0",
-        "@ilha/store": "^0.2.0",
+        "@ilha/router": "^0.3.6",
+        "@ilha/store": "^0.3.5",
         "@qubit-rs/client": "^0.4.5",
         "@types/bun": "^1.3.12",
-        "ilha": "^0.4.1",
+        "ilha": "^0.6.0",
         "lucide": "^1.8.0",
         "zod": "^4.3.6",
       },
@@ -32,9 +32,9 @@
 
     "@emnapi/wasi-threads": ["@emnapi/wasi-threads@1.0.4", "", { "dependencies": { "tslib": "^2.4.0" } }, "sha512-PJR+bOmMOPH8AtcTGAyYNiuJ3/Fcoj2XN/gBEWzDIKh254XO+mM9XoXHk5GNEhodxeMznbg7BlRojVbKN+gC6g=="],
 
-    "@ilha/router": ["@ilha/router@0.2.6", "", { "dependencies": { "ilha": "0.4.1", "rou3": "0.8.1" } }, "sha512-dTAasGWtS4sW3K/yW0sxbUVv7WSnjRv5YB4f4UEdePeJ9vWIo1/OPK9i41z2Mi0Jxm0aldS+z01ik/9DkO40Fw=="],
+    "@ilha/router": ["@ilha/router@0.3.6", "", { "dependencies": { "ilha": "0.6.0", "rou3": "0.8.1" } }, "sha512-rH+otFMw6uWNbG/tm1yc4G57phwp1TPT/3IdgbaEvFiblkHuU66gyJ26A9aTGybfSxM2twwtxS5n4GFP2EnOSg=="],
 
-    "@ilha/store": ["@ilha/store@0.2.2", "", { "dependencies": { "alien-signals": "3.1.2", "ilha": "0.4.1" } }, "sha512-mbFZiZkeBhfRLtSKKqoOW4DsGMAl6ydb9LTg+YjF0EE1UC21adJh8c3Du+pcmwP/HPRUKM227Mxo0IzFwe3YMw=="],
+    "@ilha/store": ["@ilha/store@0.3.5", "", { "dependencies": { "alien-signals": "3.2.1", "ilha": "0.6.0" } }, "sha512-pKoyBIEoh3P6LGueU4v4jqHsPn3kvXVuL1YlaJEI/M+ZRl33TR5ZJh1UXk1DdGr3ORLMMU/savkPKIvUvtDcSw=="],
 
     "@jest/diff-sequences": ["@jest/diff-sequences@30.0.1", "", {}, "sha512-n5H8QLDJ47QqbCNn5SuFjCRDrOLEZ0h8vAHCK5RL9Ls7Xa8AQLa/YxAc9UjFqoEDM48muwtBGjtMY5cr0PLDCw=="],
 
@@ -106,7 +106,7 @@
 
     "@zkochan/js-yaml": ["@zkochan/js-yaml@0.0.7", "", { "dependencies": { "argparse": "^2.0.1" }, "bin": { "js-yaml": "bin/js-yaml.js" } }, "sha512-nrUSn7hzt7J6JWgWGz78ZYI8wj+gdIJdk0Ynjpp8l+trkn58Uqsf6RYrYkEK+3X18EX+TNdtJI0WxAtc+L84SQ=="],
 
-    "alien-signals": ["alien-signals@3.1.2", "", {}, "sha512-d9dYqZTS90WLiU0I5c6DHj/HcKkF8ZyGN3G5x8wSbslulz70KOxaqCT0hQCo9KOyhVqzqGojvNdJXoTumZOtcw=="],
+    "alien-signals": ["alien-signals@3.2.1", "", {}, "sha512-I8FjmltrfnDFoZedi5CG8DghVYNhzb/Ijluz7tCSJH0xpd0484Kowhbb1XDYOxfJpU1p5wnM2X54dA+IfGyD1g=="],
 
     "ansi-colors": ["ansi-colors@4.1.3", "", {}, "sha512-/6w/C21Pm1A7aZitlI5Ni/2J6FFQN8i1Cvz3kHABAAbw93v/NlvKdVOqz7CCWz/3iv/JplRSEEZ83XION15ovw=="],
 
@@ -220,7 +220,7 @@
 
     "ignore": ["ignore@7.0.5", "", {}, "sha512-Hs59xBNfUIunMFgWAbGX5cq6893IbWg4KnrjbYwX3tx0ztorVgTDA6B2sxf8ejHJ4wz8BqGUMYlnzNBer5NvGg=="],
 
-    "ilha": ["ilha@0.4.1", "", { "dependencies": { "alien-signals": "3.1.2" } }, "sha512-5Dr9EH68JRH61WyyAPLQBRE2FGdcB7RmOyBD09se3nq0KL8cDRE0rws0dZSU8kkOUh7pweBB/SSKhiovpWNzJw=="],
+    "ilha": ["ilha@0.6.0", "", { "dependencies": { "alien-signals": "3.2.1" } }, "sha512-a/BkM/1+zXlrFnl12lK1ULOsroy+dmQaS3FeMk+kGld33PXeFYIa29h4UVMNpXVFIqCgVt66upyrJsz/SKylyA=="],
 
     "ilha-vite": ["ilha-vite@workspace:frontend"],
 
