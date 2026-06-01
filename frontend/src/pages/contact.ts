@@ -1,14 +1,14 @@
-import ilha, { html } from 'ilha';
+import { createStore } from '@ilha/store';
 import {
   extractFormData,
+  type FormErrors,
   issuesToErrors,
   validateWithSchema,
-  type FormErrors,
 } from '@ilha/store/form';
-import { locale } from '../lib/locale';
+import ilha, { html } from 'ilha';
 import z from 'zod';
-import { createStore } from '@ilha/store';
 import type { Data } from '../bindings';
+import { locale } from '../lib/locale';
 import api from '../lib/rpc';
 
 type Status = 'idle' | 'loading' | 'success' | 'error';
@@ -90,9 +90,11 @@ export default ilha
                   name="full_name"
                   placeholder="${full_name}"
                 />
-                ${errors.full_name
-                  ? html`<span class="form-error">${errors.full_name[0]}</span>`
-                  : ''}
+                ${
+                  errors.full_name
+                    ? html`<span class="form-error">${errors.full_name[0]}</span>`
+                    : ''
+                }
               </div>
               <div class="form-group">
                 <label for="email">Email</label>
@@ -102,9 +104,11 @@ export default ilha
                   name="email"
                   placeholder="${email}"
                 />
-                ${errors.email
-                  ? html`<span class="form-error">${errors.email[0]}</span>`
-                  : ''}
+                ${
+                  errors.email
+                    ? html`<span class="form-error">${errors.email[0]}</span>`
+                    : ''
+                }
               </div>
               <div class="form-group">
                 <label for="content">Message</label>
@@ -113,16 +117,22 @@ export default ilha
                   name="content"
                   placeholder="${content}"
                 ></textarea>
-                ${errors.content
-                  ? html`<span class="form-error">${errors.content[0]}</span>`
-                  : ''}
+                ${
+                  errors.content
+                    ? html`<span class="form-error">${errors.content[0]}</span>`
+                    : ''
+                }
               </div>
-              ${status === 'error'
-                ? html`<p class="form-error">${message}</p>`
-                : ''}
-              ${status === 'success'
-                ? html`<p class="form-success">${message}</p>`
-                : ''}
+              ${
+                status === 'error'
+                  ? html`<p class="form-error">${message}</p>`
+                  : ''
+              }
+              ${
+                status === 'success'
+                  ? html`<p class="form-success">${message}</p>`
+                  : ''
+              }
               <button
                 type="submit"
                 class="btn btn-primary"

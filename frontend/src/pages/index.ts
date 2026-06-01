@@ -1,9 +1,9 @@
 import ilha, { html, raw } from 'ilha';
-import { locale } from '../lib/locale';
-import api from '../lib/rpc';
 import type { Data, NowPlayingTrack } from '../bindings';
 import type { Hero } from '../bindings/Hero';
 import type { SocialButton } from '../bindings/SocialButton';
+import { locale } from '../lib/locale';
+import api from '../lib/rpc';
 
 function calculateAge(birthday: string): number {
   const [month, day, year] = birthday.split('-').map(Number);
@@ -26,11 +26,13 @@ const button = (item: SocialButton, styles?: string) =>
     ${item.label}
   </a>`;
 
-const nowPlaying = (track: NowPlayingTrack, hero: Hero) =>
-  html`${hero.now_playing}:
+const nowPlaying = (track: NowPlayingTrack | null, hero: Hero) => {
+  if (track === null) return html``;
+  return html`${hero.now_playing}:
     <a href="${track.url}" target="_blank" rel="noopener noreferrer"
       >${track.name} ${hero.by} ${track.artist}</a
     >`;
+};
 
 function renderCurrentlyBuilding(text: string, url: string) {
   const name = 'Crabdash';
@@ -79,9 +81,9 @@ export default ilha
           src="/static/headshot.jpg"
           alt="Headshot photo of ${data.about.first_name}"
           fetchpriority="high"
-          ${mobile
-            ? raw('width=1200 height=1391')
-            : raw('width=360 height=418')}
+          ${
+            mobile ? raw('width=1200 height=1391') : raw('width=360 height=418')
+          }
         />
       </div>
     `;
@@ -135,9 +137,7 @@ export default ilha
                   )}</span
                 >
                 <span
-                  >${state.nowPlaying()
-                    ? nowPlaying(state.nowPlaying()!, loc.hero)
-                    : html``}</span
+                  >${nowPlaying(state.nowPlaying(), loc.hero)}</span
                 >
               </p>
             </div>

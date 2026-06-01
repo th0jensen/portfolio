@@ -7,7 +7,7 @@
       "options": { "cwd": "frontend" }
     },
     "lint": {
-      "command": "bunx tsc --noEmit",
+      "command": "bunx biome check .",
       "options": { "cwd": "frontend" }
     },
     "install": {

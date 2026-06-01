@@ -1,14 +1,14 @@
 import ilha, { html, raw } from 'ilha';
+import { GitFork } from 'lucide';
+import type { Data, ExperienceItem } from '../bindings';
+import icon from '../lib/icon';
 import { locale } from '../lib/locale';
 import api from '../lib/rpc';
-import type { Data, ExperienceItem } from '../bindings';
-import { GitFork } from 'lucide';
-import icon from '../lib/icon';
 
 function formatCompact(n: bigint | number): string {
   const v = typeof n === 'bigint' ? Number(n) : n;
-  if (v >= 1_000_000) return (v / 1_000_000).toFixed(1) + 'm';
-  if (v >= 1_000) return (v / 1_000).toFixed(1) + 'k';
+  if (v >= 1_000_000) return `${(v / 1_000_000).toFixed(1)}m`;
+  if (v >= 1_000) return `${(v / 1_000).toFixed(1)}k`;
   return v.toString();
 }
 
@@ -24,9 +24,11 @@ function experienceCard(item: ExperienceItem) {
     class="repo-card__name"
     target="_blank"
     rel="noopener noreferrer"
-    >${item.name}${item.pr_number
-      ? html`<span class="repo-card__pr-number">#${item.pr_number}</span>`
-      : html``}</a
+    >${item.name}${
+      item.pr_number
+        ? html`<span class="repo-card__pr-number">#${item.pr_number}</span>`
+        : html``
+    }</a
   >`;
 
   return html`
@@ -40,8 +42,9 @@ function experienceCard(item: ExperienceItem) {
         ></span>
         <span>${item.language}</span>
         <span class="repo-card__stars">★ ${formatCompact(item.stars)}</span>
-        ${item.forks
-          ? html`<span class="repo-card__stars"
+        ${
+          item.forks
+            ? html`<span class="repo-card__stars"
               >${raw(
                 icon(
                   GitFork,
@@ -50,14 +53,18 @@ function experienceCard(item: ExperienceItem) {
                 ),
               )}${formatCompact(item.forks)}</span
             >`
-          : html``}
-        ${item.downloads != null && item.type === 'zed-extension'
-          ? html`<span class="repo-card__downloads"
+            : html``
+        }
+        ${
+          item.downloads != null && item.type === 'zed-extension'
+            ? html`<span class="repo-card__downloads"
               >↓ ${formatCompact(item.downloads)}</span
             >`
-          : html``}
-        ${item.additions != null
-          ? html`<span
+            : html``
+        }
+        ${
+          item.additions != null
+            ? html`<span
               class="repo-card__pr-info"
               style="display:inline-flex;align-items:center;gap:0.75rem;margin-left:auto"
               ><span style="display:inline-flex;align-items:center;gap:0.25rem"
@@ -65,9 +72,10 @@ function experienceCard(item: ExperienceItem) {
                 ><span class="pr-deletions">−${item.deletions}</span></span
               >${prBadge(item.pr_state)}</span
             >`
-          : html`<span style="margin-left:auto"
+            : html`<span style="margin-left:auto"
               >${prBadge(item.pr_state)}</span
-            >`}
+            >`
+        }
       </div>
     </div>
   `;

@@ -1,4 +1,4 @@
-import { type IconNode } from 'lucide';
+import type { IconNode } from 'lucide';
 
 export default function icon(node: IconNode, size = 24, attrs = ''): string {
   const children = node

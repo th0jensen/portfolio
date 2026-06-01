@@ -1,9 +1,9 @@
-import ilha, { html, raw } from 'ilha';
 import { routePath } from '@ilha/router';
-import { locale, setLocale } from '../lib/locale';
+import ilha, { html, raw } from 'ilha';
 import { ChevronDown, createIcons, Menu, Moon, Sun, X } from 'lucide';
-import icon from '../lib/icon';
 import type { Data } from '../bindings';
+import icon from '../lib/icon';
+import { locale, setLocale } from '../lib/locale';
 import api from '../lib/rpc';
 
 if (typeof document !== 'undefined') {
@@ -111,9 +111,11 @@ export default ilha
           <a
             href="${link.href}"
             class="${mobile ? 'mobile-menu__link' : 'nav-link'}"
-            ${link.external
-              ? raw('target="_blank" rel="noopener noreferrer"')
-              : ''}
+            ${
+              link.external
+                ? raw('target="_blank" rel="noopener noreferrer"')
+                : ''
+            }
             ${mobile ? 'data-menu-close' : ''}
             >${link.label}</a
           >
@@ -153,9 +155,9 @@ export default ilha
             <button
               class="mobile-menu-btn"
               data-menu-toggle
-              aria-label="${mobileOpen
-                ? loc.nav.close_menu
-                : loc.nav.open_menu}"
+              aria-label="${
+                mobileOpen ? loc.nav.close_menu : loc.nav.open_menu
+              }"
             >
               ${mobileOpen ? raw(icon(X)) : raw(icon(Menu))}
             </button>

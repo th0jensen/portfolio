@@ -1,6 +1,6 @@
 import ilha, { html } from 'ilha';
-import { locale } from '../lib/locale';
 import type { Data, Project } from '../bindings';
+import { locale } from '../lib/locale';
 import api from '../lib/rpc';
 
 function projectCard(
