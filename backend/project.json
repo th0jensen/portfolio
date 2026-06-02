@@ -3,14 +3,12 @@
   "sourceRoot": "backend/src",
   "targets": {
     "build": {
-      "dependsOn": ["frontend:build"],
-      "command": "SKIP_BUN_BUILD=1 cargo build --release",
+      "command": "cargo build --release",
       "options": { "cwd": "backend" }
     },
     "dev": {
-      "dependsOn": ["frontend:build"],
       "continuous": true,
-      "command": "SKIP_BUN_BUILD=1 RUST_LOG=DEBUG cargo run",
+      "command": "RUST_LOG=DEBUG cargo run",
       "options": { "cwd": "backend" }
     },
     "lint": {

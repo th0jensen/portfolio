@@ -3,7 +3,7 @@
   "sourceRoot": "frontend/src",
   "targets": {
     "build": {
-      "command": "bun run build",
+      "command": "bunx vite build",
       "options": { "cwd": "frontend" },
       "cache": false
     },
