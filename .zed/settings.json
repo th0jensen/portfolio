@@ -20,6 +20,15 @@
       },
       "prettier": { "allowed": false },
     },
+    "TSX": {
+      "language_servers": ["biome", "!deno", "!eslint", "..."],
+      "formatter": { "language_server": { "name": "biome" } },
+      "code_actions_on_format": {
+        "source.fixAll.biome": true,
+        "source.organizeImports.biome": true,
+      },
+      "prettier": { "allowed": false },
+    },
   },
   "prettier": {
     "arrowParens": "always",

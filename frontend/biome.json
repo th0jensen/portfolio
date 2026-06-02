@@ -6,7 +6,7 @@
   },
   "assist": {
     "enabled": true,
-    "includes": ["**/*.ts", "!src/bindings/**"],
+    "includes": ["**/*.ts", "**/*.tsx", "!src/bindings/**"],
     "actions": {
       "source": {
         "recommended": true,
@@ -16,14 +16,14 @@
   },
   "linter": {
     "enabled": true,
-    "includes": ["**/*.ts", "!src/bindings/**"],
+    "includes": ["**/*.ts", "**/*.tsx", "!src/bindings/**"],
     "rules": {
       "recommended": true
     }
   },
   "formatter": {
     "enabled": true,
-    "includes": ["**/*.ts", "!src/bindings/**"],
+    "includes": ["**/*.ts", "**/*.tsx", "!src/bindings/**"],
     "indentStyle": "space",
     "indentWidth": 2,
     "lineWidth": 80,
