@@ -5,6 +5,11 @@ import icon from '../lib/icon';
 import { locale } from '../lib/locale';
 import api from '../lib/rpc';
 
+type PageInput = {
+  data?: Data;
+  experience?: ExperienceItem[];
+};
+
 function formatCompact(n: bigint | number): string {
   const v = typeof n === 'bigint' ? Number(n) : n;
   if (v >= 1_000_000) return `${(v / 1_000_000).toFixed(1)}m`;
@@ -82,21 +87,25 @@ function experienceCard(item: ExperienceItem) {
 }
 
 export default ilha
-  .state('data', null as Data | null)
-  .state('experience', [] as ExperienceItem[])
+  .state('data', ({ data }: PageInput) => data ?? null)
+  .state('experience', ({ experience }: PageInput) => experience ?? [])
   .effect(({ state }) => {
-    (async () => {
-      try {
-        const result = await api.data.query();
-        state.data(result);
-      } catch {}
-    })();
-    (async () => {
-      try {
-        const result = await api.experience.query();
-        state.experience(result);
-      } catch {}
-    })();
+    if (!state.data()) {
+      (async () => {
+        try {
+          const result = await api.data.query();
+          state.data(result);
+        } catch {}
+      })();
+    }
+    if (state.experience().length === 0) {
+      (async () => {
+        try {
+          const result = await api.experience.query();
+          state.experience(result);
+        } catch {}
+      })();
+    }
   })
   .render(({ state }) => {
     const data = state.data();

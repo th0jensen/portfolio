@@ -3,6 +3,10 @@ import type { Data, Project } from '../bindings';
 import { locale } from '../lib/locale';
 import api from '../lib/rpc';
 
+type PageInput = {
+  data?: Data;
+};
+
 function projectCard(
   project: Project,
   featured: boolean,
@@ -84,8 +88,9 @@ function projectCard(
 }
 
 export default ilha
-  .state('data', null as Data | null)
+  .state('data', ({ data }: PageInput) => data ?? null)
   .effect(({ state }) => {
+    if (state.data()) return;
     (async () => {
       try {
         const result = await api.data.query();

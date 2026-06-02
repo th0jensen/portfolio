@@ -6,16 +6,21 @@ import icon from '../lib/icon';
 import { locale, setLocale } from '../lib/locale';
 import api from '../lib/rpc';
 
+type HeaderInput = {
+  data?: Data;
+};
+
 if (typeof document !== 'undefined') {
   createIcons({ icons: { Sun, Moon, Menu, X, ChevronDown } });
 }
 
 export default ilha
-  .state('data', null as Data | null)
+  .state('data', ({ data }: HeaderInput) => data ?? null)
   .state('mobileOpen', false)
   .state('theme', 'dark' as 'light' | 'dark')
   .state('scrolled', false)
   .effect(({ state }) => {
+    if (state.data()) return;
     (async () => {
       try {
         const result = await api.data.query();

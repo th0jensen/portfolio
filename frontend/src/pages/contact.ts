@@ -11,6 +11,10 @@ import type { Data } from '../bindings';
 import { locale } from '../lib/locale';
 import api from '../lib/rpc';
 
+type PageInput = {
+  data?: Data;
+};
+
 type Status = 'idle' | 'loading' | 'success' | 'error';
 
 const emailSchema = z.object({
@@ -53,8 +57,9 @@ const contactFormStore = createStore(
 );
 
 export default ilha
-  .state('data', null as Data | null)
+  .state('data', ({ data }: PageInput) => data ?? null)
   .effect(({ state }) => {
+    if (state.data()) return;
     (async () => {
       try {
         const result = await api.data.query();

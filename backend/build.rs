@@ -10,6 +10,7 @@ fn main() {
     println!("cargo:rerun-if-changed=../frontend/src");
     println!("cargo:rerun-if-changed=../frontend/package.json");
     println!("cargo:rerun-if-changed=../frontend/vite.config.ts");
+    println!("cargo:rerun-if-changed=../frontend/dist/prerendered");
 
     if std::env::var("CI").is_ok() {
         return;

@@ -5,6 +5,10 @@ import type { SocialButton } from '../bindings/SocialButton';
 import { locale } from '../lib/locale';
 import api from '../lib/rpc';
 
+type PageInput = {
+  data?: Data;
+};
+
 function calculateAge(birthday: string): number {
   const [month, day, year] = birthday.split('-').map(Number);
   const birth = new Date(year, month - 1, day);
@@ -50,15 +54,17 @@ function renderCurrentlyBuilding(text: string, url: string) {
 }
 
 export default ilha
-  .state('data', null as Data | null)
+  .state('data', ({ data }: PageInput) => data ?? null)
   .state('nowPlaying', null as NowPlayingTrack | null)
   .effect(({ state }) => {
-    (async () => {
-      try {
-        const result = await api.data.query();
-        state.data(result);
-      } catch {}
-    })();
+    if (!state.data()) {
+      (async () => {
+        try {
+          const result = await api.data.query();
+          state.data(result);
+        } catch {}
+      })();
+    }
     (async () => {
       try {
         const result = await api.lastfm.query();

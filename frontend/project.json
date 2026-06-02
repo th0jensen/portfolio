@@ -3,8 +3,9 @@
   "sourceRoot": "frontend/src",
   "targets": {
     "build": {
-      "command": "bunx vite build",
-      "options": { "cwd": "frontend" }
+      "command": "bun run build",
+      "options": { "cwd": "frontend" },
+      "cache": false
     },
     "lint": {
       "command": "bunx biome check .",
