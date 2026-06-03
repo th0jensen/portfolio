@@ -5,7 +5,7 @@ import {
   issuesToErrors,
   validateWithSchema,
 } from '@ilha/store/form';
-import ilha from 'ilha';
+import ilha, { html } from 'ilha';
 import z from 'zod';
 import type { Data } from '../bindings';
 import { locale } from '../lib/locale';
@@ -73,61 +73,75 @@ export default ilha
   })
   .render(({ state }) => {
     const data = state.data();
-    if (!data) return <div></div>;
+    if (!data) return html``;
 
     const loc = data[locale()];
     const { full_name, email, content } = loc.contact;
     const { errors, status, message } = contactFormStore.getState();
 
-    return (
-      <section class='section' id='contact'>
-        <div class='container'>
-          <div class='section-header'>
-            <h2 class='section-title'>{loc.nav.contact}</h2>
+    return html`
+      <section class="section" id="contact">
+        <div class="container">
+          <div class="section-header">
+            <h2 class="section-title">${loc.nav.contact}</h2>
           </div>
-          <div class='glass-card contact-card'>
-            <form class='contact-form'>
-              <div class='form-group'>
-                <label for='full_name'>Name</label>
+          <div class="glass-card contact-card">
+            <form class="contact-form">
+              <div class="form-group">
+                <label for="full_name">Name</label>
                 <input
-                  type='text'
-                  id='full_name'
-                  name='full_name'
-                  placeholder={full_name}
+                  type="text"
+                  id="full_name"
+                  name="full_name"
+                  placeholder="${full_name}"
                 />
-                {errors.full_name && (
-                  <span class='form-error'>{errors.full_name[0]}</span>
-                )}
+                ${
+                  errors.full_name
+                    ? html`<span class="form-error">${errors.full_name[0]}</span>`
+                    : ''
+                }
               </div>
-              <div class='form-group'>
-                <label for='email'>Email</label>
+              <div class="form-group">
+                <label for="email">Email</label>
                 <input
-                  type='email'
-                  id='email'
-                  name='email'
-                  placeholder={email}
+                  type="email"
+                  id="email"
+                  name="email"
+                  placeholder="${email}"
                 />
-                {errors.email && (
-                  <span class='form-error'>{errors.email[0]}</span>
-                )}
+                ${
+                  errors.email
+                    ? html`<span class="form-error">${errors.email[0]}</span>`
+                    : ''
+                }
               </div>
-              <div class='form-group'>
-                <label for='content'>Message</label>
+              <div class="form-group">
+                <label for="content">Message</label>
                 <textarea
-                  id='content'
-                  name='content'
-                  placeholder={content}
+                  id="content"
+                  name="content"
+                  placeholder="${content}"
                 ></textarea>
-                {errors.content && (
-                  <span class='form-error'>{errors.content[0]}</span>
-                )}
+                ${
+                  errors.content
+                    ? html`<span class="form-error">${errors.content[0]}</span>`
+                    : ''
+                }
               </div>
-              {status === 'error' && <p class='form-error'>{message}</p>}
-              {status === 'success' && <p class='form-success'>{message}</p>}
+              ${
+                status === 'error'
+                  ? html`<p class="form-error">${message}</p>`
+                  : ''
+              }
+              ${
+                status === 'success'
+                  ? html`<p class="form-success">${message}</p>`
+                  : ''
+              }
               <button
-                type='submit'
-                class='btn btn-primary'
-                disabled={status === 'loading'}
+                type="submit"
+                class="btn btn-primary"
+                ${status === 'loading' ? 'disabled' : ''}
               >
                 Send
               </button>
@@ -135,5 +149,5 @@ export default ilha
           </div>
         </div>
       </section>
-    );
+    `;
   });

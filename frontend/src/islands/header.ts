@@ -1,8 +1,8 @@
 import { routePath } from '@ilha/router';
-import ilha, { html } from 'ilha';
+import ilha, { html, raw } from 'ilha';
 import { ChevronDown, createIcons, Menu, Moon, Sun, X } from 'lucide';
 import type { Data } from '../bindings';
-import Icon from '../lib/icon';
+import icon from '../lib/icon';
 import { locale, setLocale } from '../lib/locale';
 import api from '../lib/rpc';
 
@@ -111,82 +111,86 @@ export default ilha
         );
 
     const renderNavLinks = (mobile = false) =>
-      navLinks.map((link) => (
-        <a
-          key={link.label}
-          href={link.href}
-          className={mobile ? 'mobile-menu__link' : 'nav-link'}
-          target={link.external ? '_blank' : undefined}
-          rel={link.external ? 'noopener noreferrer' : undefined}
-          {...(mobile ? { 'data-menu-close': true } : {})}
-        >
-          {link.label}
-        </a>
-      ));
+      navLinks.map(
+        (link) => html`
+          <a
+            href="${link.href}"
+            class="${mobile ? 'mobile-menu__link' : 'nav-link'}"
+            ${
+              link.external
+                ? raw('target="_blank" rel="noopener noreferrer"')
+                : ''
+            }
+            ${mobile ? 'data-menu-close' : ''}
+            >${link.label}</a
+          >
+        `,
+      );
 
-    return (
-      <div class={wrapClass}>
-        <div class='site-header-backdrop site-header-backdrop--solid'></div>
+    return html`
+      <div class="${wrapClass}">
+        <div class="site-header-backdrop site-header-backdrop--solid"></div>
 
-        <header class='site-header'>
-          <div class='container site-header__inner'>
-            <a href='/' class='site-header__name' data-menu-close>
-              Thomas Jensen
-            </a>
+        <header class="site-header">
+          <div class="container site-header__inner">
+            <a href="/" class="site-header__name" data-menu-close
+              >Thomas Jensen</a
+            >
 
-            <nav class='site-nav' aria-label='Main navigation'>
-              {renderNavLinks()}
+            <nav class="site-nav" aria-label="Main navigation">
+              ${renderNavLinks()}
 
-              <details class='locale-dropdown'>
-                <summary class='locale-summary'>
-                  {currentLocaleFlag} {currentLocaleLabel}
-                  <Icon node={ChevronDown} />
+              <details class="locale-dropdown">
+                <summary class="locale-summary">
+                  ${currentLocaleFlag} ${currentLocaleLabel}
+                  ${raw(icon(ChevronDown))}
                 </summary>
-                <div class='locale-menu'>{localeOptions()}</div>
+                <div class="locale-menu">${localeOptions()}</div>
               </details>
 
               <button
-                type='button'
-                class='theme-toggle'
+                class="theme-toggle"
                 data-theme-toggle
-                aria-label={isDark ? loc.theme.light : loc.theme.dark}
+                aria-label="${isDark ? loc.theme.light : loc.theme.dark}"
               >
-                {isDark ? <Icon node={Sun} /> : <Icon node={Moon} />}
+                ${isDark ? raw(icon(Sun)) : raw(icon(Moon))}
               </button>
             </nav>
 
             <button
-              type='button'
-              class='mobile-menu-btn'
+              class="mobile-menu-btn"
               data-menu-toggle
-              aria-label={mobileOpen ? loc.nav.close_menu : loc.nav.open_menu}
+              aria-label="${
+                mobileOpen ? loc.nav.close_menu : loc.nav.open_menu
+              }"
             >
-              {mobileOpen ? <Icon node={X} /> : <Icon node={Menu} />}
+              ${mobileOpen ? raw(icon(X)) : raw(icon(Menu))}
             </button>
           </div>
         </header>
 
         <nav
-          className={`mobile-menu ${mobileOpen ? '' : 'hidden'}`}
-          aria-label='Mobile navigation'
+          class="mobile-menu"
+          ${mobileOpen ? '' : 'hidden'}
+          aria-label="Mobile navigation"
         >
-          {renderNavLinks(true)}
-          <div class='mobile-menu__divider'></div>
-          <details class='mobile-locale-details'>
-            <summary class='mobile-locale-summary'>
-              <span>
-                {currentLocaleFlag} {currentLocaleLabel}
-              </span>
-              <Icon node={ChevronDown} />
+          ${renderNavLinks(true)}
+
+          <div class="mobile-menu__divider"></div>
+
+          <details class="mobile-locale-details">
+            <summary class="mobile-locale-summary">
+              <span>${currentLocaleFlag} ${currentLocaleLabel}</span>
+              ${raw(icon(ChevronDown))}
             </summary>
-            <div class='mobile-locale-submenu'>{localeOptions(true)}</div>
+            <div class="mobile-locale-submenu">${localeOptions(true)}</div>
           </details>
 
-          <button type='button' class='mobile-menu__theme' data-theme-toggle>
-            {isDark ? <Icon node={Sun} /> : <Icon node={Moon} />}
-            {isDark ? loc.theme.light : loc.theme.dark}
+          <button class="mobile-menu__theme" data-theme-toggle>
+            ${isDark ? raw(icon(Sun)) : raw(icon(Moon))}
+            ${isDark ? loc.theme.light : loc.theme.dark}
           </button>
         </nav>
       </div>
-    );
+    `;
   });
