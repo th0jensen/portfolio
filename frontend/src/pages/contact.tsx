@@ -1,5 +1,5 @@
 import { createStore } from '@ilha/store';
-import { extractFormData, type FormErrors } from '@ilha/store/form';
+import { extractFormData } from '@ilha/store/form';
 import { Button, Field, Input, Textarea } from 'areia';
 import ilha from 'ilha';
 import z from 'zod';
@@ -11,8 +11,6 @@ type PageInput = {
   data?: Data;
 };
 
-type Status = 'idle' | 'loading' | 'success' | 'error';
-
 const emailSchema = z.object({
   full_name: z.string().min(1, 'Name is required.'),
   email: z.email('Invalid email address.'),
@@ -20,7 +18,7 @@ const emailSchema = z.object({
 });
 
 const contactFormStore = createStore(
-  { status: 'idle' as Status, message: '', errors: {} as FormErrors },
+  { status: 'idle' as 'idle' | 'loading' | 'success' | 'error', message: '' },
   (set) => ({
     async submit(event: SubmitEvent) {
       const form = event.target as HTMLFormElement;
@@ -43,10 +41,9 @@ const contactFormStore = createStore(
           status: json.ok ? 'success' : 'error',
         });
 
-        const succeeded = json.ok;
         setTimeout(() => {
           set({ status: 'idle', message: '' });
-          if (succeeded) form.reset();
+          if (json.ok) form.reset();
         }, 1 * 1000);
       } catch {
         set({
@@ -57,14 +54,6 @@ const contactFormStore = createStore(
           set({ status: 'idle', message: '' });
         }, 1 * 1000);
       }
-
-      set({ errors: {} });
-
-      set({ errors: {} });
-
-      setTimeout(() => {
-        set({ status: 'idle', message: '' });
-      }, 2 * 1000);
     },
   }),
 );
