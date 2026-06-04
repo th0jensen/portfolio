@@ -105,7 +105,7 @@ export default ilha
 
     return (
       <section
-        class='relative min-h-[calc(100vh-9.5rem)] overflow-x-hidden max-md:-mt-16 max-md:min-h-auto'
+        class='relative min-h-[calc(100vh-9.5rem)] overflow-x-hidden max-md:-mt-16 max-md:min-h-[calc(100vh-6rem)]'
         id='hero'
       >
         {/* Background */}

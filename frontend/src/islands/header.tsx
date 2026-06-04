@@ -43,6 +43,10 @@ export default ilha
     const solid = routePath() !== '/';
     document.documentElement.classList.toggle('header-solid', solid);
   })
+  .effect(({ state }) => {
+    const solid = state.mobileOpen() || state.scrolled() || routePath() !== '/';
+    document.documentElement.classList.toggle('header-solid', solid);
+  })
   .on('[data-theme-toggle]@click', ({ state }) => {
     const next = state.theme() === 'dark' ? 'light' : 'dark';
     state.theme(next);
@@ -79,13 +83,11 @@ export default ilha
 
     const loc = data[locale()];
     const locales = data.locales;
-    // const isHome = routePath() === '/';
+    const isHome = routePath() === '/';
     const isDark = state.theme() === 'dark';
     const mobileOpen = state.mobileOpen();
-    // const scrolled = state.scrolled();
-    // const isSolid = !isHome || scrolled || mobileOpen;
-    const wrapClass = `relative site-header-wrap`;
-    const backdropClass = `pointer-events-none absolute inset-0 z-0 transition-[background-color,border-color] duration-200 site-header-backdrop`;
+    const scrolled = state.scrolled();
+    const isSolid = !isHome || scrolled || mobileOpen;
 
     const navLinks = [
       { href: '/projects', label: loc.nav.work },
@@ -134,10 +136,11 @@ export default ilha
       ));
 
     return (
-      <div class={wrapClass}>
-        <div class={backdropClass} data-header-backdrop></div>
-
+      <div class='relative site-header-wrap'>
         <header class='relative z-50 h-16 transition-colors duration-200 site-header'>
+          {isSolid && (
+            <div class='pointer-events-none absolute inset-0 z-[-1] bg-[hsl(var(--background)_/0.85)] border-b border-[hsl(var(--border)_/0.2)] backdrop-blur-2xl'></div>
+          )}
           <div class='w-full max-w-6xl mx-auto px-6 flex h-full items-center justify-between'>
             <a
               href='/'
