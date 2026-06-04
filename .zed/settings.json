@@ -38,6 +38,12 @@
       },
       "prettier": { "allowed": false },
     },
+    "CSS": {
+      "language_servers": [
+        "!vscode-css-language-server",
+        "tailwindcss-language-server",
+      ],
+    },
   },
   "prettier": {
     "arrowParens": "always",
