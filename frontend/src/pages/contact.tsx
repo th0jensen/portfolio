@@ -120,7 +120,7 @@ export default ilha
               <Field
                 label='Name'
                 error='Enter your name.'
-                validationMode='onBlur'
+                validationMode='onSubmit'
                 validate={(val) =>
                   emailSchema.shape.content.safeParse(val).success
                     ? null
@@ -138,7 +138,7 @@ export default ilha
               <Field
                 label='Email'
                 error='Enter a valid email address.'
-                validationMode='onBlur'
+                validationMode='onSubmit'
                 validate={(val) =>
                   emailSchema.shape.email.safeParse(val).success
                     ? null
@@ -151,7 +151,7 @@ export default ilha
               <Field
                 label='Message'
                 error='Enter a message to send.'
-                validationMode='onBlur'
+                validationMode='onSubmit'
                 validate={(val) =>
                   emailSchema.shape.content.safeParse(val).success
                     ? null
