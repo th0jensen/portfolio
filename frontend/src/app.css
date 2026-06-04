@@ -1,3 +1,6 @@
+@import "tailwindcss";
+@import "areia/tailwind.css";
+
 /* ─── Locale ──────────────────────────────────────────────── */
 html[data-locale='en'] [data-locale-content='no'],
 html[data-locale='no'] [data-locale-content='en'] {

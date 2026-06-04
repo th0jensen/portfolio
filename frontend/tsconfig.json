@@ -21,6 +21,9 @@
     "erasableSyntaxOnly": true,
     "noFallthroughCasesInSwitch": true,
     "noUncheckedSideEffectImports": true,
+
+    "jsx": "react-jsx",
+    "jsxImportSource": "ilha"
   },
   "include": ["src"],
   "exclude": ["src/prerender.ts"],
