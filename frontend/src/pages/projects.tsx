@@ -134,7 +134,7 @@ export default ilha
   })
   .render(({ state }) => {
     const data = state.data();
-    if (!data) return <div></div>;
+    if (!data) return <div>Failed to fetch data from backend.</div>;
 
     const loc = data[locale()];
     return (

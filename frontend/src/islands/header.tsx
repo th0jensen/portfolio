@@ -79,7 +79,7 @@ export default ilha
   })
   .render(({ state }) => {
     const data = state.data();
-    if (!data) return <div></div>;
+    if (!data) return <div>Failed to fetch data from backend.</div>;
 
     const loc = data[locale()];
     const locales = data.locales;
@@ -136,7 +136,7 @@ export default ilha
       ));
 
     return (
-      <div class='relative site-header-wrap'>
+      <div class='fixed top-0 left-0 right-0 z-50 site-header-wrap'>
         <header class='relative z-50 h-16 transition-colors duration-200 site-header'>
           {isSolid && (
             <div class='pointer-events-none absolute inset-0 z-[-1] bg-[hsl(var(--background)_/0.85)] border-b border-[hsl(var(--border)_/0.2)] backdrop-blur-2xl'></div>
@@ -186,7 +186,6 @@ export default ilha
             </button>
           </div>
         </header>
-
         {mobileOpen && (
           <nav
             class='absolute top-full left-3 right-3 z-40 mt-1.5 bg-[hsl(var(--background)/0.92)] backdrop-blur-2xl border border-[hsl(var(--border)/0.2)] rounded-2xl p-2 flex flex-col gap-1 shadow-[0_8px_32px_hsl(0_0%_0%/0.12)] md:hidden'

@@ -55,7 +55,7 @@ const ExperienceCard = ({ item }: { item: ExperienceItem }) => (
               <Icon
                 node={GitFork}
                 size={13}
-                attrs='class="block shrink-0 stroke-[2.25]" aria-hidden="true"'
+                attrs='class="block shrink-0 stroke-[2.25]"'
               />
               {formatCompact(item.forks)}
             </span>
@@ -117,7 +117,7 @@ export default ilha
   })
   .render(({ state }) => {
     const data = state.data();
-    if (!data) return <div></div>;
+    if (!data) return <div>Failed to fetch data from backend.</div>;
 
     const loc = data[locale()];
 

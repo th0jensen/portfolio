@@ -2,6 +2,7 @@ import { Icon, LinkButton } from 'areia';
 import ilha from 'ilha';
 import { ExternalLink } from 'lucide';
 import type { Data, NowPlayingTrack } from '../bindings';
+import { cn } from '../lib/cn';
 import { locale } from '../lib/locale';
 import api from '../lib/rpc';
 
@@ -18,36 +19,6 @@ function calculateAge(birthday: string): number {
   if (m < 0 || (m === 0 && today.getDate() < birth.getDate())) age--;
   return age;
 }
-
-// const Button = ({ item, styles }: { item: SocialButton; styles?: string }) => (
-//   <a
-//     href={item.url}
-//     target='_blank'
-//     rel='noopener noreferrer'
-//     class='inline-flex items-center justify-center font-semibold text-[0.9375rem] rounded-[--radius] cursor-pointer transition-all duration-200 ease-in-out border-none no-underline whitespace-nowrap h-11 px-5 font-inherit focus-visible:outline focus-visible:outline-[hsl(var(--ring))] focus-visible:outline-offset-2 bg-[hsl(var(--secondary))] text-[hsl(var(--secondary-foreground))] hover:bg-[hsl(var(--secondary)/0.7)]'
-//     style={styles}
-//   >
-//     {item.label}
-//   </a>
-// );
-
-// const NowPlaying = ({
-//   track,
-//   hero,
-// }: {
-//   track: NowPlayingTrack | null;
-//   hero: Hero;
-// }) => {
-//   if (track === null) return <div></div>;
-//   return (
-//     <>
-//       {hero.now_playing}:
-//       <a href={track.url} target='_blank' rel='noopener noreferrer'>
-//         {track.name} {hero.by} {track.artist}
-//       </a>
-//     </>
-//   );
-// };
 
 export default ilha
   .state('data', ({ data }: PageInput) => data ?? null)
@@ -70,7 +41,7 @@ export default ilha
   })
   .render(({ state }) => {
     const data = state.data();
-    if (!data) return <div></div>;
+    if (!data) return <div>Failed to fetch data from backend.</div>;
 
     const loc = data[locale()];
     const age = calculateAge(data.about.birthday);
@@ -82,11 +53,11 @@ export default ilha
 
     const Headshot = ({ mobile = false }: { mobile?: boolean }) => (
       <div
-        class={
+        class={cn(
           mobile
             ? 'absolute top-0 left-0 right-0 h-[62vh] overflow-hidden z-0 md:hidden'
-            : 'hidden md:flex justify-center items-center'
-        }
+            : 'hidden md:flex justify-center items-center',
+        )}
       >
         <img
           src='/static/headshot.jpg'
@@ -94,12 +65,45 @@ export default ilha
           fetchpriority='high'
           height={mobile ? '1391' : '418'}
           width={mobile ? '1200' : '360'}
-          class={
+          class={cn(
             mobile
               ? 'w-full h-full object-cover object-[50%_35%]'
-              : 'w-auto h-auto max-h-[calc(100vh-9rem)] rounded-[--radius]'
-          }
+              : 'w-auto h-auto max-h-[calc(100vh-9rem)] rounded-[--radius]',
+          )}
         />
+      </div>
+    );
+
+    const Actions = ({ mobile = false }: { mobile?: boolean }) => (
+      <div
+        class={cn(
+          'gap-3 pt-1.5 flex-wrap',
+          mobile
+            ? 'inline-flex flex-col items-stretch md:hidden'
+            : 'hidden md:flex items-center',
+        )}
+      >
+        <LinkButton class='font-bold' href={'/projects'} variant='primary'>
+          {loc.hero.explore_work}
+        </LinkButton>
+        <div class='inline-flex flex-row items-stretch flex-wrap'>
+          <LinkButton
+            class={cn('font-bold', !mobile && 'justify-center min-w-24')}
+            href={loc.buttons.github.url}
+            variant='ghost'
+            external
+          >
+            {loc.buttons.github.label}
+          </LinkButton>
+          <LinkButton
+            class={cn('font-bold', !mobile && 'justify-center min-w-24')}
+            href={loc.buttons.linkedin.url}
+            variant='ghost'
+            external
+          >
+            {loc.buttons.linkedin.label}
+          </LinkButton>
+        </div>
       </div>
     );
 
@@ -113,8 +117,7 @@ export default ilha
         <div class='absolute left-[5%] top-[20%] w-[24rem] h-96 rounded-full bg-[hsl(var(--primary)/0.08)] blur-3xl pointer-events-none'></div>
         <div class='absolute right-[10%] bottom-[20%] w-[20rem] h-80 rounded-full bg-[hsl(var(--accent)/0.1)] blur-3xl pointer-events-none'></div>
 
-        {/* Mobile image */}
-        <Headshot mobile={true} />
+        <Headshot mobile />
         <div class='pointer-events-none absolute top-30 left-0 right-0 h-[calc(62vh-6.25rem)] bg-[linear-gradient(to_bottom,transparent_0,transparent_calc(35%+50px),hsl(var(--background))_75%,hsl(var(--background))_100%)] z-10 md:hidden'></div>
 
         {/* Content */}
@@ -131,61 +134,8 @@ export default ilha
                 {description}
               </p>
 
-              {/* Desktop actions */}
-              <div class='hidden md:flex flex-wrap gap-3 pt-1.5 items-center'>
-                <LinkButton
-                  class='font-bold'
-                  href={'/projects'}
-                  variant='primary'
-                >
-                  {loc.hero.explore_work}
-                </LinkButton>
-                <LinkButton
-                  class='min-w-24 justify-center font-bold'
-                  href={loc.buttons.github.url}
-                  variant='ghost'
-                  external
-                >
-                  {loc.buttons.github.label}
-                </LinkButton>
-                <LinkButton
-                  class='min-w-24 justify-center font-bold'
-                  href={loc.buttons.linkedin.url}
-                  variant='ghost'
-                  external
-                >
-                  {loc.buttons.linkedin.label}
-                </LinkButton>
-              </div>
-
-              {/* Mobile actions */}
-              <div class='inline-flex flex-col items-stretch md:hidden flex-wrap gap-3 pt-1.5'>
-                <LinkButton
-                  class='font-bold'
-                  href={'/projects'}
-                  variant='primary'
-                >
-                  {loc.hero.explore_work}
-                </LinkButton>
-                <div class='inline-flex flex-row items-stretch flex-wrap'>
-                  <LinkButton
-                    class='font-bold'
-                    href={loc.buttons.github.url}
-                    variant='ghost'
-                    external
-                  >
-                    {loc.buttons.github.label}
-                  </LinkButton>
-                  <LinkButton
-                    class='font-bold'
-                    href={loc.buttons.linkedin.url}
-                    variant='ghost'
-                    external
-                  >
-                    {loc.buttons.linkedin.label}
-                  </LinkButton>
-                </div>
-              </div>
+              <Actions />
+              <Actions mobile />
 
               <p class='mt-4'>
                 <span class='flex flex-row items-center'>
@@ -219,7 +169,6 @@ export default ilha
               </p>
             </div>
 
-            {/* Portrait */}
             <Headshot />
           </div>
         </div>
