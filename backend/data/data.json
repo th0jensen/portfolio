@@ -32,7 +32,7 @@
     },
     "work": {
       "subtitle": "Featured",
-      "visit_project": "View {name} project",
+      "visit_project": "View project",
       "download_app_store": "Download on App Store"
     },
     "experience": {
@@ -79,7 +79,7 @@
     },
     "work": {
       "subtitle": "Utvalgte",
-      "visit_project": "Se prosjektet {name}",
+      "visit_project": "Se prosjektet",
       "download_app_store": "Last ned på App Store"
     },
     "experience": {
@@ -171,10 +171,10 @@
       "zed_extension_id": "zed"
     },
     {
-      "name": "th0jensen/crabdash",
-      "description": "Crabdash is a cross-platform homelab dashboard built in Rust with GPUI",
-      "url": "https://github.com/th0jensen/crabdash",
-      "stars": 2,
+      "name": "th0jensen/fff-gpui",
+      "description": "UI harness for dmtrKovalenko/fff made in GPUI. System-wide file finder that integrates well with the Zed editor.",
+      "url": "https://github.com/th0jensen/fff-gpui",
+      "stars": 0,
       "forks": 0,
       "language": "Rust",
       "language_color": "#c25a3c",
@@ -182,10 +182,10 @@
       "downloads": null
     },
     {
-      "name": "th0jensen/fff-gpui",
-      "description": "UI harness for dmtrKovalenko/fff made in GPUI. System-wide file finder that integrates well with the Zed editor.",
-      "url": "https://github.com/th0jensen/fff-gpui",
-      "stars": 0,
+      "name": "th0jensen/crabdash",
+      "description": "Crabdash is a cross-platform homelab dashboard built in Rust with GPUI",
+      "url": "https://github.com/th0jensen/crabdash",
+      "stars": 2,
       "forks": 0,
       "language": "Rust",
       "language_color": "#c25a3c",

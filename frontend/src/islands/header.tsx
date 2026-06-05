@@ -161,7 +161,7 @@ export default ilha
                   {currentLocaleFlag} {currentLocaleLabel}
                   <Icon node={ChevronDown} />
                 </summary>
-                <div class='absolute top-[calc(100%+0.25rem)] right-0 p-1 bg-[hsl(var(--card))] border border-[hsl(var(--border)/0.25)] rounded-[--radius] shadow-[0_8px_24px_hsl(0_0%_0%/0.1)] min-w-32'>
+                <div class='absolute top-[calc(100%+0.25rem)] right-0 p-1 bg-[hsl(var(--card))] border border-[hsl(var(--border)/0.25)] rounded-2xl shadow-[0_8px_24px_hsl(0_0%_0%/0.1)] min-w-32'>
                   {localeOptions()}
                 </div>
               </details>
