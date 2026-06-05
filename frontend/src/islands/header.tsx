@@ -119,10 +119,10 @@ export default ilha
       >
         <summary
           class={cn(
-            'flex items-center font-medium rounded-md cursor-pointer text-muted-foreground duration-200 hover:text-foreground hover:bg-muted transition-[background,color] text-sm list-none',
+            'flex items-center font-medium rounded-md cursor-pointer text-muted-foreground duration-200 hover:text-foreground hover:bg-muted transition-[background,color] list-none',
             mobile
-              ? 'justify-between p-4 py-3 [&::-webkit-details-marker]:hidden [&_svg]:w-3.5 [&_svg]:h-3.5 [&_svg]:shrink-0 [&_svg]:transition-transform [&_svg]:duration-200 group-open:[&_svg]:rotate-180'
-              : 'gap-1.5 px-2.5 py-1.25',
+              ? 'justify-between p-4 py-3 [&::-webkit-details-marker]:hidden [&_svg]:w-3.5 [&_svg]:h-3.5 [&_svg]:shrink-0 [&_svg]:transition-transform [&_svg]:duration-200 group-open:[&_svg]:rotate-180 text-base'
+              : 'gap-1.5 px-2.5 py-1.25 text-sm',
           )}
         >
           {currentLocaleFlag} {currentLocaleLabel}
@@ -152,7 +152,7 @@ export default ilha
           href={link.href}
           class={navLinkClass(mobile)}
           data-menu-close={mobile ? true : undefined}
-          external
+          external={link.href.includes('resume') && true}
         >
           {link.label}
         </Link>
@@ -162,7 +162,7 @@ export default ilha
       <div class='fixed top-0 left-0 right-0 z-50 site-header-wrap'>
         <header class='relative z-50 h-16 transition-colors duration-200 site-header'>
           {isSolid && (
-            <div class='pointer-events-none absolute inset-0 z-[-1] bg-[hsl(var(--background)_/0.85)] border-b border-[hsl(var(--border)_/0.2)] backdrop-blur-2xl'></div>
+            <div class='pointer-events-none absolute inset-0 z-[-1] bg-background/85 border-b border-[hsl(var(--border)_/0.2)] backdrop-blur-2xl'></div>
           )}
           <div class='w-full max-w-6xl mx-auto px-6 flex h-full items-center justify-between'>
             <a
@@ -203,7 +203,7 @@ export default ilha
         </header>
         {mobileOpen && (
           <nav
-            class='absolute top-full left-3 right-3 z-40 mt-1.5 bg-background backdrop-blur-2xl border border-[hsl(var(--border)/0.2)] rounded-2xl p-2 flex flex-col gap-1 shadow-[0_8px_32px_hsl(0_0%_0%/0.12)] md:hidden'
+            class='absolute top-full left-3 right-3 z-40 mt-1.5 bg-background/85 backdrop-blur-2xl border border-[hsl(var(--border)/0.2)] rounded-2xl p-2 flex flex-col gap-1 shadow-[0_8px_32px_hsl(0_0%_0%/0.12)] md:hidden'
             aria-label='Mobile navigation'
           >
             <RenderNavLinks mobile />
@@ -217,7 +217,11 @@ export default ilha
               class='flex items-center gap-3 p-4 py-3 text-base font-medium bg-none border-none cursor-pointer text-foreground rounded-[calc(var(--radius)-2px)] w-full font-inherit transition-colors duration-200 hover:bg-muted [&_svg]:w-4.5 [&_svg]:h-4.5'
               data-theme-toggle
             >
-              {isDark ? <Icon node={Sun} /> : <Icon node={Moon} />}
+              {isDark ? (
+                <Icon node={Sun} size={16} />
+              ) : (
+                <Icon node={Moon} size={16} />
+              )}
               {isDark ? loc.theme.light : loc.theme.dark}
             </button>
           </nav>
