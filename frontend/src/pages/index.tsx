@@ -68,7 +68,7 @@ export default ilha
           class={cn(
             mobile
               ? 'w-full h-full object-cover object-[50%_35%]'
-              : 'w-auto h-auto max-h-[calc(100vh-9rem)] rounded-[--radius]',
+              : 'w-auto h-auto max-h-[calc(100vh-9rem)] rounded-2xl',
           )}
         />
       </div>
