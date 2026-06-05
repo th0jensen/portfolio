@@ -1,7 +1,9 @@
 import { routePath } from '@ilha/router';
+import { Link } from 'areia';
 import ilha from 'ilha';
 import { ChevronDown, createIcons, Menu, Moon, Sun, X } from 'lucide';
 import type { Data } from '../bindings';
+import { cn } from '../lib/cn';
 import Icon from '../lib/icon';
 import { locale, setLocale } from '../lib/locale';
 import api from '../lib/rpc';
@@ -101,38 +103,59 @@ export default ilha
     const currentLocaleLabel =
       locales.find((lo) => lo.code === locale())?.label ?? 'English';
 
-    const localeOptions = (mobile = false) =>
-      locales
-        .filter((lo) => lo.code !== locale())
-        .map((lo) => (
-          <span
-            data-locale={lo.code}
-            class={
-              mobile
-                ? 'block p-4 py-3 text-[0.9375rem] font-medium no-underline text-[hsl(var(--foreground))] rounded-[calc(var(--radius)-2px)] transition-colors duration-200 hover:bg-[hsl(var(--muted))]'
-                : 'flex items-center gap-2 px-3 py-2 text-sm no-underline rounded-[calc(var(--radius)-2px)] text-[hsl(var(--muted-foreground))] transition-[color,background] duration-200 hover:text-[hsl(var(--foreground))] hover:bg-[hsl(var(--muted))]'
-            }
-            style={{ cursor: 'pointer' }}
-          >
-            {lo.flag} {lo.label}
-          </span>
-        ));
+    const navLinkClass = (mobile: boolean) =>
+      cn(
+        'font-medium cursor-pointer no-underline text-foreground hover:text-foreground rounded-md duration-200 hover:bg-muted transition-[color,background]',
+        mobile ? 'block p-4 py-3 text-base' : 'flex px-3 py-1.75 text-sm',
+      );
 
-    const renderNavLinks = (mobile = false) =>
-      navLinks.map((link) => (
-        <a
-          href={link.href}
-          class={
+    const LocaleOptions = ({ mobile = false }: { mobile?: boolean }) => (
+      <details
+        class={cn(
+          mobile
+            ? 'list-none group'
+            : 'relative ml-2 [&::-webkit-details-marker]:hidden',
+        )}
+      >
+        <summary
+          class={cn(
+            'flex items-center font-medium rounded-md cursor-pointer text-muted-foreground duration-200 hover:text-foreground hover:bg-muted transition-[background,color] text-sm list-none',
             mobile
-              ? 'block p-4 py-3 text-[0.9375rem] font-medium no-underline text-[hsl(var(--foreground))] rounded-[calc(var(--radius)-2px)] transition-colors duration-200 hover:bg-[hsl(var(--muted))]'
-              : 'px-3 py-1.75 text-sm font-medium no-underline text-[hsl(var(--foreground))] rounded-[calc(var(--radius)-2px)] transition-[color,background] duration-200 hover:text-[hsl(var(--foreground)/0.8)] hover:bg-[hsl(var(--muted))]'
-          }
-          target={link.external ? '_blank' : undefined}
-          rel={link.external ? 'noopener noreferrer' : undefined}
+              ? 'justify-between p-4 py-3 [&::-webkit-details-marker]:hidden [&_svg]:w-3.5 [&_svg]:h-3.5 [&_svg]:shrink-0 [&_svg]:transition-transform [&_svg]:duration-200 group-open:[&_svg]:rotate-180'
+              : 'gap-1.5 px-2.5 py-1.25',
+          )}
+        >
+          {currentLocaleFlag} {currentLocaleLabel}
+          <Icon node={ChevronDown} />
+        </summary>
+        <div
+          class={cn(
+            mobile
+              ? 'flex flex-col gap-0.5 pb-1'
+              : 'absolute top-[calc(100%+0.25rem)] right-0 p-1 bg-card border border-[hsl(var(--border)/0.25)] rounded-2xl shadow-[0_8px_24px_hsl(0_0%_0%/0.1)] min-w-32',
+          )}
+        >
+          {locales
+            .filter((lo) => lo.code !== locale())
+            .map((lo) => (
+              <span data-locale={lo.code} class={navLinkClass(mobile)}>
+                {lo.flag} {lo.label}
+              </span>
+            ))}
+        </div>
+      </details>
+    );
+
+    const RenderNavLinks = ({ mobile = false }: { mobile?: boolean }) =>
+      navLinks.map((link) => (
+        <Link
+          href={link.href}
+          class={navLinkClass(mobile)}
           data-menu-close={mobile ? true : undefined}
+          external
         >
           {link.label}
-        </a>
+        </Link>
       ));
 
     return (
@@ -154,21 +177,13 @@ export default ilha
               class='hidden md:flex items-center gap-0.5'
               aria-label='Main navigation'
             >
-              {renderNavLinks()}
+              <RenderNavLinks />
 
-              <details class='relative ml-2 [&::-webkit-details-marker]:hidden'>
-                <summary class='flex items-center gap-1.5 px-2.5 py-1.25 text-sm font-medium rounded-[calc(var(--radius)-2px)] cursor-pointer text-[hsl(var(--muted-foreground))] transition-[color,background] duration-200 hover:text-[hsl(var(--foreground))] hover:bg-[hsl(var(--muted))] list-none'>
-                  {currentLocaleFlag} {currentLocaleLabel}
-                  <Icon node={ChevronDown} />
-                </summary>
-                <div class='absolute top-[calc(100%+0.25rem)] right-0 p-1 bg-[hsl(var(--card))] border border-[hsl(var(--border)/0.25)] rounded-2xl shadow-[0_8px_24px_hsl(0_0%_0%/0.1)] min-w-32'>
-                  {localeOptions()}
-                </div>
-              </details>
+              <LocaleOptions />
 
               <button
                 type='button'
-                class='flex items-center justify-center w-9 h-9 rounded-full bg-transparent border-none cursor-pointer text-[hsl(var(--muted-foreground))] transition-[color,background] duration-200 hover:text-[hsl(var(--foreground))] hover:bg-[hsl(var(--muted))] ml-2 [&_svg]:w-4.5 [&_svg]:h-4.5'
+                class='flex items-center justify-center w-9 h-9 rounded-full bg-transparent border-none cursor-pointer text-muted-foreground transition-[color,background] duration-200 hover:text-foreground hover:bg-muted ml-2 [&_svg]:w-4.5 [&_svg]:h-4.5'
                 data-theme-toggle
                 aria-label={isDark ? loc.theme.light : loc.theme.dark}
               >
@@ -178,7 +193,7 @@ export default ilha
 
             <button
               type='button'
-              class='flex items-center justify-center w-9 h-9 bg-none border-none cursor-pointer text-inherit rounded-lg transition-colors duration-200 hover:bg-[hsl(var(--muted))] md:hidden mobile-menu-btn [&_svg]:w-5 [&_svg]:h-5'
+              class='flex items-center justify-center w-9 h-9 bg-none border-none cursor-pointer text-inherit rounded-lg transition-colors duration-200 hover:bg-muted md:hidden mobile-menu-btn [&_svg]:w-5 [&_svg]:h-5'
               data-menu-toggle
               aria-label={mobileOpen ? loc.nav.close_menu : loc.nav.open_menu}
             >
@@ -188,28 +203,18 @@ export default ilha
         </header>
         {mobileOpen && (
           <nav
-            class='absolute top-full left-3 right-3 z-40 mt-1.5 bg-[hsl(var(--background)/0.92)] backdrop-blur-2xl border border-[hsl(var(--border)/0.2)] rounded-2xl p-2 flex flex-col gap-1 shadow-[0_8px_32px_hsl(0_0%_0%/0.12)] md:hidden'
+            class='absolute top-full left-3 right-3 z-40 mt-1.5 bg-background backdrop-blur-2xl border border-[hsl(var(--border)/0.2)] rounded-2xl p-2 flex flex-col gap-1 shadow-[0_8px_32px_hsl(0_0%_0%/0.12)] md:hidden'
             aria-label='Mobile navigation'
           >
-            {renderNavLinks(true)}
+            <RenderNavLinks mobile />
 
             <div class='h-px bg-[hsl(var(--border)/0.5)] my-1'></div>
 
-            <details class='list-none group'>
-              <summary class='flex items-center justify-between p-4 py-3 text-[0.9375rem] font-medium cursor-pointer text-[hsl(var(--muted-foreground))] rounded-[calc(var(--radius)-2px)] list-none transition-[background,color] duration-200 hover:bg-[hsl(var(--muted))] hover:text-[hsl(var(--foreground))] [&::-webkit-details-marker]:hidden [&_svg]:w-3.5 [&_svg]:h-3.5 [&_svg]:shrink-0 [&_svg]:transition-transform [&_svg]:duration-200 group-open:[&_svg]:rotate-180'>
-                <span>
-                  {currentLocaleFlag} {currentLocaleLabel}
-                </span>
-                <Icon node={ChevronDown} />
-              </summary>
-              <div class='flex flex-col gap-0.5 pb-1'>
-                {localeOptions(true)}
-              </div>
-            </details>
+            <LocaleOptions mobile />
 
             <button
               type='button'
-              class='flex items-center gap-3 p-4 py-3 text-[0.9375rem] font-medium bg-none border-none cursor-pointer text-[hsl(var(--foreground))] rounded-[calc(var(--radius)-2px)] w-full font-inherit transition-colors duration-200 hover:bg-[hsl(var(--muted))] [&_svg]:w-4.5 [&_svg]:h-4.5'
+              class='flex items-center gap-3 p-4 py-3 text-base font-medium bg-none border-none cursor-pointer text-foreground rounded-[calc(var(--radius)-2px)] w-full font-inherit transition-colors duration-200 hover:bg-muted [&_svg]:w-4.5 [&_svg]:h-4.5'
               data-theme-toggle
             >
               {isDark ? <Icon node={Sun} /> : <Icon node={Moon} />}
