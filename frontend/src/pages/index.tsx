@@ -100,17 +100,14 @@ export default ilha
                 <div class='absolute -top-5 -right-4 h-24 w-24 border-t border-r border-primary/55' />
                 <div class='absolute -bottom-4 -left-4 h-24 w-24 border-b border-l border-primary/55' />
                 <div class='relative aspect-[3/4] overflow-hidden border border-border bg-muted'>
-                  <picture>
-                    <source srcset='/static/headshot.webp' type='image/webp' />
-                    <img
-                      src='/static/headshot.jpg'
-                      alt={`Portrait of ${name}`}
-                      width='360'
-                      height='540'
-                      fetchpriority='high'
-                      class='h-full w-full object-cover object-center saturate-[0.88] transition-[filter] duration-500 dark:brightness-[0.82] dark:saturate-[0.72]'
-                    />
-                  </picture>
+                  <img
+                    src='/static/headshot.jpg'
+                    alt={`Portrait of ${name}`}
+                    width='360'
+                    height='540'
+                    fetchpriority='high'
+                    class='h-full w-full object-cover object-center saturate-[0.88] transition-[filter] duration-500 dark:brightness-[0.82] dark:saturate-[0.72]'
+                  />
                   <div class='absolute inset-x-0 bottom-0 bg-[linear-gradient(to_top,hsl(var(--shadow)/0.72),transparent)] px-5 pt-20 pb-5 text-white'>
                     <p class='font-mono text-[0.625rem] uppercase tracking-[0.15em] text-white/70'>
                       {isNorwegian ? 'Nåværende fokus' : 'Current focus'}
