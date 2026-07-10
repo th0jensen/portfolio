@@ -1,8 +1,7 @@
-import { LayerCard, Link } from 'areia';
+import { Link } from 'areia';
 import ilha from 'ilha';
-import { GitFork } from 'lucide';
+import { ArrowUpRight, Download, GitFork } from 'lucide';
 import type { Data, ExperienceItem } from '../bindings';
-import { cn } from '../lib/cn';
 import Icon from '../lib/icon';
 import { locale } from '../lib/locale';
 import api from '../lib/rpc';
@@ -12,92 +11,18 @@ type PageInput = {
   experience?: ExperienceItem[];
 };
 
-function formatCompact(n: bigint | number): string {
-  const v = typeof n === 'bigint' ? Number(n) : n;
-  if (v >= 1_000_000) return `${(v / 1_000_000).toFixed(1)}m`;
-  if (v >= 1_000) return `${(v / 1_000).toFixed(1)}k`;
-  return v.toString();
+function formatCompact(value: bigint | number): string {
+  const number = typeof value === 'bigint' ? Number(value) : value;
+  if (number >= 1_000_000) return `${(number / 1_000_000).toFixed(1)}m`;
+  if (number >= 1_000) return `${(number / 1_000).toFixed(1)}k`;
+  return String(number);
 }
 
-const PrBadge = ({ state }: { state: string | null | undefined }) => {
-  if (!state) return <div></div>;
-  const label = state.charAt(0).toUpperCase() + state.slice(1);
-  return (
-    <span
-      class={cn(
-        'shrink-0 rounded-full px-2 py-[0.15rem] text-[0.6875rem] font-medium capitalize',
-        state === 'open' &&
-          'bg-[hsl(142_60%_15%_/0.15)] text-[hsl(142_60%_40%)]',
-        state === 'merged' &&
-          'bg-[hsl(265_60%_60%_/0.15)] text-[hsl(265_60%_50%)]',
-      )}
-    >
-      {label}
-    </span>
-  );
-};
-
-const ExperienceCard = ({ item }: { item: ExperienceItem }) => (
-  <LayerCard class='flex h-full flex-col transition-all duration-200 ease-in-out hover:shadow-[0_10px_24px_-5px_hsl(0_0%_0%_/0.1)]'>
-    <LayerCard.Title>
-      <div class='flex w-full items-center justify-between gap-3 text-xs text-muted-foreground'>
-        <div class='flex items-center gap-3'>
-          <span
-            class='inline-block h-3 w-3 shrink-0 rounded-full'
-            style={`background:${item.language_color}`}
-          />
-          <span>{item.language}</span>
-          <span class='inline-flex items-center gap-1'>
-            ★ {formatCompact(item.stars)}
-          </span>
-          {item.forks && (
-            <span class='inline-flex items-center gap-1'>
-              <Icon
-                node={GitFork}
-                size={13}
-                attrs='class="block shrink-0 stroke-[2.25]"'
-              />
-              {formatCompact(item.forks)}
-            </span>
-          )}
-          {item.downloads != null && item.type === 'zed-extension' && (
-            <span class='inline-flex items-center gap-1'>
-              ↓ {formatCompact(item.downloads)}
-            </span>
-          )}
-        </div>
-        {item.additions != null ? (
-          <div class='inline-flex items-center gap-3'>
-            <span class='inline-flex items-center gap-1'>
-              <span class='text-[hsl(142_60%_35%)]'>+{item.additions}</span>
-              <span class='text-[hsl(0_70%_45%)]'>−{item.deletions}</span>
-            </span>
-            <PrBadge state={item.pr_state} />
-          </div>
-        ) : (
-          <PrBadge state={item.pr_state} />
-        )}
-      </div>
-    </LayerCard.Title>
-    <LayerCard.Content class='flex flex-1 flex-col gap-3 p-6'>
-      <Link
-        href={item.url}
-        class='inline-flex items-center gap-1 text-[0.9375rem] font-semibold text-foreground hover:text-foreground no-underline transition-colors hover:underline'
-        external
-      >
-        {item.name}
-        {item.pr_number && (
-          <span class='ml-1 font-normal text-muted-foreground'>
-            #{item.pr_number}
-          </span>
-        )}
-      </Link>
-      <p class='flex-1 whitespace-pre-line text-sm leading-[1.65] text-muted-foreground'>
-        {item.description}
-      </p>
-    </LayerCard.Content>
-  </LayerCard>
-);
+function typeLabel(item: ExperienceItem): string {
+  if (item.type === 'pr') return 'Pull request';
+  if (item.type === 'zed-extension') return 'Zed extension';
+  return 'Repository';
+}
 
 export default ilha
   .state('data', ({ data }: PageInput) => data ?? null)
@@ -117,28 +42,158 @@ export default ilha
   })
   .render(({ state }) => {
     const data = state.data();
-    if (!data) return <div>Failed to fetch data from backend.</div>;
+    if (!data) return '';
 
     const loc = data[locale()];
+    const isNorwegian = locale() === 'no';
 
     return (
-      <section class='py-20' id='experience'>
-        <div class='mx-auto w-full max-w-6xl px-6'>
-          <div class='mb-12'>
-            <p class='mb-3 text-xs font-semibold uppercase tracking-widest text-muted-foreground'>
-              {loc.experience.subtitle}
-            </p>
-            <h2 class='text-[2.25rem] font-bold tracking-[-0.02em]'>
-              {loc.nav.experience}
-            </h2>
-            <p class='mt-4 max-w-2xl leading-[1.7] text-muted-foreground/90'>
+      <section id='experience' class='flex-1'>
+        <header class='relative overflow-hidden border-b border-border py-16 sm:py-20'>
+          <div class='technical-grid absolute inset-0 opacity-35' />
+          <div class='absolute inset-0 bg-[linear-gradient(to_right,hsl(var(--background)/0.98),hsl(var(--background)/0.78))]' />
+          <div class='relative mx-auto grid w-full max-w-7xl gap-8 px-5 sm:px-8 md:grid-cols-[0.8fr_1.2fr] md:items-end lg:px-10'>
+            <div>
+              <p class='font-mono text-[0.6875rem] uppercase tracking-[0.16em] text-primary'>
+                02 / {loc.experience.subtitle}
+              </p>
+              <h1 class='mt-4 text-5xl font-bold tracking-[-0.055em] sm:text-6xl'>
+                {loc.nav.experience}
+              </h1>
+            </div>
+            <p class='max-w-2xl text-lg leading-8 text-muted-foreground md:justify-self-end'>
               {loc.experience.description}
             </p>
           </div>
+        </header>
 
-          <div class='grid grid-cols-1 gap-8 md:grid-cols-2'>
-            {state.experience().map((item) => (
-              <ExperienceCard item={item} />
+        <div class='mx-auto w-full max-w-7xl px-5 py-16 sm:px-8 sm:py-20 lg:px-10'>
+          <div class='mb-8 flex items-center justify-between gap-4 border-b border-border pb-4 font-mono text-[0.625rem] uppercase tracking-[0.14em] text-muted-foreground'>
+            <span>{isNorwegian ? 'Utvalgt arbeid' : 'Selected work'}</span>
+            <span>
+              {state.experience().length.toString().padStart(2, '0')} entries
+            </span>
+          </div>
+
+          <div class='divide-y divide-border border-b border-border'>
+            {state.experience().map((item, index) => (
+              <article class='group grid gap-5 py-9 sm:grid-cols-[3.5rem_minmax(0,1fr)] lg:grid-cols-[3.5rem_minmax(0,1fr)_15rem] lg:gap-8 lg:py-11'>
+                <div class='font-mono text-[0.6875rem] text-muted-foreground'>
+                  /{String(index + 1).padStart(2, '0')}
+                </div>
+
+                <div class='min-w-0'>
+                  <div class='mb-3 flex flex-wrap items-center gap-3 font-mono text-[0.625rem] uppercase tracking-[0.12em] text-muted-foreground'>
+                    <span class='inline-flex items-center gap-2'>
+                      <span
+                        class='h-2 w-2'
+                        style={`background-color:${item.language_color}`}
+                      />
+                      {item.language}
+                    </span>
+                    <span class='text-border'>/</span>
+                    <span>{typeLabel(item)}</span>
+                    {item.pr_state && (
+                      <>
+                        <span class='text-border'>/</span>
+                        <span class='text-primary'>{item.pr_state}</span>
+                      </>
+                    )}
+                  </div>
+
+                  <Link
+                    href={item.url}
+                    class='inline-flex items-center gap-2 text-xl font-bold tracking-[-0.02em] text-foreground no-underline transition-colors hover:text-primary sm:text-2xl'
+                    external
+                  >
+                    {item.name}
+                    {item.pr_number && (
+                      <span class='font-mono text-sm font-normal text-muted-foreground'>
+                        #{String(item.pr_number)}
+                      </span>
+                    )}
+                    <Icon
+                      node={ArrowUpRight}
+                      size={17}
+                      attrs='class="opacity-50 transition-[opacity,transform] group-hover:-translate-y-0.5 group-hover:translate-x-0.5 group-hover:opacity-100"'
+                    />
+                  </Link>
+
+                  <p class='mt-4 max-w-3xl whitespace-pre-line text-[0.9375rem] leading-7 text-muted-foreground'>
+                    {item.description}
+                  </p>
+
+                  {item.type === 'zed-extension' && (
+                    <div class='mt-5 flex flex-wrap gap-4'>
+                      {item.zed_extension_url && (
+                        <a
+                          href={item.zed_extension_url}
+                          class='font-mono text-[0.6875rem] uppercase tracking-[0.1em] text-foreground underline decoration-border underline-offset-4 hover:decoration-primary'
+                        >
+                          Open in Zed
+                        </a>
+                      )}
+                      {item.github_url && item.github_url !== item.url && (
+                        <Link
+                          href={item.github_url}
+                          class='font-mono text-[0.6875rem] uppercase tracking-[0.1em] text-foreground underline decoration-border underline-offset-4 hover:decoration-primary'
+                          external
+                        >
+                          GitHub
+                        </Link>
+                      )}
+                    </div>
+                  )}
+                </div>
+
+                <dl class='grid grid-cols-2 gap-x-5 gap-y-4 border-t border-border pt-5 sm:col-start-2 sm:grid-cols-4 lg:col-start-auto lg:grid-cols-2 lg:border-t-0 lg:border-l lg:pt-0 lg:pl-8'>
+                  <div>
+                    <dt class='font-mono text-[0.5625rem] uppercase tracking-[0.12em] text-muted-foreground'>
+                      Stars
+                    </dt>
+                    <dd class='mt-1 text-sm font-bold'>
+                      ★ {formatCompact(item.stars)}
+                    </dd>
+                  </div>
+                  {Number(item.forks) > 0 && (
+                    <div>
+                      <dt class='font-mono text-[0.5625rem] uppercase tracking-[0.12em] text-muted-foreground'>
+                        Forks
+                      </dt>
+                      <dd class='mt-1 inline-flex items-center gap-1.5 text-sm font-bold'>
+                        <Icon node={GitFork} size={13} />
+                        {formatCompact(item.forks)}
+                      </dd>
+                    </div>
+                  )}
+                  {item.downloads != null && item.type === 'zed-extension' && (
+                    <div>
+                      <dt class='font-mono text-[0.5625rem] uppercase tracking-[0.12em] text-muted-foreground'>
+                        Downloads
+                      </dt>
+                      <dd class='mt-1 inline-flex items-center gap-1.5 text-sm font-bold'>
+                        <Icon node={Download} size={13} />
+                        {formatCompact(item.downloads)}
+                      </dd>
+                    </div>
+                  )}
+                  {item.additions != null && (
+                    <div>
+                      <dt class='font-mono text-[0.5625rem] uppercase tracking-[0.12em] text-muted-foreground'>
+                        Diff
+                      </dt>
+                      <dd class='mt-1 font-mono text-xs'>
+                        <span class='text-[hsl(142_55%_40%)]'>
+                          +{String(item.additions)}
+                        </span>{' '}
+                        <span class='text-[hsl(2_62%_54%)]'>
+                          −{String(item.deletions)}
+                        </span>
+                      </dd>
+                    </div>
+                  )}
+                </dl>
+              </article>
             ))}
           </div>
         </div>

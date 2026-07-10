@@ -1,8 +1,6 @@
-import { LayerCard, Link } from 'areia';
 import ilha from 'ilha';
-import type { Data, Project } from '../bindings';
-import type { Work } from '../bindings/Work';
-import { cn } from '../lib/cn';
+import type { Data } from '../bindings';
+import ProjectCard from '../components/project-card';
 import { locale } from '../lib/locale';
 import api from '../lib/rpc';
 
@@ -10,154 +8,77 @@ type PageInput = {
   data?: Data;
 };
 
-const ProjectCard = ({
-  project,
-  featured,
-  data,
-}: {
-  project: Project;
-  featured: boolean;
-  data: Work;
-}) => {
-  const techPills = Object.keys(project.technologies).map((tech) => (
-    <span class='rounded-lg bg-accent/50 px-3 py-1.5 text-xs font-semibold text-accent-foreground transition-colors hover:bg-accent/70'>
-      {tech}
-    </span>
-  ));
-
-  const isAppStore = project.source_type === 'appstore';
-  const isGithub = project.source_type === 'github';
-  const overlayClass =
-    'absolute inset-0 z-10 flex items-center justify-center bg-linear-to-b from-black/30 via-black/10 to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100';
-
-  const overlay = isAppStore ? (
-    <div class={overlayClass}>
-      <Link
-        href={project.source_link}
-        aria-label={data.download_app_store}
-        external
-      >
-        <img
-          src='/static/appstore.svg'
-          alt={data.download_app_store}
-          width='120'
-          height='40'
-        />
-      </Link>
-    </div>
-  ) : isGithub ? (
-    <div class={overlayClass}>
-      <Link
-        href={project.source_link}
-        class='inline-flex items-center rounded-md bg-foreground px-4 py-2 text-sm font-semibold text-background transition-transform hover:scale-105'
-        external
-      >
-        {data.visit_project}
-      </Link>
-    </div>
-  ) : (
-    <div class={overlayClass} />
-  );
-
-  return (
-    <div>
-      <LayerCard
-        class={cn(
-          'group flex h-full overflow-hidden transition-all duration-200 ease-in-out hover:shadow-[0_12px_28px_-5px_hsl(0_0%_0%_/0.12)] flex-col',
-          featured && 'md:min-h-85',
-        )}
-      >
-        <LayerCard.Title>
-          <Link
-            class='text-muted-foreground hover:text-foreground no-underline hover:underline'
-            href={project.source_link}
-            external
-          >
-            {project.name}
-          </Link>
-        </LayerCard.Title>
-        <LayerCard.Content
-          class={cn('flex flex-col', featured && 'md:flex-row md:min-h-85')}
-        >
-          <div
-            class={cn(
-              'relative flex h-50 items-center justify-center overflow-hidden bg-transparent',
-              featured &&
-                'md:h-full md:min-h-85 md:p-10 md:w-[34%] md:shrink-0',
-            )}
-          >
-            {overlay}
-            <img
-              src={project.image_url}
-              alt={project.name}
-              width='300'
-              height='180'
-              class={cn(
-                'object-contain transition-transform duration-500 ease-out group-hover:scale-105 h-45',
-                featured && 'md:5-58',
-              )}
-            />
-          </div>
-          <div
-            class={cn(
-              'flex flex-1 flex-col gap-4 p-5',
-              featured && 'md:w-[66%] md:justify-center md:px-8 md:py-7',
-            )}
-          >
-            <p
-              class={cn(
-                'whitespace-pre-line leading-[1.65] text-muted-foreground',
-                featured ? 'md:max-w-2xl text-base' : 'flex-1 text-sm',
-              )}
-            >
-              {project.description}
-            </p>
-            <div class='flex flex-wrap gap-2 pt-1'>{techPills}</div>
-          </div>
-        </LayerCard.Content>
-      </LayerCard>
-    </div>
-  );
-};
-
 export default ilha
   .state('data', ({ data }: PageInput) => data ?? null)
   .effect(({ state }) => {
     if (state.data()) return;
-
     (async () => {
       try {
-        const result = await api.data.query();
-        state.data(result);
+        state.data(await api.data.query());
       } catch {}
     })();
   })
   .render(({ state }) => {
     const data = state.data();
-    if (!data) return <div>Failed to fetch data from backend.</div>;
+    if (!data) return '';
 
     const loc = data[locale()];
+    const isNorwegian = locale() === 'no';
+    const featuredProject = data.projects[1];
+    const secondaryProjects = [data.projects[0], data.projects[2]];
+
     return (
-      <section class='py-20' id='work'>
-        <div class='mx-auto w-full max-w-6xl px-6'>
-          <div class='mb-12'>
-            <p class='mb-3 text-xs font-semibold uppercase tracking-widest text-muted-foreground'>
-              {loc.work.subtitle}
+      <section id='work' class='flex-1'>
+        <header class='relative overflow-hidden border-b border-border py-16 sm:py-20'>
+          <div class='technical-grid absolute inset-0 opacity-35' />
+          <div class='absolute inset-0 bg-[linear-gradient(to_right,hsl(var(--background)/0.98),hsl(var(--background)/0.78))]' />
+          <div class='relative mx-auto grid w-full max-w-7xl gap-8 px-5 sm:px-8 md:grid-cols-[0.8fr_1.2fr] md:items-end lg:px-10'>
+            <div>
+              <p class='font-mono text-[0.6875rem] uppercase tracking-[0.16em] text-primary'>
+                01 / {loc.work.subtitle}
+              </p>
+              <h1 class='mt-4 text-5xl font-bold tracking-[-0.055em] sm:text-6xl'>
+                {loc.nav.work}
+              </h1>
+            </div>
+            <p class='max-w-2xl text-lg leading-8 text-muted-foreground md:justify-self-end'>
+              {isNorwegian
+                ? 'Systemarbeid, native verktøy og produkter — fra bidrag til Zed til programvare bygget og levert fra bunnen av.'
+                : 'Systems work, native tooling, and products—from contributions to Zed to software built and shipped from the ground up.'}
             </p>
-
-            <h2 class='text-[2.25rem] font-bold tracking-[-0.02em]'>
-              {loc.nav.work}
-            </h2>
           </div>
+        </header>
 
-          <div class='grid grid-cols-1 gap-8 md:grid-cols-2'>
-            {data.projects.map((project, i) => (
-              <div class={cn(i === 0 && 'md:col-span-2')}>
+        <div class='mx-auto w-full max-w-7xl px-5 py-16 sm:px-8 sm:py-20 lg:px-10'>
+          <div class='grid grid-cols-1 gap-5'>
+            <ProjectCard
+              project={featuredProject}
+              index={0}
+              featured
+              copy={loc.work}
+            />
+            <div class='grid grid-cols-1 gap-5 md:grid-cols-2'>
+              {secondaryProjects.map((project, index) => (
                 <ProjectCard
                   project={project}
-                  featured={i === 0}
-                  data={loc.work}
+                  index={index + 1}
+                  copy={loc.work}
                 />
+              ))}
+            </div>
+          </div>
+
+          <div class='mt-16 grid border-y border-border sm:grid-cols-3 sm:divide-x sm:divide-border'>
+            {[
+              ['Rust', 'Systems'],
+              ['GPUI', 'Native UI'],
+              ['Swift', 'Apple platforms'],
+            ].map(([technology, context]) => (
+              <div class='flex items-center justify-between gap-4 py-5 sm:px-6 first:sm:pl-0 last:sm:pr-0'>
+                <span class='text-base font-bold'>{technology}</span>
+                <span class='font-mono text-[0.625rem] uppercase tracking-[0.12em] text-muted-foreground'>
+                  {context}
+                </span>
               </div>
             ))}
           </div>
