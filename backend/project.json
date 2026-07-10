@@ -3,7 +3,8 @@
   "sourceRoot": "backend/src",
   "targets": {
     "build": {
-      "command": "cargo build --release",
+      "dependsOn": ["frontend:build"],
+      "command": "SKIP_BUN_BUILD=1 cargo build --release",
       "options": { "cwd": "backend" }
     },
     "dev": {
@@ -12,7 +13,8 @@
       "options": { "cwd": "backend" }
     },
     "lint": {
-      "command": "cargo clippy -- -D warnings",
+      "dependsOn": ["frontend:build"],
+      "command": "SKIP_BUN_BUILD=1 cargo clippy -- -D warnings",
       "options": { "cwd": "backend" }
     }
   }

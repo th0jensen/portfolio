@@ -5,13 +5,13 @@
       "dependsOn": ["backend:dev"]
     },
     "build": {
-      "dependsOn": ["frontend:build", "backend:build"]
+      "dependsOn": ["backend:build"]
     },
     "lint": {
       "dependsOn": ["backend:lint", "frontend:lint"]
     },
     "init": {
-      "dependsOn": ["frontend:install", "frontend:build"]
+      "dependsOn": ["frontend:install"]
     }
   }
 }

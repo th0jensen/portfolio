@@ -135,7 +135,7 @@ async fn main() {
     let headers = ServiceBuilder::new().layer(compression).layer(
         SetResponseHeaderLayer::overriding(
             header::CACHE_CONTROL,
-            HeaderValue::from_static("public, max-age=300"),
+            HeaderValue::from_static("no-cache"),
         ),
     );
 

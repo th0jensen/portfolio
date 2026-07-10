@@ -5,8 +5,7 @@ WORKDIR /app
 COPY . .
 RUN touch .env
 RUN bun install --frozen-lockfile
-RUN bunx nx run init
-RUN bunx nx run build
+RUN bunx nx run portfolio:build --output-style=static
 
 FROM debian:bookworm-slim AS runtime
 RUN apt-get update && apt-get install -y libssl3 ca-certificates && rm -rf /var/lib/apt/lists/*
