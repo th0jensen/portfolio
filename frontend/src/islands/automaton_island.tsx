@@ -1,7 +1,6 @@
 import ilha, { batch } from 'ilha';
 import {
   Eraser,
-  PanelRight,
   Pause,
   Play,
   RefreshCw,
@@ -54,8 +53,10 @@ function drawGrid(
   const context = canvas.getContext('2d', { alpha: false });
   if (!context) throw new Error('Canvas 2D is unavailable.');
 
+  const darkMode = document.documentElement.classList.contains('dark');
+  const background = darkMode ? '#000000' : '#ffffff';
   context.imageSmoothingEnabled = false;
-  context.fillStyle = '#000000';
+  context.fillStyle = background;
   context.fillRect(0, 0, canvas.width, canvas.height);
 
   const grid = engine.grid;
@@ -63,14 +64,17 @@ function drawGrid(
 
   const cellSize = canvas.width / grid.width;
   const colors = new Map(
-    definition.states.map((paintState) => [paintState.value, paintState.color]),
+    definition.states.map((paintState) => [
+      paintState.value,
+      darkMode ? paintState.color : paintState.lightColor,
+    ]),
   );
 
   for (let y = 0; y < grid.height; y += 1) {
     for (let x = 0; x < grid.width; x += 1) {
       const value = grid.cells[y * grid.width + x];
       if (value === 0) continue;
-      context.fillStyle = colors.get(value) ?? '#000000';
+      context.fillStyle = colors.get(value) ?? background;
       const left = Math.round(x * cellSize);
       const top = Math.round(y * cellSize);
       const right = Math.round((x + 1) * cellSize);
@@ -82,7 +86,7 @@ function drawGrid(
   const displayedCellSize = canvas.getBoundingClientRect().width / grid.width;
   if (displayedCellSize < 7) return;
 
-  context.fillStyle = 'rgb(255 255 255 / 9%)';
+  context.fillStyle = darkMode ? 'rgb(255 255 255 / 9%)' : 'rgb(0 0 0 / 9%)';
   for (let index = 1; index < grid.width; index += 1) {
     const position = Math.round(index * cellSize);
     context.fillRect(position, 0, 1, canvas.height);
@@ -115,13 +119,15 @@ function inputNumber(target: EventTarget | null): number | null {
 }
 
 const toolButtonClass =
-  'inline-flex h-9 min-w-9 cursor-pointer items-center justify-center gap-1.5 rounded-sm border border-border bg-background px-3 text-[0.8125rem] font-bold text-foreground hover:border-foreground/30 hover:bg-muted focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring disabled:cursor-not-allowed disabled:opacity-45 max-[430px]:w-9 max-[430px]:px-0';
+  'inline-flex h-9 min-w-9 cursor-pointer items-center justify-center gap-1.5 rounded-sm border border-border bg-background px-3 text-[0.8125rem] font-bold text-foreground hover:border-foreground/30 hover:bg-muted focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring disabled:cursor-not-allowed disabled:opacity-45';
+
+const toolbarButtonClass = `${toolButtonClass} max-[430px]:w-9 max-[430px]:px-0`;
 
 const fieldClass =
   'mt-2 h-9 w-full rounded-sm border border-border bg-background px-2.5 text-sm text-foreground focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-ring';
 
 const controlSectionClass =
-  'min-w-0 border border-border bg-background/55 p-3 max-[540px]:p-2.5 lg:border-x-0 lg:border-t-0 lg:bg-transparent lg:p-4';
+  'min-w-0 border border-border bg-card p-3 max-[540px]:p-2.5 lg:border-x-0 lg:border-t-0 lg:bg-transparent lg:p-4';
 
 export default ilha
   .state('engine', null as AutomatonEngine | null)
@@ -136,6 +142,7 @@ export default ilha
   .state('running', false)
   .state('controlsOpen', false)
   .state('resumeAfterControls', false)
+  .state('darkMode', false)
   .state('canvasSide', 512)
   .state('canvasPixels', 512)
   .onMount(({ host, state }) => {
@@ -179,14 +186,15 @@ export default ilha
     resizeObserver.observe(canvasSpace);
     resizeCanvas();
 
-    const themeObserver = new MutationObserver(() => {
-      const engine = state.engine();
-      if (engine) drawGrid(host, engine, automatonDefinition(state.ruleId()));
-    });
+    const syncTheme = () => {
+      state.darkMode(document.documentElement.classList.contains('dark'));
+    };
+    const themeObserver = new MutationObserver(syncTheme);
     themeObserver.observe(document.documentElement, {
       attributeFilter: ['class'],
       attributes: true,
     });
+    syncTheme();
 
     const fail = (error: unknown) => {
       if (disposed) return;
@@ -257,6 +265,7 @@ export default ilha
     state.generation();
     state.canvasPixels();
     state.canvasSide();
+    state.darkMode();
     if (engine) drawGrid(host, engine, automatonDefinition(ruleId));
   })
   .on('[data-rule]@change:abortable', async ({ event, state }) => {
@@ -492,7 +501,7 @@ export default ilha
             aria-busy={state.status() !== 'ready'}
           >
             <canvas
-              class='block max-h-full max-w-full touch-none cursor-crosshair border border-border bg-black shadow-[0_20px_55px_-35px_hsl(var(--shadow)/0.8)]'
+              class='block max-h-full max-w-full touch-none cursor-crosshair border border-border bg-white dark:bg-black'
               data-automaton-canvas
               width={state.canvasPixels()}
               height={state.canvasPixels()}
@@ -533,12 +542,12 @@ export default ilha
             )}
           </div>
 
-          <div class='grid h-15 min-w-0 grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] items-center gap-3 border-t border-border bg-background/94 px-3 max-[540px]:h-13.5 max-[540px]:gap-1.5 max-[540px]:px-2'>
+          <div class='grid h-15 min-w-0 grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] items-center gap-3 border-t border-border bg-background px-3 max-[540px]:h-13.5 max-[540px]:gap-1.5 max-[540px]:px-2'>
             <div class='flex min-w-0 items-center gap-1.5'>
               <button
                 type='button'
                 data-run
-                class={`${toolButtonClass} border-primary bg-primary text-primary-foreground hover:border-primary/90 hover:bg-primary/90`}
+                class={`${toolbarButtonClass} border-primary bg-primary text-primary-foreground hover:border-primary/90 hover:bg-primary/90`}
                 disabled={disabled}
                 aria-label={running ? labels.pause : labels.run}
               >
@@ -550,7 +559,7 @@ export default ilha
               <button
                 type='button'
                 data-step
-                class={toolButtonClass}
+                class={toolbarButtonClass}
                 disabled={disabled}
                 aria-label={labels.step}
               >
@@ -560,7 +569,7 @@ export default ilha
               <button
                 type='button'
                 data-clear
-                class={toolButtonClass}
+                class={toolbarButtonClass}
                 disabled={!state.engine()}
                 aria-label={labels.clear}
               >
@@ -595,21 +604,28 @@ export default ilha
           </div>
         </div>
 
+        {state.controlsOpen() && (
+          <button
+            type='button'
+            data-settings-close
+            class='absolute inset-0 z-20 cursor-default bg-transparent lg:hidden'
+            aria-label={labels.close}
+            tabindex='-1'
+          />
+        )}
+
         <aside
           class={
             state.controlsOpen()
-              ? 'absolute inset-0 z-30 flex min-h-0 flex-col overflow-hidden bg-card lg:static lg:border-l lg:border-border'
+              ? 'absolute inset-x-0 bottom-0 z-30 flex max-h-[calc(100%-0.5rem)] flex-col overflow-y-auto border-t border-border bg-background shadow-[0_-8px_24px_hsl(var(--shadow)/0.18)] lg:static lg:max-h-none lg:overflow-hidden lg:border-t-0 lg:border-l lg:border-border lg:bg-card lg:shadow-none'
               : 'hidden min-h-0 overflow-hidden bg-card lg:static lg:flex lg:flex-col lg:border-l lg:border-border'
           }
           aria-label={labels.parameters}
         >
-          <div class='flex min-h-13 items-center justify-between border-b border-border px-4 lg:min-h-14'>
-            <div class='flex items-center gap-2'>
-              <Icon node={PanelRight} size={15} />
-              <h2 class='font-mono text-[0.6875rem] font-bold uppercase tracking-[0.14em]'>
-                {labels.parameters}
-              </h2>
-            </div>
+          <div class='flex min-h-13 items-center justify-between border-b border-border bg-card px-4 lg:min-h-14'>
+            <h2 class='font-mono text-[0.6875rem] font-bold uppercase tracking-[0.14em]'>
+              {labels.parameters}
+            </h2>
             <button
               type='button'
               data-settings-close
@@ -669,8 +685,12 @@ export default ilha
                     title={paintState.label}
                   >
                     <span
-                      class='h-2 w-2 border border-white/20'
-                      style={`background:${paintState.color}`}
+                      class='h-2 w-2 border border-black/20 dark:border-white/20'
+                      style={`background:${
+                        state.darkMode()
+                          ? paintState.color
+                          : paintState.lightColor
+                      }`}
                     />
                     {paintState.label}
                   </span>
@@ -686,7 +706,7 @@ export default ilha
                   </span>
                   <input
                     data-grid-size
-                    class={fieldClass}
+                    class={`${fieldClass} max-[1023px]:text-[16px]`}
                     type='number'
                     inputmode='numeric'
                     min={minimumGridSize}
@@ -702,7 +722,7 @@ export default ilha
                   </span>
                   <input
                     data-grid-size
-                    class={fieldClass}
+                    class={`${fieldClass} max-[1023px]:text-[16px]`}
                     type='number'
                     inputmode='numeric'
                     min={minimumGridSize}
@@ -716,7 +736,7 @@ export default ilha
               <button
                 type='button'
                 data-resize-grid
-                class={`${toolButtonClass} mt-3 w-full`}
+                class={`${toolButtonClass} mt-3 w-full min-w-0 max-w-full overflow-hidden whitespace-nowrap`}
                 disabled={disabled || state.draftSize() === state.gridSize()}
               >
                 {labels.apply}

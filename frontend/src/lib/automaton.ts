@@ -203,6 +203,7 @@ export type PaintState = {
   value: number;
   label: string;
   color: string;
+  lightColor: string;
 };
 
 export type AutomatonDefinition = {
@@ -220,8 +221,18 @@ export const automata: readonly AutomatonDefinition[] = [
     summary: 'Survival at two or three neighbours; birth at three.',
     defaultState: 1,
     states: [
-      { value: 1, label: 'Alive', color: '#ffffff' },
-      { value: 0, label: 'Dead', color: '#000000' },
+      {
+        value: 1,
+        label: 'Alive',
+        color: '#ffffff',
+        lightColor: '#111827',
+      },
+      {
+        value: 0,
+        label: 'Dead',
+        color: '#000000',
+        lightColor: '#ffffff',
+      },
     ],
   },
   {
@@ -230,8 +241,18 @@ export const automata: readonly AutomatonDefinition[] = [
     summary: 'Every cell dies; empty cells with two neighbours are born.',
     defaultState: 1,
     states: [
-      { value: 1, label: 'Alive', color: '#78ff78' },
-      { value: 0, label: 'Dead', color: '#000000' },
+      {
+        value: 1,
+        label: 'Alive',
+        color: '#78ff78',
+        lightColor: '#16813e',
+      },
+      {
+        value: 0,
+        label: 'Dead',
+        color: '#000000',
+        lightColor: '#ffffff',
+      },
     ],
   },
   {
@@ -240,9 +261,24 @@ export const automata: readonly AutomatonDefinition[] = [
     summary: 'Cells cycle through on, dying, and off states.',
     defaultState: 1,
     states: [
-      { value: 1, label: 'Alive', color: '#ffffff' },
-      { value: 0, label: 'Dead', color: '#000000' },
-      { value: 2, label: 'Dying', color: '#5078ff' },
+      {
+        value: 1,
+        label: 'Alive',
+        color: '#ffffff',
+        lightColor: '#111827',
+      },
+      {
+        value: 0,
+        label: 'Dead',
+        color: '#000000',
+        lightColor: '#ffffff',
+      },
+      {
+        value: 2,
+        label: 'Dying',
+        color: '#5078ff',
+        lightColor: '#3156c7',
+      },
     ],
   },
   {
@@ -251,10 +287,30 @@ export const automata: readonly AutomatonDefinition[] = [
     summary: 'Signals move through painted conductor paths.',
     defaultState: 3,
     states: [
-      { value: 3, label: 'Conductor', color: '#1c2b23' },
-      { value: 0, label: 'Empty', color: '#000000' },
-      { value: 1, label: 'Electron head', color: '#1450dc' },
-      { value: 2, label: 'Electron tail', color: '#848aab' },
+      {
+        value: 3,
+        label: 'Conductor',
+        color: '#1c2b23',
+        lightColor: '#557a5f',
+      },
+      {
+        value: 0,
+        label: 'Empty',
+        color: '#000000',
+        lightColor: '#ffffff',
+      },
+      {
+        value: 1,
+        label: 'Electron head',
+        color: '#1450dc',
+        lightColor: '#123fae',
+      },
+      {
+        value: 2,
+        label: 'Electron tail',
+        color: '#848aab',
+        lightColor: '#646b87',
+      },
     ],
   },
 ] as const;
