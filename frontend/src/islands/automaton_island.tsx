@@ -14,7 +14,9 @@ import {
   type AutomatonId,
   automata,
   automatonDefinition,
+  automatonTemplateGroups,
   defaultGridSize,
+  fetchAutomatonTemplate,
   getAutomaton,
   maximumGridSize,
   minimumGridSize,
@@ -23,7 +25,12 @@ import {
 import Icon from '../lib/icon';
 import { locale } from '../lib/locale';
 
-type LoadStatus = 'loading' | 'ready' | 'resizing' | 'error';
+type LoadStatus =
+  | 'loading'
+  | 'ready'
+  | 'resizing'
+  | 'loading-template'
+  | 'error';
 
 type PaintSession = {
   pointerId: number | null;
@@ -118,6 +125,10 @@ function inputNumber(target: EventTarget | null): number | null {
   return Number.isFinite(target.valueAsNumber) ? target.valueAsNumber : null;
 }
 
+function hasActiveCells(engine: AutomatonEngine): boolean {
+  return engine.grid?.cells.some((cell) => cell !== 0) ?? false;
+}
+
 const toolButtonClass =
   'inline-flex h-9 min-w-9 cursor-pointer items-center justify-center gap-1.5 rounded-sm border border-border bg-background px-3 text-[0.8125rem] font-bold text-foreground hover:border-foreground/30 hover:bg-muted focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring disabled:cursor-not-allowed disabled:opacity-45';
 
@@ -133,8 +144,10 @@ export default ilha
   .state('engine', null as AutomatonEngine | null)
   .state('status', 'loading' as LoadStatus)
   .state('errorMessage', '')
-  .state('ruleId', 0 as AutomatonId)
+  .state('automatonId', 0 as AutomatonId)
+  .state('automatonName', automata[0].name)
   .state('paintState', 1)
+  .state('templatePath', '')
   .state('gridSize', defaultGridSize)
   .state('draftSize', defaultGridSize)
   .state('speed', 12)
@@ -216,13 +229,14 @@ export default ilha
         const interval = 1000 / state.speed();
         if (timestamp - lastStepTime >= interval) {
           lastStepTime = timestamp;
-          const ruleId = state.ruleId();
+          const automatonId = state.automatonId();
           void engine
-            .step(ruleId)
+            .step(automatonId)
             .then((grid) => {
               if (disposed || !grid) return;
               state.generation(state.generation() + 1);
-              drawGrid(host, engine, automatonDefinition(ruleId));
+              if (!hasActiveCells(engine)) state.running(false);
+              drawGrid(host, engine, automatonDefinition(automatonId));
             })
             .catch(fail);
         }
@@ -243,7 +257,7 @@ export default ilha
           state.status('ready');
           state.errorMessage('');
         });
-        drawGrid(host, engine, automatonDefinition(state.ruleId()));
+        drawGrid(host, engine, automatonDefinition(state.automatonId()));
       } catch (error) {
         fail(error);
       }
@@ -261,12 +275,12 @@ export default ilha
   })
   .effect(({ host, state }) => {
     const engine = state.engine();
-    const ruleId = state.ruleId();
+    const automatonId = state.automatonId();
     state.generation();
     state.canvasPixels();
     state.canvasSide();
     state.darkMode();
-    if (engine) drawGrid(host, engine, automatonDefinition(ruleId));
+    if (engine) drawGrid(host, engine, automatonDefinition(automatonId));
   })
   .on('[data-rule]@change:abortable', async ({ event, state }) => {
     if (!(event.target instanceof HTMLSelectElement)) return;
@@ -279,14 +293,37 @@ export default ilha
       engine.sanitize(definition);
     }
     batch(() => {
-      state.ruleId(ruleId);
+      state.automatonId(ruleId);
+      state.automatonName(definition.name);
       state.paintState(definition.defaultState);
       state.generation(0);
+      if (engine && !hasActiveCells(engine)) state.running(false);
     });
   })
-  .on('[data-paint-state]@change', ({ event, state }) => {
+  .on('[data-template]@change:abortable', async ({ event, host, state }) => {
     if (!(event.target instanceof HTMLSelectElement)) return;
-    state.paintState(Number(event.target.value));
+    const engine = state.engine();
+    const path = event.target.value;
+    if (!engine || !path) return;
+
+    state.status('loading-template');
+    const stateFile = await fetchAutomatonTemplate(path);
+    const { grid, automatonId } = await engine.loadState(stateFile);
+    const definition = automatonDefinition(automatonId);
+
+    batch(() => {
+      state.templatePath(path);
+      state.automatonId(automatonId);
+      state.automatonName(definition.name);
+      state.paintState(definition.defaultState);
+      state.gridSize(grid.width);
+      state.draftSize(grid.width);
+      state.generation(0);
+      state.status('ready');
+      state.errorMessage('');
+      if (!hasActiveCells(engine)) state.running(false);
+    });
+    drawGrid(host, engine, definition);
   })
   .on('[data-grid-size]@input', ({ event, host, state }) => {
     const value = inputNumber(event.target);
@@ -318,9 +355,9 @@ export default ilha
       state.errorMessage('');
       state.controlsOpen(false);
       state.resumeAfterControls(false);
-      state.running(runAfterResize);
+      state.running(runAfterResize && hasActiveCells(engine));
     });
-    drawGrid(host, engine, automatonDefinition(state.ruleId()));
+    drawGrid(host, engine, automatonDefinition(state.automatonId()));
   })
   .on('[data-speed]@input', ({ event, state }) => {
     const value = inputNumber(event.target);
@@ -328,6 +365,8 @@ export default ilha
   })
   .on('[data-run]@click', ({ state }) => {
     if (state.status() !== 'ready') return;
+    const engine = state.engine();
+    if (!state.running() && (!engine || !hasActiveCells(engine))) return;
     state.running(!state.running());
   })
   .on('[data-step]@click:abortable', async ({ host, state }) => {
@@ -335,11 +374,11 @@ export default ilha
     if (!engine || state.status() !== 'ready') return;
 
     state.running(false);
-    const ruleId = state.ruleId();
-    const grid = await engine.step(ruleId);
+    const automatonId = state.automatonId();
+    const grid = await engine.step(automatonId);
     if (!grid) return;
     state.generation(state.generation() + 1);
-    drawGrid(host, engine, automatonDefinition(ruleId));
+    drawGrid(host, engine, automatonDefinition(automatonId));
   })
   .on('[data-clear]@click:abortable', async ({ host, state }) => {
     const engine = state.engine();
@@ -349,7 +388,7 @@ export default ilha
     await engine.idle();
     engine.clear();
     state.generation(0);
-    drawGrid(host, engine, automatonDefinition(state.ruleId()));
+    drawGrid(host, engine, automatonDefinition(state.automatonId()));
   })
   .on('[data-settings-toggle]@click', ({ state }) => {
     if (state.controlsOpen()) {
@@ -402,7 +441,7 @@ export default ilha
       pointerId: event.pointerId,
       lastCell: cell,
     });
-    drawGrid(host, engine, automatonDefinition(state.ruleId()));
+    drawGrid(host, engine, automatonDefinition(state.automatonId()));
   })
   .on('[data-automaton-canvas]@pointermove', ({ event, host, state }) => {
     const engine = state.engine();
@@ -421,7 +460,7 @@ export default ilha
     const value = (event.buttons & 2) !== 0 ? 0 : state.paintState();
     engine.paintLine(session.lastCell ?? cell, cell, value);
     session.lastCell = cell;
-    drawGrid(host, engine, automatonDefinition(state.ruleId()));
+    drawGrid(host, engine, automatonDefinition(state.automatonId()));
   })
   .on('[data-automaton-canvas]@pointerup', ({ event, host }) => {
     if (event.target instanceof HTMLCanvasElement) {
@@ -440,7 +479,7 @@ export default ilha
   })
   .render(({ state }) => {
     const isNorwegian = locale() === 'no';
-    const definition = automatonDefinition(state.ruleId());
+    const definition = automatonDefinition(state.automatonId());
     const disabled = state.status() !== 'ready';
     const running = state.running();
     const statusLabel =
@@ -452,13 +491,18 @@ export default ilha
           ? isNorwegian
             ? 'Allokerer rutenett…'
             : 'Allocating grid…'
-          : state.status() === 'error'
-            ? state.errorMessage()
-            : `${state.gridSize()} × ${state.gridSize()} · direct WASM memory`;
+          : state.status() === 'loading-template'
+            ? isNorwegian
+              ? 'Laster mønster…'
+              : 'Loading template…'
+            : state.status() === 'error'
+              ? state.errorMessage()
+              : `${state.gridSize()} × ${state.gridSize()} · ${state.automatonName()}`;
 
     const labels = isNorwegian
       ? {
           parameters: 'Parametere',
+          template: 'Mønster',
           rule: 'Regel',
           paint: 'Tegnetilstand',
           columns: 'Kolonner',
@@ -476,6 +520,7 @@ export default ilha
         }
       : {
           parameters: 'Parameters',
+          template: 'Template',
           rule: 'Rule',
           paint: 'Paint state',
           columns: 'Columns',
@@ -622,10 +667,30 @@ export default ilha
           }
           aria-label={labels.parameters}
         >
-          <div class='flex min-h-13 items-center justify-between border-b border-border bg-card px-4 lg:min-h-14'>
-            <h2 class='font-mono text-[0.6875rem] font-bold uppercase tracking-[0.14em]'>
-              {labels.parameters}
-            </h2>
+          <div class='flex min-h-13 items-center justify-between gap-2 border-b border-border bg-card px-4 lg:min-h-14'>
+            <div class='flex min-w-0 flex-1 items-center gap-2'>
+              <h2 class='shrink-0 font-mono text-[0.6875rem] font-bold uppercase tracking-[0.14em]'>
+                {labels.parameters}
+              </h2>
+              <select
+                data-template
+                class='h-9 min-w-0 flex-1 rounded-sm border border-border bg-background px-2 text-[16px] text-foreground focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-ring lg:text-sm'
+                bind:value={state.templatePath}
+                disabled={disabled}
+                aria-label={labels.template}
+              >
+                <option value='' disabled>
+                  {labels.template}
+                </option>
+                {automatonTemplateGroups.map((group) => (
+                  <optgroup label={group.label}>
+                    {group.templates.map((template) => (
+                      <option value={template.path}>{template.name}</option>
+                    ))}
+                  </optgroup>
+                ))}
+              </select>
+            </div>
             <button
               type='button'
               data-settings-close
@@ -648,7 +713,7 @@ export default ilha
                 id='automaton-rule'
                 data-rule
                 class={fieldClass}
-                value={state.ruleId()}
+                bind:value={state.automatonId}
                 disabled={disabled}
               >
                 {automata.map((automaton) => (
@@ -671,7 +736,7 @@ export default ilha
                 id='automaton-paint-state'
                 data-paint-state
                 class={fieldClass}
-                value={state.paintState()}
+                bind:value={state.paintState}
                 disabled={disabled}
               >
                 {definition.states.map((paintState) => (

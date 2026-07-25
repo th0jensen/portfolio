@@ -193,11 +193,26 @@ export type GridDescriptor = {
   height: number;
 };
 
+type StateGridDescriptor = GridDescriptor & {
+  automatonId: number;
+};
+
 export type GridView = GridDescriptor & {
   cells: Int32Array;
 };
 
 export type AutomatonId = 0 | 1 | 2 | 3;
+
+export type AutomatonTemplate = {
+  name: string;
+  path: string;
+};
+
+export type AutomatonTemplateGroup = {
+  automatonId: AutomatonId;
+  label: string;
+  templates: readonly AutomatonTemplate[];
+};
 
 export type PaintState = {
   value: number;
@@ -319,6 +334,32 @@ export const defaultGridSize = 72;
 export const minimumGridSize = 8;
 export const maximumGridSize = 300;
 
+export const automatonTemplateGroups: readonly AutomatonTemplateGroup[] = [
+  {
+    automatonId: 0,
+    label: "Conway's Life",
+    templates: [{ name: 'Oscillator', path: 'conway/oscillator.toml' }],
+  },
+  {
+    automatonId: 1,
+    label: 'Seeds',
+    templates: [{ name: 'Triangle', path: 'seeds/triangle.toml' }],
+  },
+  {
+    automatonId: 2,
+    label: "Brian's Brain",
+    templates: [{ name: 'Diamond', path: 'briansbrain/diamond.toml' }],
+  },
+  {
+    automatonId: 3,
+    label: 'Wireworld',
+    templates: [
+      { name: 'Circular signal', path: 'wireworld/circular.toml' },
+      { name: 'XOR gate', path: 'wireworld/xor.toml' },
+    ],
+  },
+];
+
 export function automatonDefinition(id: number): AutomatonDefinition {
   return automata.find((definition) => definition.id === id) ?? automata[0];
 }
@@ -328,9 +369,25 @@ export function normalizeGridSize(size: number): number {
   return Math.max(minimumGridSize, Math.min(maximumGridSize, Math.round(size)));
 }
 
+export async function fetchAutomatonTemplate(path: string): Promise<string> {
+  const knownTemplate = automatonTemplateGroups.some((group) =>
+    group.templates.some((template) => template.path === path),
+  );
+  if (!knownTemplate) throw new Error(`Unknown automaton template: ${path}`);
+
+  const response = await fetch(`/static/automaton/patterns/${path}`);
+  if (!response.ok) {
+    throw new Error(
+      `Failed to load template: ${response.status} ${response.statusText}`,
+    );
+  }
+  return response.text();
+}
+
 export type AutomatonExports = WebAssembly.Exports & {
   memory: WebAssembly.Memory;
   createGrid(width: number, height: number): Promise<GridDescriptor>;
+  createGridFromState(stateFile: string): Promise<StateGridDescriptor>;
   nextGrid(pointer: number, automatonId: number): Promise<GridDescriptor>;
 };
 
@@ -444,26 +501,60 @@ export class AutomatonEngine {
       const grid = this.grid;
       if (!grid) throw new Error('The WASM module returned an empty grid.');
 
-      grid.cells.fill(0);
-      if (previousCells) {
-        const copyWidth = Math.min(previousWidth, grid.width);
-        const copyHeight = Math.min(previousHeight, grid.height);
-        const sourceX = Math.floor((previousWidth - copyWidth) / 2);
-        const sourceY = Math.floor((previousHeight - copyHeight) / 2);
-        const targetX = Math.floor((grid.width - copyWidth) / 2);
-        const targetY = Math.floor((grid.height - copyHeight) / 2);
-
-        for (let row = 0; row < copyHeight; row += 1) {
-          const sourceStart = (sourceY + row) * previousWidth + sourceX;
-          const targetStart = (targetY + row) * grid.width + targetX;
-          grid.cells.set(
-            previousCells.subarray(sourceStart, sourceStart + copyWidth),
-            targetStart,
-          );
-        }
-      }
+      this.copyCentered(previousCells, previousWidth, previousHeight, grid);
 
       return grid;
+    } catch (error) {
+      this.setDescriptor(previous);
+      throw error;
+    }
+  }
+
+  async loadState(
+    stateFile: string,
+  ): Promise<{ grid: GridView; automatonId: AutomatonId }> {
+    await this.pendingStep;
+    const previous = this.descriptor;
+
+    try {
+      if (typeof this.exports.createGridFromState !== 'function') {
+        throw new Error(
+          'The loaded WASM module does not export createGridFromState.',
+        );
+      }
+      const loaded = await this.exports.createGridFromState(stateFile);
+      if (
+        !automata.some((definition) => definition.id === loaded.automatonId)
+      ) {
+        throw new Error(
+          `The template returned an unknown automaton ID: ${loaded.automatonId}`,
+        );
+      }
+
+      this.setDescriptor(loaded);
+      const loadedGrid = this.grid;
+      if (!loadedGrid) {
+        throw new Error('The WASM module returned an empty template grid.');
+      }
+
+      let grid = loadedGrid;
+      if (loadedGrid.width !== loadedGrid.height) {
+        const cells = loadedGrid.cells.slice();
+        const dimension = Math.max(loadedGrid.width, loadedGrid.height);
+        const square = await this.exports.createGrid(dimension, dimension);
+        this.setDescriptor(square);
+        const squareGrid = this.grid;
+        if (!squareGrid) {
+          throw new Error('The WASM module returned an empty square grid.');
+        }
+        grid = squareGrid;
+        this.copyCentered(cells, loadedGrid.width, loadedGrid.height, grid);
+      }
+
+      return {
+        grid,
+        automatonId: loaded.automatonId as AutomatonId,
+      };
     } catch (error) {
       this.setDescriptor(previous);
       throw error;
@@ -542,6 +633,32 @@ export class AutomatonEngine {
       return;
     }
     grid.cells[y * grid.width + x] = value;
+  }
+
+  private copyCentered(
+    source: Int32Array | undefined,
+    sourceWidth: number,
+    sourceHeight: number,
+    target: GridView,
+  ): void {
+    target.cells.fill(0);
+    if (!source) return;
+
+    const copyWidth = Math.min(sourceWidth, target.width);
+    const copyHeight = Math.min(sourceHeight, target.height);
+    const sourceX = Math.floor((sourceWidth - copyWidth) / 2);
+    const sourceY = Math.floor((sourceHeight - copyHeight) / 2);
+    const targetX = Math.floor((target.width - copyWidth) / 2);
+    const targetY = Math.floor((target.height - copyHeight) / 2);
+
+    for (let row = 0; row < copyHeight; row += 1) {
+      const sourceStart = (sourceY + row) * sourceWidth + sourceX;
+      const targetStart = (targetY + row) * target.width + targetX;
+      target.cells.set(
+        source.subarray(sourceStart, sourceStart + copyWidth),
+        targetStart,
+      );
+    }
   }
 
   private setDescriptor(descriptor: GridDescriptor | null): void {

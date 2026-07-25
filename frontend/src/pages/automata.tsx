@@ -19,11 +19,6 @@ export default ilha.render(() => {
               Cellular Automata
             </h1>
           </div>
-          {/*<p class='hidden max-w-xl text-sm leading-6 text-muted-foreground sm:block lg:text-[0.9375rem]'>
-            {isNorwegian
-              ? 'Fire regler kjøres i Haskell-kompilert WebAssembly. Tegn direkte i lineært minne, og la modulen beregne hver generasjon.'
-              : 'Four rules run in Haskell-compiled WebAssembly. Paint directly into linear memory, then let the module compute each generation.'}
-          </p>*/}
         </div>
       </header>
 
