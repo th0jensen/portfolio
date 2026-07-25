@@ -44,6 +44,9 @@ export default ilha
     const name = `${data.about.first_name} ${data.about.last_name}`;
     const track = state.nowPlaying();
     const featuredProject = data.projects[1];
+    const automatonProject = data.projects.find(
+      (project) => project.source_link === '/automata',
+    );
     const secondaryProjects = [data.projects[0], data.projects[2]];
     const contributions = data.experience_items.slice(0, 2);
     const isNorwegian = locale() === 'no';
@@ -54,13 +57,13 @@ export default ilha
           <div class='technical-grid absolute inset-0 -z-20 opacity-45' />
           <div class='absolute inset-0 -z-10 bg-[linear-gradient(90deg,hsl(var(--background)/0.97)_0%,hsl(var(--background)/0.9)_52%,hsl(var(--background)/0.7)_100%)]' />
 
-          <div class='mx-auto grid min-h-[38rem] w-full max-w-7xl grid-cols-1 px-5 sm:px-8 lg:grid-cols-[minmax(0,1.2fr)_minmax(19rem,0.8fr)] lg:px-10'>
+          <div class='mx-auto grid min-h-152 w-full max-w-7xl grid-cols-1 px-5 sm:px-8 lg:grid-cols-[minmax(0,1.2fr)_minmax(19rem,0.8fr)] lg:px-10'>
             <div class='flex flex-col justify-center py-16 lg:border-r lg:border-border lg:py-24 lg:pr-16'>
               <div class='mb-8 flex items-center gap-3 font-mono text-[0.6875rem] uppercase tracking-[0.16em] text-muted-foreground'>
                 <span class='h-2 w-2 bg-primary' />
                 <span>{loc.hero.role}</span>
                 <span class='h-px w-10 bg-border' />
-                <span>Rust · GPUI</span>
+                <span>Native · Web</span>
               </div>
 
               <h1 class='max-w-4xl text-[clamp(3.2rem,8vw,6.8rem)] font-bold leading-[0.88] tracking-[-0.065em] text-foreground'>
@@ -95,11 +98,11 @@ export default ilha
               </div>
             </div>
 
-            <div class='relative flex min-h-[30rem] items-end px-4 pt-10 sm:px-12 lg:min-h-0 lg:px-10 lg:pt-20'>
+            <div class='relative flex min-h-120 items-end px-4 pt-10 sm:px-12 lg:min-h-0 lg:px-10 lg:pt-20'>
               <div class='relative mx-auto w-full max-w-sm'>
                 <div class='absolute -top-5 -right-4 h-24 w-24 border-t border-r border-primary/55' />
                 <div class='absolute -bottom-4 -left-4 h-24 w-24 border-b border-l border-primary/55' />
-                <div class='relative aspect-[3/4] overflow-hidden border border-border bg-muted'>
+                <div class='relative aspect-3/4 overflow-hidden border border-border bg-muted'>
                   <img
                     src='/static/headshot.jpg'
                     alt={`Portrait of ${name}`}
@@ -189,9 +192,17 @@ export default ilha
             </div>
 
             <div class='grid grid-cols-1 gap-5'>
+              {automatonProject && (
+                <ProjectCard
+                  project={automatonProject}
+                  index={0}
+                  featured
+                  copy={loc.work}
+                />
+              )}
               <ProjectCard
                 project={featuredProject}
-                index={0}
+                index={automatonProject ? 1 : 0}
                 featured
                 copy={loc.work}
               />
@@ -199,7 +210,7 @@ export default ilha
                 {secondaryProjects.map((project, index) => (
                   <ProjectCard
                     project={project}
-                    index={index + 1}
+                    index={index + (automatonProject ? 2 : 1)}
                     copy={loc.work}
                   />
                 ))}

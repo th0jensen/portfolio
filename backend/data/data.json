@@ -135,6 +135,18 @@
       "description": "Appleosophy was my first real shipping project: the place where I learned how to take a product from idea to App Store release, working across iOS, API integration, and the practical details of actually delivering software.",
       "source_type": "appstore",
       "source_link": "https://apps.apple.com/us/app/appleosophy/id1635844078"
+    },
+    {
+      "name": "Cellular Automata",
+      "image_url": "/static/images/automaton.svg",
+      "technologies": {
+        "Haskell": "#5D4F85",
+        "WebAssembly": "#654FF0",
+        "TypeScript": "#3178C6"
+      },
+      "description": "An interactive cellular automata lab powered by Haskell-compiled WebAssembly, with direct grid editing, multiple rule sets, and a responsive Ilha interface.",
+      "source_type": "internal",
+      "source_link": "/automata"
     }
   ],
   "experience_items": [

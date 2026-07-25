@@ -14,6 +14,7 @@ pub fn router() -> Router<AppState> {
         .route("/projects", get(page_handler))
         .route("/experience", get(page_handler))
         .route("/contact", get(page_handler).post(dispatch_email))
+        .route("/automata", get(page_handler))
         .fallback(error_handler)
 }
 

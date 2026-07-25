@@ -55,8 +55,9 @@ async fn main() {
         .unwrap_or_else(|_| "../backend/static".to_string());
     let dist_dir = std::env::var("DIST_DIR")
         .unwrap_or_else(|_| "../frontend/dist".to_string());
-    let endpoints: [String; 5] = [
+    let endpoints: [String; 6] = [
         "/".into(),
+        "/automata".into(),
         "/projects".into(),
         "/experience".into(),
         "/contact".into(),

@@ -1,5 +1,5 @@
 import { Link } from 'areia';
-import { ArrowUpRight } from 'lucide';
+import { ArrowRight, ArrowUpRight } from 'lucide';
 import type { Project } from '../bindings';
 import type { Work } from '../bindings/Work';
 import { cn } from '../lib/cn';
@@ -16,8 +16,13 @@ export default function ProjectCard({
   featured?: boolean;
   copy: Work;
 }) {
+  const isInternal = project.source_link.startsWith('/');
   const sourceLabel =
-    project.source_type === 'appstore' ? 'App Store' : 'GitHub';
+    project.source_type === 'appstore'
+      ? 'App Store'
+      : project.source_type === 'internal'
+        ? 'Portfolio lab'
+        : 'GitHub';
 
   return (
     <article
@@ -28,16 +33,19 @@ export default function ProjectCard({
           : 'h-full grid-rows-[15rem_1fr]',
       )}
     >
-      <div
+      <Link
+        href={project.source_link}
+        external={!isInternal}
+        aria-label={`${copy.visit_project}: ${project.name}`}
         class={cn(
-          'relative isolate flex min-h-0 items-center justify-center overflow-hidden border-border bg-project-surface p-8',
+          'relative isolate flex min-h-0 items-center justify-center overflow-hidden border-border bg-project-surface p-8 no-underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-ring',
           featured ? 'border-b lg:border-r lg:border-b-0 lg:p-12' : 'border-b',
         )}
       >
         <span class='absolute top-5 left-5 font-mono text-[0.6875rem] tracking-[0.16em] text-muted-foreground'>
           /0{index + 1}
         </span>
-        <div class='absolute inset-5 border border-foreground/[0.05]' />
+        <div class='absolute inset-5 border border-foreground/5' />
         <img
           src={project.image_url}
           alt={`${project.name} project mark`}
@@ -49,7 +57,7 @@ export default function ProjectCard({
             featured ? 'h-44 w-44 sm:h-52 sm:w-52' : 'h-36 w-36',
           )}
         />
-      </div>
+      </Link>
 
       <div
         class={cn(
@@ -60,7 +68,11 @@ export default function ProjectCard({
         <div class='mb-5 flex items-center justify-between gap-4 font-mono text-[0.6875rem] uppercase tracking-[0.13em] text-muted-foreground'>
           <span>{sourceLabel}</span>
           <span>
-            {project.source_type === 'github' ? 'Open source' : 'Shipped'}
+            {project.source_type === 'github'
+              ? 'Open source'
+              : project.source_type === 'internal'
+                ? 'Interactive'
+                : 'Shipped'}
           </span>
         </div>
 
@@ -83,7 +95,7 @@ export default function ProjectCard({
 
         <div class='mt-7 flex flex-wrap gap-x-4 gap-y-2 border-t border-border pt-5'>
           {Object.keys(project.technologies).map((technology) => (
-            <span class='font-mono text-[0.6875rem] uppercase tracking-[0.1em] text-foreground/70'>
+            <span class='font-mono text-[0.6875rem] uppercase tracking-widest text-foreground/70'>
               {technology}
             </span>
           ))}
@@ -93,12 +105,12 @@ export default function ProjectCard({
           href={project.source_link}
           class='mt-7 inline-flex w-fit items-center gap-2 text-sm font-bold text-foreground no-underline decoration-primary decoration-2 underline-offset-4 transition-colors hover:text-primary hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-4 focus-visible:ring-offset-card'
           aria-label={`${copy.visit_project}: ${project.name}`}
-          external
+          external={!isInternal}
         >
           {project.source_type === 'appstore'
             ? copy.download_app_store
             : copy.visit_project}
-          <Icon node={ArrowUpRight} size={15} />
+          <Icon node={isInternal ? ArrowRight : ArrowUpRight} size={15} />
         </Link>
       </div>
     </article>

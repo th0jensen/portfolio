@@ -24,8 +24,12 @@ export default ilha
 
     const loc = data[locale()];
     const isNorwegian = locale() === 'no';
-    const featuredProject = data.projects[1];
-    const secondaryProjects = [data.projects[0], data.projects[2]];
+    const featuredProject =
+      data.projects.find((project) => project.source_link === '/automata') ??
+      data.projects[0];
+    const secondaryProjects = data.projects.filter(
+      (project) => project.source_link !== featuredProject.source_link,
+    );
 
     return (
       <section id='work' class='flex-1'>
@@ -57,7 +61,7 @@ export default ilha
               featured
               copy={loc.work}
             />
-            <div class='grid grid-cols-1 gap-5 md:grid-cols-2'>
+            <div class='grid grid-cols-1 gap-5 md:grid-cols-2 lg:grid-cols-3'>
               {secondaryProjects.map((project, index) => (
                 <ProjectCard
                   project={project}

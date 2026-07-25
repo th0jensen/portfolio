@@ -110,7 +110,7 @@ export default ilha
               <span class='grid h-8 w-8 place-items-center bg-black font-mono text-[0.625rem] font-bold tracking-[-0.04em] text-white'>
                 TJ
               </span>
-              <span class='hidden text-base font-bold tracking-[-0.025em] min-[380px]:inline'>
+              <span class='hidden text-base font-bold tracking-tight min-[380px]:inline'>
                 Thomas Jensen
               </span>
             </a>

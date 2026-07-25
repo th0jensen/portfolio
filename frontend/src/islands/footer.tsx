@@ -58,7 +58,7 @@ export default ilha.render(() => {
       </div>
 
       <div class='border-t border-border'>
-        <div class='mx-auto flex w-full max-w-7xl flex-col gap-2 px-5 py-4 font-mono text-[0.625rem] uppercase tracking-[0.1em] text-muted-foreground sm:flex-row sm:items-center sm:justify-between sm:px-8 lg:px-10'>
+        <div class='mx-auto flex w-full max-w-7xl flex-col gap-2 px-5 py-4 font-mono text-[0.625rem] uppercase tracking-widest text-muted-foreground sm:flex-row sm:items-center sm:justify-between sm:px-8 lg:px-10'>
           <p>© {year} Thomas Jensen</p>
           <p>{isNorwegian ? 'Bygget med omtanke' : 'Built with intent'}</p>
         </div>

@@ -36,6 +36,7 @@ const routes = [
   { url: '/projects', name: 'projects' },
   { url: '/experience', name: 'experience' },
   { url: '/contact', name: 'contact' },
+  { url: '/automata', name: 'automata' },
   { url: '/error', name: 'error' },
 ] as const;
 

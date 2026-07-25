@@ -52,6 +52,7 @@ fn main() {
         ("/projects", "projects"),
         ("/experience", "experience"),
         ("/contact", "contact"),
+        ("/automata", "automata"),
         ("/error", "error"),
     ] {
         let fragment =

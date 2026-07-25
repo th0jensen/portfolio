@@ -128,7 +128,7 @@ export default ilha
                       {item.zed_extension_url && (
                         <a
                           href={item.zed_extension_url}
-                          class='font-mono text-[0.6875rem] uppercase tracking-[0.1em] text-foreground underline decoration-border underline-offset-4 hover:decoration-primary'
+                          class='font-mono text-[0.6875rem] uppercase tracking-widest text-foreground underline decoration-border underline-offset-4 hover:decoration-primary'
                         >
                           Open in Zed
                         </a>
@@ -136,7 +136,7 @@ export default ilha
                       {item.github_url && item.github_url !== item.url && (
                         <Link
                           href={item.github_url}
-                          class='font-mono text-[0.6875rem] uppercase tracking-[0.1em] text-foreground underline decoration-border underline-offset-4 hover:decoration-primary'
+                          class='font-mono text-[0.6875rem] uppercase tracking-widest text-foreground underline decoration-border underline-offset-4 hover:decoration-primary'
                           external
                         >
                           GitHub
