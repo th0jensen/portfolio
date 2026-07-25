@@ -237,16 +237,16 @@ export const automata: readonly AutomatonDefinition[] = [
     defaultState: 1,
     states: [
       {
-        value: 1,
-        label: 'Alive',
-        color: '#ffffff',
-        lightColor: '#111827',
-      },
-      {
         value: 0,
         label: 'Dead',
         color: '#000000',
         lightColor: '#ffffff',
+      },
+      {
+        value: 1,
+        label: 'Alive',
+        color: '#ffffff',
+        lightColor: '#111827',
       },
     ],
   },
@@ -257,16 +257,16 @@ export const automata: readonly AutomatonDefinition[] = [
     defaultState: 1,
     states: [
       {
-        value: 1,
-        label: 'Alive',
-        color: '#78ff78',
-        lightColor: '#16813e',
-      },
-      {
         value: 0,
         label: 'Dead',
         color: '#000000',
         lightColor: '#ffffff',
+      },
+      {
+        value: 1,
+        label: 'Alive',
+        color: '#78ff78',
+        lightColor: '#16813e',
       },
     ],
   },
@@ -277,16 +277,16 @@ export const automata: readonly AutomatonDefinition[] = [
     defaultState: 1,
     states: [
       {
-        value: 1,
-        label: 'Alive',
-        color: '#ffffff',
-        lightColor: '#111827',
-      },
-      {
         value: 0,
         label: 'Dead',
         color: '#000000',
         lightColor: '#ffffff',
+      },
+      {
+        value: 1,
+        label: 'Alive',
+        color: '#ffffff',
+        lightColor: '#111827',
       },
       {
         value: 2,
@@ -303,16 +303,16 @@ export const automata: readonly AutomatonDefinition[] = [
     defaultState: 3,
     states: [
       {
-        value: 3,
-        label: 'Conductor',
-        color: '#1c2b23',
-        lightColor: '#557a5f',
-      },
-      {
         value: 0,
         label: 'Empty',
         color: '#000000',
         lightColor: '#ffffff',
+      },
+      {
+        value: 3,
+        label: 'Conductor',
+        color: '#1c2b23',
+        lightColor: '#557a5f',
       },
       {
         value: 1,
