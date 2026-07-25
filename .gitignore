@@ -20,3 +20,7 @@ manual_bininspect_update.nu
 
 # Nx cache
 .nx
+
+# Local WASM artefacts (note: *.js)
+*.wasm
+*.js
