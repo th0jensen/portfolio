@@ -22,5 +22,4 @@ manual_bininspect_update.nu
 .nx
 
 # Local WASM artefacts (note: *.js)
-*.wasm
-*.js
+automaton/

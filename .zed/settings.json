@@ -59,6 +59,9 @@
       ],
     },
   },
+  "wrap_guides": [80],
+  "soft_wrap": "bounded",
+  "show_whitespaces":"boundary",
   "prettier": {
     "arrowParens": "always",
     "bracketSpacing": true,

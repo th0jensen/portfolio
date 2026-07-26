@@ -2,13 +2,12 @@ use std::sync::LazyLock;
 
 use axum::{Json, extract::State, response::IntoResponse};
 use regex::Regex;
-use resend_rs::{Resend, types::CreateEmailBaseOptions};
+use resend_rs::types::CreateEmailBaseOptions;
 use serde::{Deserialize, Serialize};
 
 use crate::AppState;
 
 #[derive(ts_rs::TS, Debug, Deserialize, Serialize)]
-#[ts(export)]
 pub struct EmailPayload {
     full_name: String,
     email: String,
@@ -16,9 +15,9 @@ pub struct EmailPayload {
 }
 
 #[derive(Serialize)]
-struct ApiResponse {
-    ok: bool,
-    message: &'static str,
+pub struct ApiResponse {
+    pub ok: bool,
+    pub message: String,
 }
 
 static EMAIL_RE: LazyLock<Option<Regex>> =
@@ -29,7 +28,7 @@ fn is_email(email: &str) -> bool {
 }
 
 pub async fn dispatch_email(
-    State(state): State<AppState>,
+    State(state): State<AppState<'static>>,
     Json(payload): Json<EmailPayload>,
 ) -> impl IntoResponse {
     let EmailPayload {
@@ -48,11 +47,12 @@ pub async fn dispatch_email(
         tracing::warn!(name = %full_name, "contact form validation failed");
         return Json(ApiResponse {
             ok: false,
-            message: "All fields are required to be non-empty and valid.",
+            message: "All fields are required to be non-empty and valid."
+                .into(),
         });
     }
 
-    let client = Resend::new(&state.resend_api_key);
+    let client = &state.resend_client;
 
     let from = &state.sender_mail.to_string();
     let to: [&str; 1] = [&state.contact_mail];
@@ -67,14 +67,15 @@ pub async fn dispatch_email(
             tracing::info!("Successfully sent email: {:?}", email);
             Json(ApiResponse {
                 ok: true,
-                message: "Mail was successfully sent!",
+                message: "Mail was successfully sent!".into(),
             })
         }
         Err(email) => {
             tracing::error!("Failed to send email: {:?}", email);
             Json(ApiResponse {
                 ok: false,
-                message: "Something went wrong while sending the mail...",
+                message: "Something went wrong while sending the mail..."
+                    .into(),
             })
         }
     }

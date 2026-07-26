@@ -1,7 +1,7 @@
 use std::{
     collections::{HashMap, HashSet},
     sync::Arc,
-    time::{Duration, Instant},
+    time::Duration,
 };
 
 use qubit::{Router, handler};
@@ -9,11 +9,8 @@ use serde::Deserialize;
 
 use crate::{AppState, types};
 
-pub fn router() -> Router<AppState> {
-    let router = Router::new()
-        .handler(data)
-        .handler(experience)
-        .handler(lastfm);
+pub fn router() -> Router<AppState<'static>> {
+    let router = Router::new().handler(data).handler(experience);
 
     #[cfg(debug_assertions)]
     router.write_bindings_to_dir("../frontend/src/bindings");
@@ -21,31 +18,19 @@ pub fn router() -> Router<AppState> {
 }
 
 #[handler(query)]
-async fn lastfm(ctx: AppState) -> Option<types::NowPlayingTrack> {
-    match ctx.lastfm_client.now_playing().await {
-        Ok(track) => track.map(Into::into),
-        Err(e) => {
-            tracing::error!(e = %e, "failed to reach last.fm");
-            None
-        }
-    }
-}
-
-#[handler(query)]
-async fn data(ctx: AppState) -> types::Data {
+async fn data(ctx: AppState<'static>) -> types::Data {
     tracing::debug!("serving data");
     (*ctx.data).clone()
 }
 
 #[handler(query)]
-async fn experience(ctx: AppState) -> Vec<types::ExperienceItem> {
+async fn experience(ctx: AppState<'static>) -> Vec<types::ExperienceItem> {
     const TTL: Duration = Duration::from_secs(3 * 24 * 60 * 60);
 
-    let cached = ctx.experience_cache.read().ok().and_then(|guard| {
-        guard
-            .as_ref()
-            .and_then(|(at, items)| (at.elapsed() < TTL).then(|| items.clone()))
-    });
+    let cached = {
+        let cache = ctx.experience_cache.read().await;
+        cache.fresh(TTL)
+    };
 
     if let Some(items) = cached {
         tracing::debug!("serving experience from cache");
@@ -109,8 +94,9 @@ async fn experience(ctx: AppState) -> Vec<types::ExperienceItem> {
         })
         .collect();
 
-    if let Ok(mut cache) = ctx.experience_cache.write() {
-        *cache = Some((Instant::now(), items.clone()));
+    {
+        let mut cache = ctx.experience_cache.write().await;
+        cache.store(items.clone())
     }
 
     items

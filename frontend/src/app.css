@@ -86,6 +86,16 @@ html.dark {
 
   * {
     border-color: hsl(var(--border));
+    user-select: none;
+    -webkit-tap-highlight-color: transparent;
+    -webkit-touch-callout: none;
+    box-sizing: border-box;
+    -webkit-text-size-adjust: none;
+    text-size-adjust: none;
+  }
+
+  input, textarea, [contenteditable="true"] {
+    user-select: text;
   }
 
   html {

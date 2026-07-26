@@ -1,7 +1,7 @@
 import { Link, LinkButton } from 'areia';
 import ilha from 'ilha';
 import { ArrowRight, ArrowUpRight, ExternalLink } from 'lucide';
-import type { Data, NowPlayingTrack } from '../bindings';
+import type { Data } from '../bindings';
 import ProjectCard from '../components/project-card';
 import Icon from '../lib/icon';
 import { locale } from '../lib/locale';
@@ -20,7 +20,6 @@ function formatCompact(value: bigint | number): string {
 
 export default ilha
   .state('data', ({ data }: PageInput) => data ?? null)
-  .state('nowPlaying', null as NowPlayingTrack | null)
   .effect(({ state }) => {
     if (!state.data()) {
       (async () => {
@@ -29,12 +28,6 @@ export default ilha
         } catch {}
       })();
     }
-
-    (async () => {
-      try {
-        state.nowPlaying(await api.lastfm.query());
-      } catch {}
-    })();
   })
   .render(({ state }) => {
     const data = state.data();
@@ -42,7 +35,6 @@ export default ilha
 
     const loc = data[locale()];
     const name = `${data.about.first_name} ${data.about.last_name}`;
-    const track = state.nowPlaying();
     const featuredProject = data.projects[1];
     const automatonProject = data.projects.find(
       (project) => project.source_link === '/automata',
@@ -135,9 +127,7 @@ export default ilha
           <div class='border-t border-border bg-background/80'>
             <div
               class={
-                track
-                  ? 'mx-auto grid w-full max-w-7xl grid-cols-1 divide-y divide-border px-5 sm:px-8 md:grid-cols-2 md:divide-x md:divide-y-0 lg:px-10'
-                  : 'mx-auto grid w-full max-w-7xl grid-cols-1 px-5 sm:px-8 lg:px-10'
+                'mx-auto grid w-full max-w-7xl grid-cols-1 px-5 sm:px-8 lg:px-10'
               }
             >
               <div class='flex min-w-0 items-center gap-3 py-4 md:pr-8'>
@@ -153,22 +143,6 @@ export default ilha
                   {featuredProject.name}
                 </Link>
               </div>
-              {track && (
-                <div class='flex min-w-0 items-center gap-3 py-4 md:pl-8'>
-                  <span class='shrink-0 font-mono text-[0.625rem] uppercase tracking-[0.14em] text-muted-foreground'>
-                    {loc.hero.now_playing}
-                  </span>
-                  <span class='h-1 w-1 shrink-0 bg-primary' />
-                  <a
-                    href={track.url}
-                    target='_blank'
-                    rel='noopener noreferrer'
-                    class='truncate text-sm text-foreground no-underline hover:text-primary'
-                  >
-                    {track.name} · {track.artist}
-                  </a>
-                </div>
-              )}
             </div>
           </div>
         </section>

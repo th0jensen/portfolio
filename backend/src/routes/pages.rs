@@ -8,7 +8,7 @@ use axum::{
 
 use crate::{AppState, routes::mail::dispatch_email};
 
-pub fn router() -> Router<AppState> {
+pub fn router() -> Router<AppState<'static>> {
     Router::new()
         .route("/", get(page_handler))
         .route("/projects", get(page_handler))
@@ -19,7 +19,7 @@ pub fn router() -> Router<AppState> {
 }
 
 pub async fn page_handler(
-    State(state): State<AppState>,
+    State(state): State<AppState<'static>>,
     uri: Uri,
 ) -> impl IntoResponse {
     let path = uri.path().trim_start_matches('/');
@@ -32,7 +32,7 @@ pub async fn page_handler(
 }
 
 pub async fn error_handler(
-    State(state): State<AppState>,
+    State(state): State<AppState<'static>>,
     uri: Uri,
 ) -> impl IntoResponse {
     tracing::debug!(uri = %uri, "serving 404");
