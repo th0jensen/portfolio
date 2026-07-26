@@ -8,7 +8,7 @@ RUN bun install --frozen-lockfile
 
 RUN bunx nx run portfolio:build --output-style=static
 
-FROM debian:bookworm-slim AS runtime
+FROM ubuntu:24.04 AS runtime
 RUN apt-get update && apt-get install -y libssl3 ca-certificates && rm -rf /var/lib/apt/lists/*
 WORKDIR /app
 COPY --from=builder /app/backend/target/release/backend ./backend
