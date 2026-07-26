@@ -9,9 +9,9 @@ serde_json = "1.0.149"
 ts-rs = "10.0.1"
 
 [dependencies]
+anyhow = "1.0.102"
 aws-config = { version = "1.0.1", features = ["behavior-version-latest"] }
 aws-sdk-s3 = { version = "1.4.0", features = ["rt-tokio"] }
-anyhow = "1.0.102"
 axum = "0.8.9"
 axum-core = "=0.5.6"
 axum-prometheus = "0.10.0"
