@@ -8,7 +8,7 @@
       },
     },
     "frontend": {
-      "name": "ilha-vite",
+      "name": "portfolio-frontend",
       "version": "0.0.0",
       "dependencies": {
         "@ilha/router": "^0.4.0",
