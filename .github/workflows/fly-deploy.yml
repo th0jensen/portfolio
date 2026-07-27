@@ -48,6 +48,8 @@ jobs:
       - uses: Swatinem/rust-cache@v2
         with:
           workspaces: cli
+      - uses: oven-sh/setup-bun@v2
+      - run: bun install --frozen-lockfile
       - run: bunx nx run cli:lint
 
   deploy:
