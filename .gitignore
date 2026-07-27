@@ -10,10 +10,10 @@
 
 # npm dependencies
 node_modules/
-*/target
 
 # Rust
 .rustfmt.*
+*/target
 
 # Scripts
 manual_bininspect_update.nu
@@ -21,5 +21,5 @@ manual_bininspect_update.nu
 # Nx cache
 .nx
 
-# Local WASM artefacts (note: *.js)
+# Local WASM artefacts
 automaton/
