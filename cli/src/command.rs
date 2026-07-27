@@ -62,17 +62,17 @@ pub struct Args(pub Vec<String>);
 
 #[derive(Clone, Debug, Default, PartialEq)]
 pub enum Command {
-    UPLOAD {
+    Upload {
         args: Args,
     },
-    VERIFY {
+    Verify {
         args: Args,
     },
-    LIST,
-    HELP,
-    QUIT,
+    List,
+    Help,
+    Quit,
     #[default]
-    NONE,
+    None,
 }
 
 impl Command {
@@ -108,7 +108,7 @@ impl Command {
     pub fn help(self, range: Option<Range<usize>>) {
         if self == Self::default() {
             println!("\n    Use /help for a list of available commands\n");
-            return ();
+            return;
         }
         Self::print_missing(&self, range);
 
@@ -171,15 +171,13 @@ impl Command {
         if let Some(home) = std::env::var_os("HOME")
             .or_else(|| std::env::var_os("USERPROFILE"))
             .map(PathBuf::from)
+            && cwd.starts_with(&home)
+            && let Ok(rel_path) = cwd.strip_prefix(&home)
         {
-            if cwd.starts_with(&home) {
-                if let Ok(rel_path) = cwd.strip_prefix(&home) {
-                    if rel_path == Path::new("") {
-                        return "~".to_string();
-                    }
-                    return format!("~/{}", rel_path.display());
-                }
+            if rel_path == Path::new("") {
+                return "~".to_string();
             }
+            return format!("~/{}", rel_path.display());
         }
 
         cwd.display().to_string()

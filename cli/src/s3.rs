@@ -116,16 +116,16 @@ impl S3 {
         }
     }
 
-    fn list_summary(objs: &Vec<Object>) {
+    fn list_summary(objs: &[Object]) {
         let total_items = objs.len();
         let sum = objs.iter().map(|o| o.size()).sum();
         let total_size = Self::calculate_size(sum);
-        println!("");
+        println!();
         println!("------------------------");
         println!("Total Items:   {total_items}");
         println!("Total Size:    {total_size}");
         println!("------------------------");
-        println!("");
+        println!();
     }
 
     pub async fn upload(&self, args: Args) -> Result<()> {
@@ -141,7 +141,10 @@ impl S3 {
             .send()
             .await?;
 
-        println!("Upload successful: {:?} as {}", file_path, &file_name);
+        println!(
+            "Upload successful: {file_name} from {}",
+            file_path.display()
+        );
         Ok(())
     }
 

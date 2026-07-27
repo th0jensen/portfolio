@@ -9,12 +9,12 @@ mod command;
 mod s3;
 
 static COMMANDS: &[CommandSpec] = &[
-    command_spec!(UPLOAD, "/upload", ["<name>", "<path>"]),
-    command_spec!(VERIFY, "/verify", ["<name>"]),
-    command_spec!(LIST, "/list"),
-    command_spec!(HELP, "/help"),
-    command_spec!(QUIT, "/quit"),
-    command_spec!(NONE, ""),
+    command_spec!(Upload, "/upload", ["<name>", "<path>"]),
+    command_spec!(Verify, "/verify", ["<name>"]),
+    command_spec!(List, "/list"),
+    command_spec!(Help, "/help"),
+    command_spec!(Quit, "/quit"),
+    command_spec!(None, ""),
 ];
 
 #[tokio::main]
@@ -26,12 +26,18 @@ async fn main() -> Result<()> {
         let cmd = Command::prompt();
         let result = match cmd {
             Ok(cmd) => match cmd {
-                Command::UPLOAD { args } => s3.upload(args).await,
-                Command::VERIFY { args } => s3.verify(args).await,
-                Command::LIST => s3.list().await,
-                Command::HELP => Ok(cmd.help(None)),
-                Command::QUIT => std::process::exit(0),
-                Command::NONE => Ok(cmd.help(None)),
+                Command::Upload { args } => s3.upload(args).await,
+                Command::Verify { args } => s3.verify(args).await,
+                Command::List => s3.list().await,
+                Command::Help => {
+                    cmd.help(None);
+                    continue;
+                }
+                Command::Quit => std::process::exit(0),
+                Command::None => {
+                    cmd.help(None);
+                    continue;
+                }
             },
             Err((cmd, idx)) => {
                 cmd.help(Some(idx));
