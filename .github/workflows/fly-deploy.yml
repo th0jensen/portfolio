@@ -37,6 +37,19 @@ jobs:
       - run: bunx nx run init
       - run: bunx nx run backend:lint
 
+  lint-cli:
+    name: CLI Linting
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          components: clippy
+      - uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: cli
+      - run: bunx nx run cli:lint
+
   deploy:
     name: Deploy app
     runs-on: ubuntu-latest
