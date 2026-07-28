@@ -7,3 +7,4 @@ build: frontend::build backend::build
 dev: backend::dev
 init: frontend::install
 clean: backend::clean cli::clean
+ci: lint build

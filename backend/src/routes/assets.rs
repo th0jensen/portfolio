@@ -83,6 +83,11 @@ pub async fn s3_handler(
             .content_length()
             .map(|len| len.to_string())
             .unwrap_or_else(|| "0".to_string());
+        let cache_control = if asset_name.starts_with("fonts/") {
+            "public, max-age=31536000, immutable"
+        } else {
+            "no-cache"
+        };
 
         let async_reader = asset.body.into_async_read();
         let byte_stream = ReaderStream::new(async_reader);
@@ -92,6 +97,7 @@ pub async fn s3_handler(
             .status(StatusCode::OK)
             .header(header::CONTENT_TYPE, content_type)
             .header(header::CONTENT_LENGTH, content_length)
+            .header(header::CACHE_CONTROL, cache_control)
             .header(
                 header::CONTENT_DISPOSITION,
                 format!("inline; filename=\"{}\"", file_name),

@@ -136,7 +136,7 @@ pub fn headers() -> ServiceBuilder<Headers> {
                 .deflate(true)
                 .zstd(true),
         )
-        .layer(SetResponseHeaderLayer::overriding(
+        .layer(SetResponseHeaderLayer::if_not_present(
             header::CACHE_CONTROL,
             HeaderValue::from_static("no-cache"),
         ))
