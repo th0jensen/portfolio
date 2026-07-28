@@ -2,6 +2,7 @@
 name = "portfolio-backend"
 version = "0.1.0"
 edition = "2024"
+rust-version = "1.95"
 
 
 [dependencies]
@@ -14,14 +15,12 @@ axum-prometheus = "0.10.0"
 base64 = "0.22.1"
 derivative = "2.2.0"
 dotenvy = "0.15"
-futures = "0.3.32"
 http = "=1.4.0"
-hyper = { version = "1.0", features = ["server"] }
 regex = "1.12.3"
 resend-rs = "0.24.0"
 serde = { version = "1.0.228", features = ["derive"]}
 serde_json = "1.0.149"
-tokio = { version = "1.51.1", features = ["full"] }
+tokio = { version = "1.51.1", features = ["io-util", "macros", "net", "process", "rt-multi-thread", "sync", "time"] }
 tokio-util = "0.7.19"
 tower = "0.5"
 tower-http = { version = "0.6", features = ["fs", "compression-full", "set-header", "trace"] }
@@ -30,3 +29,9 @@ tracing-subscriber = { version = "0.3.19", features=["env-filter", "json"] }
 ts-rs = "10.0.1"
 reqwest = { version = "0.12", default-features = false, features = ["json", "rustls-tls"] }
 qubit = "0.10.3"
+
+[profile.release]
+lto = "thin"
+codegen-units = 1
+strip = "symbols"
+panic = "abort"

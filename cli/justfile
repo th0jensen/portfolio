@@ -1,8 +1,8 @@
 build:
-    cargo build --release
+    cargo build --release --locked
 
 lint:
-    cargo clippy -- -D warnings
+    cargo clippy --locked -- -D warnings
 
 clean:
     cargo clean

@@ -1,10 +1,10 @@
 lint:
     deno fmt --check
     deno lint
-    deno task check
+    deno task --frozen check
 
 build:
-    deno task build
+    deno task --frozen build
 
 install:
-    deno install
+    deno install --frozen

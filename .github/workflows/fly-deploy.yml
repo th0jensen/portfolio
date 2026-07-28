@@ -16,7 +16,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: dtolnay/rust-toolchain@stable
+      - uses: dtolnay/rust-toolchain@1.95.0
         with:
           components: clippy
       - uses: Swatinem/rust-cache@v2
@@ -24,8 +24,8 @@ jobs:
           workspaces: backend
       - uses: denoland/setup-deno@v2
         with:
-          deno-version: v2.x
-      - run: cargo install just
+          deno-version: v2.9.4
+      - run: cargo install just --version 1.57.0 --locked
       - run: just init
       - run: just lint
 

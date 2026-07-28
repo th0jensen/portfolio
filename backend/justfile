@@ -1,12 +1,12 @@
 lint:
-    cargo clippy -- -D warnings
+    cargo clippy --locked -- -D warnings
 
 build:
-    cargo build --release
+    cargo build --release --locked
 
 dev:
     just --justfile ../frontend/justfile build
-    RENDERER_BIN=../frontend/dist/renderer RUST_LOG=DEBUG cargo run .
+    RENDERER_BIN=../frontend/dist/renderer RUST_LOG=DEBUG cargo run --locked
 
 clean:
     cargo clean

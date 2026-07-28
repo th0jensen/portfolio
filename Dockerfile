@@ -1,25 +1,52 @@
-FROM rust:latest AS builder
-RUN curl -fsSL https://deno.land/install.sh | sh
-ENV PATH="/root/.deno/bin:$PATH"
+FROM denoland/deno:2.9.4 AS frontend-builder
+USER root
 WORKDIR /app
-COPY . .
-RUN touch .env
 
-RUN cargo install just
-RUN just init
-RUN just build
+COPY deno.json deno.lock ./
+COPY frontend/deno.json ./frontend/deno.json
+WORKDIR /app/frontend
+RUN deno install --frozen
 
-FROM ubuntu:24.04 AS runtime
-RUN apt-get update && apt-get install -y libssl3 ca-certificates && rm -rf /var/lib/apt/lists/*
 WORKDIR /app
-COPY --from=builder /app/backend/target/release/portfolio-backend ./backend
-COPY --from=builder /app/backend/static ./static
-COPY --from=builder /app/frontend/dist ./frontend/dist
-COPY --from=builder /app/frontend/dist/renderer ./renderer
+COPY frontend ./frontend
+WORKDIR /app/frontend
+RUN deno task --frozen build \
+    && mkdir -p /output \
+    && mv dist/renderer /output/renderer
+
+FROM rust:1.95.0-bookworm AS backend-builder
+WORKDIR /app/backend
+
+COPY backend/Cargo.toml backend/Cargo.lock ./
+RUN mkdir src \
+    && printf 'fn main() {}\n' > src/main.rs \
+    && cargo build --release --locked \
+    && rm -rf src
+
+COPY backend/src ./src
+COPY backend/data ./data
+RUN touch src/main.rs \
+    && cargo build --release --locked \
+    && cp target/release/portfolio-backend /portfolio-backend
+
+FROM debian:bookworm-slim AS runtime
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends libssl3 ca-certificates \
+    && rm -rf /var/lib/apt/lists/* \
+    && useradd --system --uid 10001 --create-home portfolio
+
+WORKDIR /app
+COPY --from=backend-builder /portfolio-backend ./backend
+COPY --from=frontend-builder /output/renderer ./renderer
+COPY --from=frontend-builder /app/frontend/dist ./frontend/dist
+COPY backend/static ./static
+
 ENV STATIC_DIR=/app/static
 ENV DIST_DIR=/app/frontend/dist
 ENV RENDERER_BIN=/app/renderer
 ENV AXUM_ORIGIN=http://127.0.0.1:8080
-ENV RUST_LOG=DEBUG
+ENV RUST_LOG=INFO
+
+USER portfolio
 EXPOSE 8080
 CMD ["./backend"]
