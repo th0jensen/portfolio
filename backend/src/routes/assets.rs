@@ -1,11 +1,11 @@
 use axum::{
     Router,
     body::Body,
-    extract::{Path, State},
+    extract::{OriginalUri, Path, State},
     response::IntoResponse,
     routing::get,
 };
-use http::{Response, StatusCode, Uri, header};
+use http::{Response, StatusCode, header};
 use tokio_util::io::ReaderStream;
 use tower_http::services::{ServeDir, ServeFile};
 
@@ -48,7 +48,7 @@ pub fn router(State(state): State<&AppState>) -> Router<AppState<'static>> {
 pub async fn s3_handler(
     State(state): State<AppState<'static>>,
     Path(path): Path<String>,
-    uri: Uri,
+    OriginalUri(uri): OriginalUri,
 ) -> Result<impl IntoResponse, Response<Body>> {
     if let Some(asset_name) = ASSETS.iter().find(|&&asset| asset == path) {
         let asset_name = asset_name.to_owned();
@@ -63,7 +63,7 @@ pub async fn s3_handler(
             Ok(asset) => asset,
             Err(err) => {
                 tracing::error!(?err, "failed to fetch from S3");
-                return Err(error_handler(State(state), uri)
+                return Err(error_handler(State(state), OriginalUri(uri))
                     .await
                     .into_response());
             }
@@ -101,11 +101,15 @@ pub async fn s3_handler(
             Ok(response) => Ok(response),
             Err(err) => {
                 tracing::error!(?err, "failed to construct asset response");
-                Err(error_handler(State(state), uri).await.into_response())
+                Err(error_handler(State(state), OriginalUri(uri))
+                    .await
+                    .into_response())
             }
         }
     } else {
         tracing::warn!("Asset not found: {:?}", path);
-        Err(error_handler(State(state), uri).await.into_response())
+        Err(error_handler(State(state), OriginalUri(uri))
+            .await
+            .into_response())
     }
 }

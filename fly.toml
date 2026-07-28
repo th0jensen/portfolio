@@ -7,8 +7,12 @@ app = 'thojensen'
 primary_region = 'arn'
 
 [env]
-  STATIC_DIR = "static"
-  DIST_DIR = "frontend/dist"
+  STATIC_DIR = "/app/static"
+  DIST_DIR = "/app/frontend/dist"
+  RENDERER_BIN = "/app/renderer"
+  AXUM_ORIGIN = "http://127.0.0.1:8080"
+  RUST_LOG = "INFO"
+
 
 [metrics]
   port = 8080

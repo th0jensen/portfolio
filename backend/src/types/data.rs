@@ -4,6 +4,31 @@ use serde::{Deserialize, Serialize};
 
 #[allow(dead_code)]
 #[derive(ts_rs::TS, Clone, Serialize, Deserialize, Debug)]
+pub struct RenderOutput {
+    pub id: u32,
+    pub status: u16,
+    pub html: Option<String>,
+    pub error: Option<String>,
+    pub headers: HashMap<String, String>,
+}
+
+#[allow(dead_code)]
+#[derive(ts_rs::TS, Clone, Serialize, Deserialize, Debug)]
+pub struct RenderInput {
+    pub id: u32,
+    pub url: String,
+    pub rpc_origin: String,
+    pub assets: Assets,
+}
+
+#[derive(ts_rs::TS, Clone, Serialize, Deserialize, Debug)]
+pub struct Assets {
+    pub css: String,
+    pub js: String,
+}
+
+#[allow(dead_code)]
+#[derive(ts_rs::TS, Clone, Serialize, Deserialize, Debug)]
 pub struct HeaderData {
     pub en: HeaderLocaleData,
     pub no: HeaderLocaleData,
@@ -16,6 +41,7 @@ pub struct HeaderLocaleData {
     pub theme: Theme,
 }
 
+#[allow(dead_code)]
 #[derive(ts_rs::TS, Clone, Serialize, Deserialize, Debug)]
 pub struct Data {
     pub en: LocaleData,
@@ -26,7 +52,6 @@ pub struct Data {
     pub locales: Vec<Locale>,
 }
 
-#[allow(dead_code)]
 #[derive(ts_rs::TS, Clone, Serialize, Deserialize, Debug)]
 pub struct ExperienceItem {
     pub name: String,

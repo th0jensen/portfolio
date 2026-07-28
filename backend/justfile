@@ -1,11 +1,12 @@
 lint:
-    SKIP_BUN_BUILD=1 cargo clippy -- -D warnings
+    cargo clippy -- -D warnings
 
 build:
     cargo build --release
 
 dev:
-    RUST_LOG=DEBUG cargo run .
+    just --justfile ../frontend/justfile build
+    RENDERER_BIN=../frontend/dist/renderer RUST_LOG=DEBUG cargo run .
 
 clean:
     cargo clean

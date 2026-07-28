@@ -1,13 +1,25 @@
 import './app.css';
-import { pageRouter, registry } from 'ilha:pages/server';
 import { mount } from 'ilha';
-import automaton_island from './islands/automaton_island';
-import footer from './islands/footer';
-import header from './islands/header';
-import { initLocale } from './lib/locale';
+import automaton_island from './islands/automaton_island.tsx';
+import footer from './islands/footer.tsx';
+import header from './islands/header.tsx';
+import { initLocale } from './lib/locale.ts';
+import automata from './pages/automata.tsx';
+import contact from './pages/contact.tsx';
+import error from './pages/error.tsx';
+import experience from './pages/experience.tsx';
+import index from './pages/index.tsx';
+import projects from './pages/projects.tsx';
 
 initLocale();
-mount({ automaton_island, header, footer });
-// biome-ignore lint/style/noNonNullAssertion: #app is required by the app shell
-const app = document.querySelector('#app')!;
-pageRouter.hydrate(registry, { root: app, target: app });
+mount({
+    automata,
+    automaton_island,
+    contact,
+    error,
+    experience,
+    footer,
+    header,
+    index,
+    projects,
+});

@@ -1,6 +1,6 @@
 FROM rust:latest AS builder
-RUN curl -fsSL https://bun.sh/install | bash
-ENV PATH="/root/.bun/bin:$PATH"
+RUN curl -fsSL https://deno.land/install.sh | sh
+ENV PATH="/root/.deno/bin:$PATH"
 WORKDIR /app
 COPY . .
 RUN touch .env
@@ -15,8 +15,11 @@ WORKDIR /app
 COPY --from=builder /app/backend/target/release/portfolio-backend ./backend
 COPY --from=builder /app/backend/static ./static
 COPY --from=builder /app/frontend/dist ./frontend/dist
+COPY --from=builder /app/frontend/dist/renderer ./renderer
 ENV STATIC_DIR=/app/static
 ENV DIST_DIR=/app/frontend/dist
+ENV RENDERER_BIN=/app/renderer
+ENV AXUM_ORIGIN=http://127.0.0.1:8080
 ENV RUST_LOG=DEBUG
 EXPOSE 8080
 CMD ["./backend"]

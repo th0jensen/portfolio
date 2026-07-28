@@ -1,8 +1,10 @@
 lint:
-    bunx biome check .
+    deno fmt --check
+    deno lint
+    deno task check
 
 build:
-    bun run build
+    deno task build
 
 install:
-    bun install
+    deno install

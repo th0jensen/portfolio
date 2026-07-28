@@ -1,6 +1,6 @@
 use std::sync::LazyLock;
 
-use axum::{Json, extract::State, response::IntoResponse};
+use qubit::handler;
 use regex::Regex;
 use resend_rs::types::CreateEmailBaseOptions;
 use serde::{Deserialize, Serialize};
@@ -14,7 +14,7 @@ pub struct EmailPayload {
     content: String,
 }
 
-#[derive(Serialize)]
+#[derive(ts_rs::TS, Clone, Serialize)]
 pub struct ApiResponse {
     pub ok: bool,
     pub message: String,
@@ -27,56 +27,55 @@ fn is_email(email: &str) -> bool {
     EMAIL_RE.as_ref().is_some_and(|re| re.is_match(email))
 }
 
-pub async fn dispatch_email(
-    State(state): State<AppState<'static>>,
-    Json(payload): Json<EmailPayload>,
-) -> impl IntoResponse {
+#[handler(mutation)]
+pub(crate) async fn dispatch_email(
+    ctx: AppState<'static>,
+    payload: EmailPayload,
+) -> ApiResponse {
     let EmailPayload {
         full_name,
         email,
         content,
-    } = &payload;
+    } = payload;
 
     tracing::info!(name = %full_name, "contact form received");
 
     if full_name.trim().is_empty()
         || email.trim().is_empty()
-        || !is_email(email)
+        || !is_email(&email)
         || content.trim().is_empty()
     {
         tracing::warn!(name = %full_name, "contact form validation failed");
-        return Json(ApiResponse {
+        return ApiResponse {
             ok: false,
             message: "All fields are required to be non-empty and valid."
                 .into(),
-        });
+        };
     }
 
-    let client = &state.resend_client;
-
-    let from = &state.sender_mail.to_string();
-    let to: [&str; 1] = [&state.contact_mail];
+    let from = &ctx.sender_mail.to_string();
+    let to: [&str; 1] = [&ctx.contact_mail];
     let subject = format!("New Contact Request from {}", full_name);
 
     let email = CreateEmailBaseOptions::new(from, to, subject)
-        .with_reply(email)
-        .with_text(content);
+        .with_reply(&email)
+        .with_text(&content);
 
-    match client.emails.send(email).await {
+    match ctx.resend_client.emails.send(email).await {
         Ok(email) => {
             tracing::info!("Successfully sent email: {:?}", email);
-            Json(ApiResponse {
+            ApiResponse {
                 ok: true,
                 message: "Mail was successfully sent!".into(),
-            })
+            }
         }
         Err(email) => {
             tracing::error!("Failed to send email: {:?}", email);
-            Json(ApiResponse {
+            ApiResponse {
                 ok: false,
                 message: "Something went wrong while sending the mail..."
                     .into(),
-            })
+            }
         }
     }
 }

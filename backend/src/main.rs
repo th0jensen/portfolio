@@ -7,26 +7,24 @@ use axum::{Router, extract::State, routing::get};
 use std::net::SocketAddr;
 use tower_http::trace::TraceLayer;
 
+mod renderer;
 mod routes;
 mod state;
 mod types;
-
-const ENDPOINTS: [&str; 6] = [
-    "/",
-    "/automata",
-    "/projects",
-    "/experience",
-    "/contact",
-    "/error",
-];
+mod util;
 
 #[tokio::main]
 async fn main() {
+    if let Err(error) = dotenvy::dotenv()
+        && !error.not_found()
+    {
+        panic!("failed to load .env: {error}");
+    }
+
     tracing_subscriber::fmt()
         .with_env_filter(env_filter())
         .init();
 
-    dotenvy::dotenv().ok();
     let state = AppState::new().await;
     let (qubit_service, qubit_handle) = router().to_service(state.clone());
     let app: Router = Router::new()
