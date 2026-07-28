@@ -18,16 +18,24 @@
         },
       },
     },
+    "just-lsp": {
+      "initialization_options": {
+        "rules": {
+          "missing-dependencies": "off"
+        }
+      }
+    }
   },
   "languages": {
     "TypeScript": {
       "language_servers": [
         "biome",
-        "vtsls",
-        "!deno",
-        "!eslint",
-        "!typescript-language-server",
-        "...",
+        "typescript-ls",
+        // "!deno",
+        // "!eslint",
+        // "!typescript-language-server",
+        // "!vtsls",
+        // "...",
       ],
       "formatter": { "language_server": { "name": "biome" } },
       "code_actions_on_format": {
@@ -39,11 +47,12 @@
     "TSX": {
       "language_servers": [
         "biome",
-        "vtsls",
-        "!deno",
-        "!eslint",
-        "!typescript-language-server",
-        "...",
+        "typescript-ls",
+        // "!deno",
+        // "!eslint",
+        // "!typescript-language-server",
+        // "!vtsls",
+        // "...",
       ],
       "formatter": { "language_server": { "name": "biome" } },
       "code_actions_on_format": {
@@ -54,10 +63,12 @@
     },
     "CSS": {
       "language_servers": [
-        "!vscode-css-language-server",
         "tailwindcss-language-server",
       ],
     },
+    "JSON": {
+      "enable_language_server": false
+    }
   },
   "wrap_guides": [80],
   "soft_wrap": "bounded",
