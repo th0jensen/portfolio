@@ -1,6 +1,5 @@
 import './app.css';
-import { pageRouter } from 'ilha:pages';
-import { registry } from 'ilha:registry';
+import { pageRouter, registry } from 'ilha:pages/server';
 import { mount } from 'ilha';
 import automaton_island from './islands/automaton_island';
 import footer from './islands/footer';

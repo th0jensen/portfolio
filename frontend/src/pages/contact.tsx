@@ -1,4 +1,4 @@
-import { createStore } from '@ilha/store';
+import { store } from '@ilha/store';
 import { extractFormData } from '@ilha/store/form';
 import { Button, Field, Input, Link, Textarea } from 'areia';
 import ilha from 'ilha';
@@ -19,38 +19,38 @@ const emailSchema = z.object({
   content: z.string().min(1, 'Message is required.'),
 });
 
-const contactFormStore = createStore(
-  { status: 'idle' as 'idle' | 'loading' | 'success' | 'error', message: '' },
-  (set) => ({
-    async submit(event: SubmitEvent) {
-      const form = event.target as HTMLFormElement;
-      set({ status: 'loading' });
+const contactFormStore = store({
+  status: 'idle' as 'idle' | 'loading' | 'success' | 'error',
+  message: '',
+})
+  .action('submit', async (event: SubmitEvent, { set }) => {
+    const form = event.target as HTMLFormElement;
+    set({ status: 'loading' });
 
-      try {
-        const response = await fetch('/contact', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(extractFormData(form)),
-        });
-        const result = (await response.json()) as {
-          ok: boolean;
-          message: string;
-        };
+    try {
+      const response = await fetch('/contact', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(extractFormData(form)),
+      });
+      const result = (await response.json()) as {
+        ok: boolean;
+        message: string;
+      };
 
-        set({
-          message: result.message,
-          status: result.ok ? 'success' : 'error',
-        });
-        if (result.ok) form.reset();
-      } catch {
-        set({
-          status: 'error',
-          message: 'Network error. Please try again.',
-        });
-      }
-    },
-  }),
-);
+      set({
+        message: result.message,
+        status: result.ok ? 'success' : 'error',
+      });
+      if (result.ok) form.reset();
+    } catch {
+      set({
+        status: 'error',
+        message: 'Network error. Please try again.',
+      });
+    }
+  })
+  .build();
 
 const StatusIsland = ilha.render(() => {
   const { status, message } = contactFormStore.getState();
@@ -96,7 +96,7 @@ export default ilha
   .on('form@submit', ({ event }) => {
     event.preventDefault();
     event.stopPropagation();
-    contactFormStore.getState().submit(event);
+    contactFormStore.submit(event);
   })
   .render(({ state }) => {
     const data = state.data();

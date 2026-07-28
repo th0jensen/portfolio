@@ -9,7 +9,7 @@ import type { Data, ExperienceItem } from './bindings';
 
 const { default: header } = await import('./islands/header');
 const { default: footer } = await import('./islands/footer');
-const { pageRouter, registry } = await import('../.ilha/routes');
+const { pageRouter, registry } = await import('../.ilha/pages.server');
 
 const distDir = `${import.meta.dir}/../dist`;
 const dataPath = `${import.meta.dir}/../../backend/data/data.json`;
