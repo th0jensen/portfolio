@@ -206,21 +206,21 @@ body:has(.automaton-page) footer {
 
 .technical-grid {
     background-image:
-    linear-gradient(to right, hsl(var(--border) / 0.32) 1px, transparent
-    1px),
-    linear-gradient(to bottom, hsl(var(--border) / 0.22) 1px, transparent
-    1px);
+        linear-gradient(to right, hsl(var(--border) / 0.32) 1px, transparent
+        1px),
+        linear-gradient(to bottom, hsl(var(--border) / 0.22) 1px, transparent
+        1px);
     background-size: 4rem 4rem;
     background-position: center top;
 }
 
 .rule-fade {
     background: linear-gradient(
-    to right,
-    transparent,
-    hsl(var(--border)) 12%,
-    hsl(var(--border)) 88%,
-    transparent
+        to right,
+        transparent,
+        hsl(var(--border)) 12%,
+        hsl(var(--border)) 88%,
+        transparent
     );
 }
 
