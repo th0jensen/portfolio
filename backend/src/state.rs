@@ -3,6 +3,7 @@ use std::{
     time::{Duration, Instant},
 };
 
+use anyhow::{Context, Result};
 use aws_config::{BehaviorVersion, Region, defaults};
 use aws_sdk_s3::{Client, config::Credentials};
 use axum::extract::State;
@@ -10,6 +11,7 @@ use axum_prometheus::{
     GenericMetricLayer, Handle, PrometheusMetricLayer,
     metrics_exporter_prometheus::PrometheusHandle,
 };
+use base64::{Engine as _, engine::general_purpose::STANDARD};
 use derivative::Derivative;
 
 use http::{HeaderValue, header};
@@ -64,6 +66,8 @@ pub(crate) struct AppState<'a> {
     pub(crate) contact_mail: Arc<String>,
     pub(crate) sender_mail: Arc<String>,
     pub(crate) data: Arc<Data>,
+    #[derivative(Debug = "ignore")]
+    pub(crate) font_css: Arc<String>,
     pub(crate) dist_dir: Arc<String>,
     pub(crate) static_dir: Arc<String>,
     #[derivative(Debug = "ignore")]
@@ -74,9 +78,17 @@ pub(crate) struct AppState<'a> {
 impl<'a> AppState<'a> {
     pub(crate) async fn new() -> Self {
         let (prometheus_layer, metric_handle) = PrometheusMetricLayer::pair();
+        let s3 = Arc::new(Self::create_s3_client().await);
+        let bucket = Arc::new(get_env_key("BUCKET_NAME"));
+        let font_css = Self::load_font_css(s3.as_ref(), bucket.as_ref())
+            .await
+            .unwrap_or_else(|error| {
+                panic!("failed to embed fonts from S3: {error:#}")
+            });
+
         Self {
-            s3: Arc::new(Self::create_s3_client().await),
-            bucket: Arc::new(get_env_key("BUCKET_NAME")),
+            s3,
+            bucket,
             renderer: Arc::new(RendererClient::new(RendererConfig::new())),
             resend_client: Arc::new(Self::create_resend_client()),
             experience_cache: Arc::new(RwLock::new(ExperienceCache::new())),
@@ -84,6 +96,7 @@ impl<'a> AppState<'a> {
             contact_mail: Arc::new(get_env_key("CONTACT_MAIL")),
             sender_mail: Arc::new(get_env_key("SENDER_MAIL")),
             data: Arc::new(Data::get()),
+            font_css: Arc::new(font_css),
             dist_dir: Arc::new(get_env_key("DIST_DIR")),
             static_dir: Arc::new(get_env_key("STATIC_DIR")),
             prometheus_layer: Arc::new(prometheus_layer),
@@ -93,6 +106,39 @@ impl<'a> AppState<'a> {
 
     fn create_resend_client() -> Resend {
         Resend::new(&get_env_key("RESEND_API_KEY"))
+    }
+
+    async fn load_font_css(client: &Client, bucket: &str) -> Result<String> {
+        let (regular, bold) = tokio::try_join!(
+            Self::load_font(client, bucket, "fonts/alef-400.ttf"),
+            Self::load_font(client, bucket, "fonts/alef-700.ttf"),
+        )?;
+
+        Ok(format!(
+            "<style>@font-face{{font-family:'Alef';src:url('data:font/ttf;base64,{regular}') format('truetype');font-weight:400;font-style:normal;font-display:swap}}@font-face{{font-family:'Alef';src:url('data:font/ttf;base64,{bold}') format('truetype');font-weight:700;font-style:normal;font-display:swap}}</style>"
+        ))
+    }
+
+    async fn load_font(
+        client: &Client,
+        bucket: &str,
+        key: &str,
+    ) -> Result<String> {
+        let object = client
+            .get_object()
+            .bucket(bucket)
+            .key(key)
+            .send()
+            .await
+            .with_context(|| format!("failed to fetch {key}"))?;
+        let bytes = object
+            .body
+            .collect()
+            .await
+            .with_context(|| format!("failed to read {key}"))?
+            .into_bytes();
+
+        Ok(STANDARD.encode(bytes))
     }
 
     async fn create_s3_client() -> Client {
@@ -136,7 +182,7 @@ pub fn headers() -> ServiceBuilder<Headers> {
                 .deflate(true)
                 .zstd(true),
         )
-        .layer(SetResponseHeaderLayer::if_not_present(
+        .layer(SetResponseHeaderLayer::overriding(
             header::CACHE_CONTROL,
             HeaderValue::from_static("no-cache"),
         ))

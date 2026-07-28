@@ -2338,6 +2338,7 @@ dependencies = [
  "axum",
  "axum-core",
  "axum-prometheus",
+ "base64",
  "derivative",
  "dotenvy",
  "futures",

@@ -47,10 +47,14 @@ async fn render_page(
                 return StatusCode::INTERNAL_SERVER_ERROR.into_response();
             };
 
-            let Some(html) = output.html else {
+            let Some(mut html) = output.html else {
                 tracing::error!(url, "SSR renderer returned no html");
                 return StatusCode::INTERNAL_SERVER_ERROR.into_response();
             };
+
+            if let Some(head_end) = html.find("</head>") {
+                html.insert_str(head_end, state.font_css.as_ref());
+            }
 
             let rendered_status = StatusCode::from_u16(output.status)
                 .unwrap_or(StatusCode::INTERNAL_SERVER_ERROR);

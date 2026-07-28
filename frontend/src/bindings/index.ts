@@ -10,10 +10,10 @@
 ############### && @@@@@@@@@@@@@@
 ############### & @@@@@@@@@@@@@    */
 
-import type { Locale } from "./Locale.ts";
-import type { About } from "./About.ts";
 import type { Project } from "./Project.ts";
 import type { ExperienceItem } from "./ExperienceItem.ts";
+import type { About } from "./About.ts";
+import type { Locale } from "./Locale.ts";
 import type { LocaleData } from "./LocaleData.ts";
 import type { Data } from "./Data.ts";
 import type { Query } from "@qubit-rs/client";
@@ -24,10 +24,10 @@ import type { ApiResponse } from "./ApiResponse.ts";
 import type { EmailPayload } from "./EmailPayload.ts";
 import type { Mutation } from "@qubit-rs/client";
 
-export type { Locale } from "./Locale.ts";
-export type { About } from "./About.ts";
 export type { Project } from "./Project.ts";
 export type { ExperienceItem } from "./ExperienceItem.ts";
+export type { About } from "./About.ts";
+export type { Locale } from "./Locale.ts";
 export type { LocaleData } from "./LocaleData.ts";
 export type { Data } from "./Data.ts";
 export type { Query } from "@qubit-rs/client";

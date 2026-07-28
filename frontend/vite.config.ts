@@ -1,18 +1,6 @@
 import { pages } from '@ilha/router/vite';
 import tailwindcss from '@tailwindcss/vite';
-import { createLogger, defineConfig } from 'vite';
-
-const logger = createLogger();
-const isRuntimeFontWarning = (message: string) =>
-    /\/static\/fonts\/alef-(400|700)\.ttf referenced/.test(message);
-const warn = logger.warn.bind(logger);
-const warnOnce = logger.warnOnce.bind(logger);
-logger.warn = (message, options) => {
-    if (!isRuntimeFontWarning(message)) warn(message, options);
-};
-logger.warnOnce = (message, options) => {
-    if (!isRuntimeFontWarning(message)) warnOnce(message, options);
-};
+import { defineConfig } from 'vite';
 
 export default defineConfig({
     oxc: {
@@ -21,7 +9,6 @@ export default defineConfig({
             importSource: 'ilha',
         },
     },
-    customLogger: logger,
     build: {
         manifest: true,
         rollupOptions: {

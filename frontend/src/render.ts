@@ -123,8 +123,6 @@ function documentShell(
     })();
   </script>
   <link rel="icon" href="/favicon.svg" />
-  <link rel="preload" href="/static/fonts/alef-400.ttf" as="font" type="font/ttf" crossorigin />
-  <link rel="preload" href="/static/fonts/alef-700.ttf" as="font" type="font/ttf" crossorigin />
   <link rel="stylesheet" href="${css}" />
   <title>Thomas Jensen</title>
 </head>
