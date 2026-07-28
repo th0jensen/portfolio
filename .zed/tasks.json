@@ -13,6 +13,6 @@
     "shell": "system",
     "show_summary": true,
     "show_command": true,
-    "save": "none",
-  },
+    "save": "none"
+  }
 ]

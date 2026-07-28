@@ -8,4 +8,13 @@ import type { Nav } from "./Nav";
 import type { Theme } from "./Theme";
 import type { Work } from "./Work";
 
-export type LocaleData = { meta: Meta, nav: Nav, hero: Hero, buttons: Buttons, work: Work, experience: Experience, theme: Theme, contact: Contact, };
+export type LocaleData = {
+  meta: Meta;
+  nav: Nav;
+  hero: Hero;
+  buttons: Buttons;
+  work: Work;
+  experience: Experience;
+  theme: Theme;
+  contact: Contact;
+};
