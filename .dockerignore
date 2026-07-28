@@ -1,6 +1,12 @@
 .git
+.github
 .zed
 .DS_Store
+
+cli
+LICENSE
+README.md
+fly.toml
 
 .env
 .env.*
