@@ -6,7 +6,9 @@ use axum::{
 };
 use http::{HeaderName, HeaderValue, StatusCode};
 
-use crate::AppState;
+use crate::{AppState, renderer::RenderRoute};
+
+const NOT_FOUND_HTML: &str = "<!doctype html><html lang=\"en\" class=\"dark\" style=\"color-scheme:dark\"><head><meta charset=\"UTF-8\"><meta name=\"viewport\" content=\"width=device-width,initial-scale=1\"><meta name=\"robots\" content=\"noindex\"><title>Not Found</title></head><body><main><h1>404</h1><p>The requested page was not found.</p><a href=\"/\">Return home</a></main></body></html>";
 
 pub fn router() -> Router<AppState<'static>> {
     Router::new()
@@ -15,32 +17,34 @@ pub fn router() -> Router<AppState<'static>> {
         .route("/experience", get(page_handler))
         .route("/contact", get(page_handler))
         .route("/automata", get(page_handler))
-        .fallback(error_handler)
 }
 
 pub async fn page_handler(
     State(state): State<AppState<'static>>,
     OriginalUri(uri): OriginalUri,
 ) -> Response {
-    let url = uri.path_and_query().map_or("/", |p| p.as_str());
-    tracing::info!(url, "rendering page");
-    render_page(&state, url, None).await
+    let Some(route) = RenderRoute::from_path(uri.path()) else {
+        return not_found_response();
+    };
+    tracing::info!(url = route.path(), "rendering page");
+    render_page(&state, route).await
 }
 
-pub async fn error_handler(
-    State(state): State<AppState<'static>>,
-    OriginalUri(uri): OriginalUri,
-) -> Response {
-    tracing::debug!(uri = %uri, "rendering 404");
-    render_page(&state, "/error", Some(StatusCode::NOT_FOUND)).await
+pub async fn error_handler(OriginalUri(uri): OriginalUri) -> Response {
+    tracing::debug!(uri = %uri, "serving static 404");
+    not_found_response()
+}
+
+pub fn not_found_response() -> Response {
+    (StatusCode::NOT_FOUND, Html(NOT_FOUND_HTML)).into_response()
 }
 
 async fn render_page(
     state: &AppState<'static>,
-    url: &str,
-    status_override: Option<StatusCode>,
+    route: RenderRoute,
 ) -> Response {
-    match state.renderer.render(url).await {
+    let url = route.path();
+    match state.renderer.render(route).await {
         Ok(output) => {
             if let Some(error) = output.error {
                 tracing::error!(url, %error, "SSR renderer returned an error");
@@ -58,12 +62,7 @@ async fn render_page(
 
             let rendered_status = StatusCode::from_u16(output.status)
                 .unwrap_or(StatusCode::INTERNAL_SERVER_ERROR);
-            let status = if rendered_status.is_redirection() {
-                rendered_status
-            } else {
-                status_override.unwrap_or(rendered_status)
-            };
-            let mut response = (status, Html(html)).into_response();
+            let mut response = (rendered_status, Html(html)).into_response();
 
             for (name, value) in output.headers {
                 let Ok(name) = HeaderName::try_from(name) else {

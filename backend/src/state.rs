@@ -89,7 +89,11 @@ impl<'a> AppState<'a> {
         Self {
             s3,
             bucket,
-            renderer: Arc::new(RendererClient::new(RendererConfig::new())),
+            renderer: Arc::new(
+                RendererClient::new(RendererConfig::new()).unwrap_or_else(
+                    |error| panic!("failed to start SSR renderer: {error:#}"),
+                ),
+            ),
             resend_client: Arc::new(Self::create_resend_client()),
             experience_cache: Arc::new(RwLock::new(ExperienceCache::new())),
             github_api_key: Arc::new(get_env_key("GITHUB_API_KEY")),
@@ -110,12 +114,12 @@ impl<'a> AppState<'a> {
 
     async fn load_font_css(client: &Client, bucket: &str) -> Result<String> {
         let (regular, bold) = tokio::try_join!(
-            Self::load_font(client, bucket, "fonts/alef-400.ttf"),
-            Self::load_font(client, bucket, "fonts/alef-700.ttf"),
+            Self::load_font(client, bucket, "fonts/alef-400.woff2"),
+            Self::load_font(client, bucket, "fonts/alef-700.woff2"),
         )?;
 
         Ok(format!(
-            "<style>@font-face{{font-family:'Alef';src:url('data:font/ttf;base64,{regular}') format('truetype');font-weight:400;font-style:normal;font-display:swap}}@font-face{{font-family:'Alef';src:url('data:font/ttf;base64,{bold}') format('truetype');font-weight:700;font-style:normal;font-display:swap}}</style>"
+            "<style>@font-face{{font-family:'Alef';src:url('data:font/woff2;base64,{regular}') format('woff2');font-weight:400;font-style:normal;font-display:swap}}@font-face{{font-family:'Alef';src:url('data:font/woff2;base64,{bold}') format('woff2');font-weight:700;font-style:normal;font-display:swap}}</style>"
         ))
     }
 

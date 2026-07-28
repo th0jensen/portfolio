@@ -1,6 +1,7 @@
 {
   "version": "5",
   "specifiers": {
+    "jsr:@std/bytes@^1.0.6": "1.0.6",
     "jsr:@std/streams@^1.1.1": "1.1.1",
     "npm:@ilha/router@~0.8.9": "0.8.9_ilha@0.9.5_vite@8.1.5",
     "npm:@ilha/store@~0.7.7": "0.7.7_@ilha+router@0.8.9__ilha@0.9.5__vite@8.1.5_alien-signals@3.2.1_ilha@0.9.5_vite@8.1.5",
@@ -16,8 +17,14 @@
     "npm:zod@^4.4.0": "4.4.3"
   },
   "jsr": {
+    "@std/bytes@1.0.6": {
+      "integrity": "f6ac6adbd8ccd99314045f5703e23af0a68d7f7e58364b47d2c7f408aeb5820a"
+    },
     "@std/streams@1.1.1": {
-      "integrity": "92556d350e537e9dce527a6d08f6f15be3ff65e656079dea69d15252187c7613"
+      "integrity": "92556d350e537e9dce527a6d08f6f15be3ff65e656079dea69d15252187c7613",
+      "dependencies": [
+        "jsr:@std/bytes"
+      ]
     }
   },
   "npm": {

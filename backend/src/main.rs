@@ -27,11 +27,11 @@ async fn main() {
 
     let state = AppState::new().await;
     let (qubit_service, qubit_handle) = router().to_service(state.clone());
+    let page_router = pages::router().route_layer(headers());
     let app: Router = Router::new()
         .merge(assets::router(State(&state)))
-        .merge(pages::router())
+        .merge(page_router)
         .fallback(pages::error_handler)
-        .route_layer(headers())
         .nest_service("/rpc", qubit_service)
         .layer(state.prometheus_layer.as_ref().clone())
         .route("/api/metrics", get(metrics_handler))

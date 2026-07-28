@@ -1,20 +1,25 @@
 use axum::{
     Router,
     body::Body,
-    extract::{OriginalUri, Path, State},
-    response::IntoResponse,
+    extract::{Path, State},
+    response::{IntoResponse, Response},
     routing::get,
 };
-use http::{Response, StatusCode, header};
+use http::{HeaderMap, HeaderValue, StatusCode, header};
 use tokio_util::io::ReaderStream;
-use tower_http::services::{ServeDir, ServeFile};
+use tower::ServiceBuilder;
+use tower_http::{
+    compression::CompressionLayer,
+    services::{ServeDir, ServeFile},
+    set_header::SetResponseHeaderLayer,
+};
 
-use crate::{AppState, routes::pages::error_handler};
+use crate::{AppState, routes::pages::not_found_response};
 
-const ASSETS: [&str; 10] = [
+const ASSETS: [&str; 15] = [
     "headshot.jpg",
-    "fonts/alef-700.ttf",
-    "fonts/alef-400.ttf",
+    "fonts/alef-700.woff2",
+    "fonts/alef-400.woff2",
     "images/appleosophy.webp",
     "images/automaton.svg",
     "images/crabdash.webp",
@@ -22,9 +27,28 @@ const ASSETS: [&str; 10] = [
     "resume.pdf",
     "automaton/automaton.js",
     "automaton/automaton.wasm",
+    "automaton/patterns/conway/oscillator.toml",
+    "automaton/patterns/seeds/triangle.toml",
+    "automaton/patterns/briansbrain/diamond.toml",
+    "automaton/patterns/wireworld/circular.toml",
+    "automaton/patterns/wireworld/xor.toml",
 ];
 
 pub fn router(State(state): State<&AppState>) -> Router<AppState<'static>> {
+    let vite_assets = ServiceBuilder::new()
+        .layer(SetResponseHeaderLayer::overriding(
+            header::CACHE_CONTROL,
+            HeaderValue::from_static("public, max-age=31536000, immutable"),
+        ))
+        .layer(
+            CompressionLayer::new()
+                .gzip(true)
+                .br(true)
+                .deflate(true)
+                .zstd(true),
+        )
+        .service(ServeDir::new(format!("{}/assets", state.dist_dir)));
+
     Router::new()
         .route("/static/{*key}", get(s3_handler))
         .nest_service(
@@ -39,77 +63,122 @@ pub fn router(State(state): State<&AppState>) -> Router<AppState<'static>> {
             "/favicon.svg",
             ServeFile::new(format!("{}/favicon.svg", state.static_dir)),
         )
-        .nest_service(
-            "/assets",
-            ServeDir::new(format!("{}/assets", state.dist_dir)),
-        )
+        .nest_service("/assets", vite_assets)
 }
 
 pub async fn s3_handler(
     State(state): State<AppState<'static>>,
     Path(path): Path<String>,
-    OriginalUri(uri): OriginalUri,
-) -> Result<impl IntoResponse, Response<Body>> {
-    if let Some(asset_name) = ASSETS.iter().find(|&&asset| asset == path) {
-        let asset_name = asset_name.to_owned();
-        let asset = match state
-            .s3
-            .get_object()
-            .bucket(state.bucket.as_ref())
-            .key(asset_name)
-            .send()
-            .await
-        {
-            Ok(asset) => asset,
-            Err(err) => {
-                tracing::error!(?err, "failed to fetch from S3");
-                return Err(error_handler(State(state), OriginalUri(uri))
-                    .await
-                    .into_response());
-            }
+    headers: HeaderMap,
+) -> Response {
+    let Some(asset_name) = ASSETS.iter().find(|&&asset| asset == path) else {
+        tracing::debug!(path, "static asset is not allowlisted");
+        return not_found_response();
+    };
+
+    let mut request = state
+        .s3
+        .get_object()
+        .bucket(state.bucket.as_ref())
+        .key(*asset_name);
+
+    if let Some(value) = request_header(&headers, header::RANGE) {
+        let Ok(value) = value else {
+            return StatusCode::BAD_REQUEST.into_response();
         };
-
-        let content_type = asset
-            .content_type()
-            .unwrap_or("application/octet-stream")
-            .to_string();
-
-        let file_name = std::path::Path::new(asset_name)
-            .file_name()
-            .and_then(|n| n.to_str())
-            .unwrap_or("file");
-
-        let content_length = asset
-            .content_length()
-            .map(|len| len.to_string())
-            .unwrap_or_else(|| "0".to_string());
-
-        let async_reader = asset.body.into_async_read();
-        let byte_stream = ReaderStream::new(async_reader);
-        let body = Body::from_stream(byte_stream);
-
-        match Response::builder()
-            .status(StatusCode::OK)
-            .header(header::CONTENT_TYPE, content_type)
-            .header(header::CONTENT_LENGTH, content_length)
-            .header(
-                header::CONTENT_DISPOSITION,
-                format!("inline; filename=\"{}\"", file_name),
-            )
-            .body(body)
-        {
-            Ok(response) => Ok(response),
-            Err(err) => {
-                tracing::error!(?err, "failed to construct asset response");
-                Err(error_handler(State(state), OriginalUri(uri))
-                    .await
-                    .into_response())
-            }
-        }
-    } else {
-        tracing::warn!("Asset not found: {:?}", path);
-        Err(error_handler(State(state), OriginalUri(uri))
-            .await
-            .into_response())
+        request = request.range(value);
     }
+    if let Some(value) = request_header(&headers, header::IF_NONE_MATCH) {
+        let Ok(value) = value else {
+            return StatusCode::BAD_REQUEST.into_response();
+        };
+        request = request.if_none_match(value);
+    }
+    if let Some(value) = request_header(&headers, header::IF_MATCH) {
+        let Ok(value) = value else {
+            return StatusCode::BAD_REQUEST.into_response();
+        };
+        request = request.if_match(value);
+    }
+
+    let asset = match request.send().await {
+        Ok(asset) => asset,
+        Err(error) => {
+            let upstream_status = error
+                .raw_response()
+                .map(|response| response.status().as_u16());
+
+            return match upstream_status {
+                Some(304) => StatusCode::NOT_MODIFIED.into_response(),
+                Some(404) => not_found_response(),
+                Some(416) => StatusCode::RANGE_NOT_SATISFIABLE.into_response(),
+                _ => {
+                    tracing::error!(
+                        ?error,
+                        asset = *asset_name,
+                        "failed to fetch static asset from S3"
+                    );
+                    StatusCode::BAD_GATEWAY.into_response()
+                }
+            };
+        }
+    };
+
+    let status = if asset.content_range().is_some() {
+        StatusCode::PARTIAL_CONTENT
+    } else {
+        StatusCode::OK
+    };
+    let file_name = std::path::Path::new(asset_name)
+        .file_name()
+        .and_then(|name| name.to_str())
+        .unwrap_or("file");
+    let content_disposition = asset
+        .content_disposition()
+        .map(str::to_owned)
+        .unwrap_or_else(|| format!("inline; filename=\"{file_name}\""));
+
+    let mut response = Response::builder()
+        .status(status)
+        .header(
+            header::CONTENT_TYPE,
+            asset.content_type().unwrap_or("application/octet-stream"),
+        )
+        .header(
+            header::CACHE_CONTROL,
+            asset.cache_control().unwrap_or(
+                "public, max-age=3600, stale-while-revalidate=86400",
+            ),
+        )
+        .header(header::CONTENT_DISPOSITION, content_disposition);
+
+    if let Some(length) = asset.content_length().filter(|length| *length >= 0) {
+        response = response.header(header::CONTENT_LENGTH, length);
+    }
+    if let Some(value) = asset.e_tag() {
+        response = response.header(header::ETAG, value);
+    }
+    if let Some(value) = asset.accept_ranges() {
+        response = response.header(header::ACCEPT_RANGES, value);
+    }
+    if let Some(value) = asset.content_range() {
+        response = response.header(header::CONTENT_RANGE, value);
+    }
+    if let Some(value) = asset.expires_string() {
+        response = response.header(header::EXPIRES, value);
+    }
+
+    let body =
+        Body::from_stream(ReaderStream::new(asset.body.into_async_read()));
+    response.body(body).unwrap_or_else(|error| {
+        tracing::error!(?error, "failed to construct asset response");
+        StatusCode::INTERNAL_SERVER_ERROR.into_response()
+    })
+}
+
+fn request_header(
+    headers: &HeaderMap,
+    name: http::header::HeaderName,
+) -> Option<Result<&str, http::header::ToStrError>> {
+    headers.get(name).map(HeaderValue::to_str)
 }
