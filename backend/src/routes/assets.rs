@@ -16,7 +16,7 @@ use tower_http::{
 
 use crate::{AppState, routes::pages::not_found_response};
 
-const ASSETS: [&str; 15] = [
+const ASSETS: [&str; 10] = [
     "headshot.jpg",
     "fonts/alef-700.woff2",
     "fonts/alef-400.woff2",
@@ -27,11 +27,6 @@ const ASSETS: [&str; 15] = [
     "resume.pdf",
     "automaton/automaton.js",
     "automaton/automaton.wasm",
-    "automaton/patterns/conway/oscillator.toml",
-    "automaton/patterns/seeds/triangle.toml",
-    "automaton/patterns/briansbrain/diamond.toml",
-    "automaton/patterns/wireworld/circular.toml",
-    "automaton/patterns/wireworld/xor.toml",
 ];
 
 pub fn router(State(state): State<&AppState>) -> Router<AppState<'static>> {
