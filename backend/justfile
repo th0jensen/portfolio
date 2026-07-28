@@ -1,0 +1,11 @@
+lint:
+    SKIP_BUN_BUILD=1 cargo clippy -- -D warnings
+
+build:
+    cargo build --release
+
+dev:
+    RUST_LOG=DEBUG cargo run .
+
+clean:
+    cargo clean

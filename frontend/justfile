@@ -1,0 +1,8 @@
+lint:
+    bunx biome check .
+
+build:
+    bun run build
+
+install:
+    bun install

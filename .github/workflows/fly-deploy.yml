@@ -11,18 +11,8 @@ on:
       - master
 
 jobs:
-  lint-frontend:
-    name: Frontend Linting
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: oven-sh/setup-bun@v2
-      - run: bun install --frozen-lockfile
-      - run: bunx nx run init
-      - run: bunx nx run frontend:lint
-
-  lint-backend:
-    name: Backend Linting
+  lint:
+    name: Linting and Type Checking
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -33,29 +23,14 @@ jobs:
         with:
           workspaces: backend
       - uses: oven-sh/setup-bun@v2
-      - run: bun install --frozen-lockfile
-      - run: bunx nx run init
-      - run: bunx nx run backend:lint
-
-  lint-cli:
-    name: CLI Linting
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: dtolnay/rust-toolchain@stable
-        with:
-          components: clippy
-      - uses: Swatinem/rust-cache@v2
-        with:
-          workspaces: cli
-      - uses: oven-sh/setup-bun@v2
-      - run: bun install --frozen-lockfile
-      - run: bunx nx run cli:lint
+      - run: cargo install just
+      - run: just init
+      - run: just lint
 
   deploy:
     name: Deploy app
     runs-on: ubuntu-latest
-    needs: [lint-frontend, lint-backend]
+    needs: [lint]
     if: github.event_name == 'push'
     concurrency: deploy-group
     steps:

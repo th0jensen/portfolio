@@ -4,9 +4,10 @@ ENV PATH="/root/.bun/bin:$PATH"
 WORKDIR /app
 COPY . .
 RUN touch .env
-RUN bun install --frozen-lockfile
 
-RUN bunx nx run portfolio:build --output-style=static
+RUN cargo install just
+RUN just init
+RUN just build
 
 FROM ubuntu:24.04 AS runtime
 RUN apt-get update && apt-get install -y libssl3 ca-certificates && rm -rf /var/lib/apt/lists/*
