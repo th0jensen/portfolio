@@ -5,11 +5,4 @@ import type { Locale } from "./Locale";
 import type { LocaleData } from "./LocaleData";
 import type { Project } from "./Project";
 
-export type Data = {
-  en: LocaleData;
-  no: LocaleData;
-  about: About;
-  projects: Array<Project>;
-  experience_items: Array<ExperienceItem>;
-  locales: Array<Locale>;
-};
+export type Data = { en: LocaleData, no: LocaleData, about: About, projects: Array<Project>, experience_items: Array<ExperienceItem>, locales: Array<Locale>, };

@@ -38,9 +38,4 @@ export type { ApiResponse } from "./ApiResponse.ts";
 export type { EmailPayload } from "./EmailPayload.ts";
 export type { Mutation } from "@qubit-rs/client";
 
-export type QubitServer = {
-  data: Query<[], Data>;
-  experience: Query<[], Array<ExperienceItem>>;
-  render_input: Query<[input: RenderInput], RenderOutput>;
-  dispatch_email: Mutation<[payload: EmailPayload], ApiResponse>;
-};
+export type QubitServer = { data: Query<[], Data>, experience: Query<[], Array<ExperienceItem>>, render_input: Query<[input: RenderInput, ], RenderOutput>, dispatch_email: Mutation<[payload: EmailPayload, ], ApiResponse> };

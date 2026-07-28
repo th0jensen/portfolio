@@ -19,6 +19,9 @@
     "vite": "npm:vite@^8.0.1",
     "zod": "npm:zod@^4.4.0"
   },
+  "lint": {
+    "exclude": ["src/bindings/**"]
+  },
   "fmt": {
     "useTabs": false,
     "lineWidth": 80,
@@ -27,8 +30,7 @@
     "singleQuote": true,
     "proseWrap": "preserve"
   },
-  "nodeModulesDir": "auto",
-  "unstable": ["sloppy-imports"],
+
   "compilerOptions": {
     "lib": [
       "dom",
