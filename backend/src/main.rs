@@ -26,6 +26,7 @@ async fn main() {
         .with_env_filter(env_filter())
         .init();
 
+    dotenvy::dotenv().ok();
     let state = AppState::new().await;
     let (qubit_service, qubit_handle) = router().to_service(state.clone());
     let app: Router = Router::new()

@@ -94,7 +94,6 @@ impl<'a> AppState<'a> {
 
     fn get_env_key(key: &str) -> String {
         let msg = format!("Missing {}", key);
-        dotenvy::dotenv().ok();
         env::var(key).expect(&msg)
     }
 
