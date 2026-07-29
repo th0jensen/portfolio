@@ -90,9 +90,11 @@ impl<'a> AppState<'a> {
             s3,
             bucket,
             renderer: Arc::new(
-                RendererClient::new(RendererConfig::new()).unwrap_or_else(
-                    |error| panic!("failed to start SSR renderer: {error:#}"),
-                ),
+                RendererClient::new(RendererConfig::new())
+                    .await
+                    .unwrap_or_else(|error| {
+                        panic!("failed to start SSR renderer: {error:#}")
+                    }),
             ),
             resend_client: Arc::new(Self::create_resend_client()),
             experience_cache: Arc::new(RwLock::new(ExperienceCache::new())),

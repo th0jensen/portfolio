@@ -112,6 +112,12 @@ function documentShell(
   <meta name="robots" content="index, follow" />
   <script>
     (() => {
+      const navigation = performance.getEntriesByType('navigation')[0];
+      if (navigation?.type === 'reload' && 'scrollRestoration' in history) {
+        history.scrollRestoration = 'manual';
+        scrollTo(0, 0);
+      }
+
       const root = document.documentElement;
       let theme = 'dark';
       try {

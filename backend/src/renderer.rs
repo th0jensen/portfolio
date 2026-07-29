@@ -3,7 +3,7 @@ use std::{
     fs,
     path::{Path, PathBuf},
     process::Stdio,
-    sync::atomic::{AtomicU32, Ordering},
+    sync::atomic::{AtomicBool, AtomicU32, Ordering},
     time::Duration,
 };
 
@@ -61,6 +61,8 @@ pub struct RendererConfig {
     pub origin: String,
     pub assets: Assets,
     pub timeout: Duration,
+    pub cold_timeout: Duration,
+    pub startup_timeout: Duration,
     pub cache_ttl: Duration,
 }
 
@@ -78,6 +80,8 @@ impl RendererConfig {
             origin: get_env_key("AXUM_ORIGIN"),
             assets,
             timeout: Duration::from_secs(5),
+            cold_timeout: Duration::from_secs(15),
+            startup_timeout: Duration::from_secs(20),
             cache_ttl: Duration::from_secs(60),
         }
     }
@@ -87,6 +91,7 @@ impl RendererConfig {
 pub struct RendererClient {
     config: RendererConfig,
     next_id: AtomicU32,
+    warmed: AtomicBool,
     worker: Mutex<Option<RendererWorker>>,
     cache: RwLock<HashMap<RenderRoute, CacheEntry>>,
 }
@@ -105,12 +110,13 @@ pub struct RendererWorker {
 }
 
 impl RendererClient {
-    pub fn new(config: RendererConfig) -> Result<Self> {
-        let worker = Self::spawn_worker(&config, "startup")?;
+    pub async fn new(config: RendererConfig) -> Result<Self> {
+        let worker = Self::spawn_worker(&config, "startup").await?;
 
         Ok(Self {
             config,
             next_id: AtomicU32::new(1),
+            warmed: AtomicBool::new(false),
             worker: Mutex::new(Some(worker)),
             cache: RwLock::new(HashMap::with_capacity(5)),
         })
@@ -136,9 +142,15 @@ impl RendererClient {
         )
         .increment(1);
 
+        let cold = !self.warmed.load(Ordering::Acquire);
+        let render_timeout = if cold {
+            self.config.cold_timeout
+        } else {
+            self.config.timeout
+        };
         let started = Instant::now();
         let lock_started = Instant::now();
-        let mut worker_slot = timeout(self.config.timeout, self.worker.lock())
+        let mut worker_slot = timeout(render_timeout, self.worker.lock())
             .await
             .context("timed out waiting for the renderer worker")?;
         let lock_wait = lock_started.elapsed();
@@ -167,7 +179,8 @@ impl RendererClient {
         }
 
         if worker_slot.is_none() {
-            *worker_slot = Some(Self::spawn_worker(&self.config, "restart")?);
+            *worker_slot =
+                Some(Self::spawn_worker(&self.config, "restart").await?);
         }
 
         let req = RenderInput {
@@ -182,8 +195,7 @@ impl RendererClient {
                 .as_mut()
                 .expect("renderer worker unexpectedly missing");
 
-            let remaining =
-                self.config.timeout.saturating_sub(started.elapsed());
+            let remaining = render_timeout.saturating_sub(started.elapsed());
             timeout(remaining, worker.exchange(&req)).await
         };
 
@@ -198,6 +210,7 @@ impl RendererClient {
                 out
             }
             Ok(Err(err)) => {
+                self.warmed.store(false, Ordering::Release);
                 histogram!(
                     "portfolio_ssr_exchange_duration_seconds",
                     "result" => "error",
@@ -208,6 +221,7 @@ impl RendererClient {
                 return Err(err);
             }
             Err(_) => {
+                self.warmed.store(false, Ordering::Release);
                 histogram!(
                     "portfolio_ssr_exchange_duration_seconds",
                     "result" => "timeout",
@@ -215,17 +229,20 @@ impl RendererClient {
                 )
                 .record(exchange_started.elapsed().as_secs_f64());
                 discard_worker(&mut worker_slot, "timeout").await;
-                bail!("renderer timed out after {:?}", self.config.timeout);
+                bail!("renderer timed out after {render_timeout:?}");
             }
         };
 
         if out.id != id {
+            self.warmed.store(false, Ordering::Release);
             discard_worker(&mut worker_slot, "id_mismatch").await;
             bail!(
                 "renderer response ID mismatch: expected {id}, got {}",
                 out.id
             );
         }
+
+        self.warmed.store(true, Ordering::Release);
 
         if out.error.is_none()
             && out.html.is_some()
@@ -260,7 +277,7 @@ impl RendererClient {
         Some(output)
     }
 
-    fn spawn_worker(
+    async fn spawn_worker(
         config: &RendererConfig,
         reason: &'static str,
     ) -> Result<RendererWorker> {
@@ -277,7 +294,7 @@ impl RendererClient {
             command.spawn().context("failed to start Deno renderer")?;
         counter!("portfolio_ssr_worker_starts_total", "reason" => reason)
             .increment(1);
-        tracing::info!(exe = ?config.exe, reason, "started SSR renderer process");
+        tracing::info!(exe = ?config.exe, reason, "spawned SSR renderer process");
 
         let stdin = child
             .stdin
@@ -289,15 +306,77 @@ impl RendererClient {
             .take()
             .context("Deno renderer stdout was not piped")?;
 
-        Ok(RendererWorker {
+        let mut worker = RendererWorker {
             child,
             stdin,
             stdout: BufReader::new(stdout),
-        })
+        };
+        let started = Instant::now();
+
+        match timeout(config.startup_timeout, worker.wait_until_ready()).await {
+            Ok(Ok(())) => {}
+            Ok(Err(error)) => {
+                let _ = worker.child.kill().await;
+                let _ = worker.child.wait().await;
+                return Err(error);
+            }
+            Err(_) => {
+                let _ = worker.child.kill().await;
+                let _ = worker.child.wait().await;
+                bail!(
+                    "renderer failed to become ready within {:?}",
+                    config.startup_timeout
+                );
+            }
+        }
+
+        histogram!(
+            "portfolio_ssr_worker_startup_duration_seconds",
+            "reason" => reason
+        )
+        .record(started.elapsed().as_secs_f64());
+        tracing::info!(
+            exe = ?config.exe,
+            reason,
+            startup_ms = started.elapsed().as_secs_f64() * 1000.0,
+            "SSR renderer is ready"
+        );
+
+        Ok(worker)
     }
 }
 
+#[derive(Deserialize)]
+#[serde(tag = "type", rename_all = "snake_case")]
+enum RendererStartupMessage {
+    Ready,
+}
+
 impl RendererWorker {
+    async fn wait_until_ready(&mut self) -> Result<()> {
+        let mut line = String::new();
+        let bytes_read = self
+            .stdout
+            .read_line(&mut line)
+            .await
+            .context("failed to read renderer readiness message")?;
+
+        if bytes_read == 0 {
+            let status = self
+                .child
+                .try_wait()
+                .context("failed to inspect Deno renderer status")?;
+            bail!("Deno renderer exited before becoming ready: {status:?}");
+        }
+
+        let message: RendererStartupMessage = serde_json::from_str(&line)
+            .context("Deno renderer returned an invalid readiness message")?;
+
+        match message {
+            RendererStartupMessage::Ready => Ok(()),
+        }
+    }
+
     async fn exchange(
         &mut self,
         request: &RenderInput,

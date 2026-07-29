@@ -2,12 +2,14 @@ import { TextLineStream } from '@std/streams/text-line-stream';
 import type { RenderInput, RenderOutput } from './bindings/index.ts';
 import { render } from './render.ts';
 
+const encoder = new TextEncoder();
+const stdout = Deno.stdout.writable.getWriter();
+
+await stdout.write(encoder.encode('{"type":"ready"}\n'));
+
 const lines = Deno.stdin.readable
     .pipeThrough(new TextDecoderStream())
     .pipeThrough(new TextLineStream());
-
-const encoder = new TextEncoder();
-const stdout = Deno.stdout.writable.getWriter();
 
 for await (const line of lines) {
     if (!line.trim()) continue;
