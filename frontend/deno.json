@@ -5,6 +5,7 @@
         "build": "deno task check && deno compile --quiet --allow-net=127.0.0.1:8080 --output renderer src/render-worker.ts && mv renderer dist/renderer"
     },
     "imports": {
+        "@bjorn3/browser_wasi_shim": "npm:@bjorn3/browser_wasi_shim@^0.4.2",
         "@ilha/router": "npm:@ilha/router@^0.8.9",
         "@ilha/store": "npm:@ilha/store@^0.7.7",
         "@tailwindcss/vite": "npm:@tailwindcss/vite@^4.3.0",

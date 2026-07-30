@@ -3,6 +3,8 @@
   "specifiers": {
     "jsr:@std/bytes@^1.0.6": "1.0.6",
     "jsr:@std/streams@^1.1.1": "1.1.1",
+
+    "npm:@bjorn3/browser_wasi_shim@~0.4.2": "0.4.2",
     "npm:@ilha/router@~0.8.9": "0.8.9_ilha@0.9.5_vite@8.1.5",
     "npm:@ilha/store@~0.7.7": "0.7.7_@ilha+router@0.8.9__ilha@0.9.5__vite@8.1.5_alien-signals@3.2.1_ilha@0.9.5_vite@8.1.5",
     "npm:@qubit-rs/client@~0.4.5": "0.4.5",
@@ -30,6 +32,9 @@
   "npm": {
     "@areia/slots@0.1.9": {
       "integrity": "sha512-DHVQHJW4GAKcz6xQNDwcDWS2diqVV7e52nCAX/6KBA+DF2D0GB5rZWM+/a2silhXXfR+ZPOCh6GPYTXZkVh4FA=="
+    },
+    "@bjorn3/browser_wasi_shim@0.4.2": {
+      "integrity": "sha512-/iHkCVUG3VbcbmEHn5iIUpIrh7a7WPiwZ3sHy4HZKZzBdSadwdddYDZAII2zBvQYV0Lfi8naZngPCN7WPHI/hA=="
     },
     "@emnapi/core@1.11.1": {
       "integrity": "sha512-RSvbQmHzdKzNsLYa/wHrbc3KN4sYLKAdPZxqiM2HATqv/SBk2/ENSHpvXGaLOMcsAyz0poEGqkmmKYG3OWiJEQ==",
@@ -562,11 +567,13 @@
       "integrity": "sha512-ytENFjIJFl2UwYglde2jchW2Hwm4GJFLDiSXWdTrJQBIN9Fcyp7n4DhxJEiWNAJMV1/BqWfW/kkg71UDcHJyTQ=="
     }
   },
+
   "workspace": {
     "members": {
       "frontend": {
         "dependencies": [
           "jsr:@std/streams@^1.1.1",
+          "npm:@bjorn3/browser_wasi_shim@~0.4.2",
           "npm:@ilha/router@~0.8.9",
           "npm:@ilha/store@~0.7.7",
           "npm:@qubit-rs/client@~0.4.5",

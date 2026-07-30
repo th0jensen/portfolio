@@ -1,203 +1,8 @@
-const wasiSuccess = 0;
-const wasiNotImplemented = 52;
+import { ConsoleStdout, File, OpenFile, WASI } from '@bjorn3/browser_wasi_shim';
 
 type MakeJsFfiImports = (
     exports: Record<string, unknown>,
 ) => WebAssembly.ModuleImports;
-
-function createWasi(args: string[]) {
-    let memory: WebAssembly.Memory;
-    const encoder = new TextEncoder();
-    const decoder = new TextDecoder();
-    const encodedArgs = args.map((argument) => encoder.encode(argument));
-
-    // Returns a structured view over the current WebAssembly memory buffer.
-    const dataView = () => new DataView(memory.buffer);
-    // Returns a byte view over the current WebAssembly memory buffer.
-    const memoryBytes = () => new Uint8Array(memory.buffer);
-
-    const functions = {
-        // Reports the number and total encoded size of command-line arguments.
-        args_sizes_get(
-            argumentCountPointer: number,
-            bufferSizePointer: number,
-        ): number {
-            const view = dataView();
-            view.setUint32(argumentCountPointer, encodedArgs.length, true);
-            view.setUint32(
-                bufferSizePointer,
-                encodedArgs.reduce(
-                    (size, argument) => size + argument.length + 1,
-                    0,
-                ),
-                true,
-            );
-            return wasiSuccess;
-        },
-
-        // Writes command-line argument pointers and strings into WebAssembly memory.
-        args_get(argumentPointers: number, argumentBuffer: number): number {
-            const view = dataView();
-            const bytes = memoryBytes();
-            let cursor = argumentBuffer;
-            encodedArgs.forEach((argument, index) => {
-                view.setUint32(argumentPointers + index * 4, cursor, true);
-                bytes.set(argument, cursor);
-                bytes[cursor + argument.length] = 0;
-                cursor += argument.length + 1;
-            });
-            return wasiSuccess;
-        },
-
-        // Reports an empty environment to the WebAssembly program.
-        environ_sizes_get(countPointer: number, sizePointer: number): number {
-            const view = dataView();
-            view.setUint32(countPointer, 0, true);
-            view.setUint32(sizePointer, 0, true);
-            return wasiSuccess;
-        },
-
-        // Completes environment loading without writing any variables.
-        environ_get(): number {
-            return wasiSuccess;
-        },
-
-        // Reports the browser clock resolution in nanoseconds.
-        clock_res_get(_clockId: number, resolutionPointer: number): number {
-            dataView().setBigUint64(resolutionPointer, 1_000_000n, true);
-            return wasiSuccess;
-        },
-
-        // Writes the current realtime or monotonic clock value in nanoseconds.
-        clock_time_get(
-            clockId: number,
-            _precision: bigint,
-            timePointer: number,
-        ): number {
-            const nanoseconds = clockId === 0
-                ? BigInt(Date.now()) * 1_000_000n
-                : BigInt(Math.floor(performance.now() * 1_000_000));
-            dataView().setBigUint64(timePointer, nanoseconds, true);
-            return wasiSuccess;
-        },
-
-        // Fills a WebAssembly memory range with cryptographically secure random bytes.
-        random_get(bufferPointer: number, bufferLength: number): number {
-            const target = new Uint8Array(
-                memory.buffer,
-                bufferPointer,
-                bufferLength,
-            );
-            for (let offset = 0; offset < target.length; offset += 65_536) {
-                crypto.getRandomValues(
-                    target.subarray(
-                        offset,
-                        Math.min(offset + 65_536, target.length),
-                    ),
-                );
-            }
-            return wasiSuccess;
-        },
-
-        // Decodes WASI output buffers and forwards them to the browser console.
-        fd_write(
-            fd: number,
-            iovecsPointer: number,
-            iovecsLength: number,
-            writtenPointer: number,
-        ): number {
-            const view = dataView();
-            let written = 0;
-            let output = '';
-            for (let i = 0; i < iovecsLength; i += 1) {
-                const iovec = iovecsPointer + i * 8;
-                const bufferPointer = view.getUint32(iovec, true);
-                const bufferLength = view.getUint32(iovec + 4, true);
-                output += decoder.decode(
-                    new Uint8Array(memory.buffer, bufferPointer, bufferLength),
-                    { stream: true },
-                );
-                written += bufferLength;
-            }
-            view.setUint32(writtenPointer, written, true);
-            if (output) {
-                (fd === 2 ? console.error : console.log)(
-                    output.replace(/\n$/, ''),
-                );
-            }
-            return wasiSuccess;
-        },
-
-        // Handles standard input as an immediate end-of-file.
-        fd_read(
-            _fd: number,
-            _iovecsPointer: number,
-            _iovecsLength: number,
-            readPointer: number,
-        ): number {
-            dataView().setUint32(readPointer, 0, true);
-            return wasiSuccess;
-        },
-
-        // Writes basic character-device metadata for a standard file descriptor.
-        fd_fdstat_get(_fd: number, statPointer: number): number {
-            const view = dataView();
-            new Uint8Array(memory.buffer, statPointer, 24).fill(0);
-            view.setUint8(statPointer, 2);
-            view.setBigUint64(statPointer + 8, BigInt.asUintN(64, -1n), true);
-            view.setBigUint64(statPointer + 16, BigInt.asUintN(64, -1n), true);
-            return wasiSuccess;
-        },
-
-        // Accepts file-descriptor close requests without browser-side resources.
-        fd_close(): number {
-            return wasiSuccess;
-        },
-
-        // Treats file-descriptor synchronization as already complete.
-        fd_sync(): number {
-            return wasiSuccess;
-        },
-
-        // Accepts file-descriptor flag changes that have no browser equivalent.
-        fd_fdstat_set_flags(): number {
-            return wasiSuccess;
-        },
-
-        // Allows the single-threaded WASI scheduler to yield successfully.
-        sched_yield(): number {
-            return wasiSuccess;
-        },
-
-        // Converts a WASI process exit into a visible JavaScript error.
-        proc_exit(exitCode: number): never {
-            throw new Error(`WASI process exited with code ${exitCode}`);
-        },
-    };
-
-    const imports = new Proxy(
-        functions as unknown as Record<string, WebAssembly.ImportValue>,
-        {
-            // Returns implemented imports or an ENOSYS stub for unused WASI calls.
-            get(target, property: string) {
-                return target[property] ?? (() => wasiNotImplemented);
-            },
-        },
-    );
-
-    return {
-        imports,
-        // Attaches linear memory and invokes the reactor initialization export once.
-        initialize(instance: WebAssembly.Instance): void {
-            const exports = instance.exports as WebAssembly.Exports & {
-                memory: WebAssembly.Memory;
-                _initialize?: () => void;
-            };
-            memory = exports.memory;
-            exports._initialize?.();
-        },
-    };
-}
 
 export type GridDescriptor = {
     pointer: number;
@@ -417,22 +222,32 @@ export function getAutomaton(): Promise<AutomatonExports> {
 }
 
 export async function loadWasm(): Promise<AutomatonExports> {
-    const wasi = createWasi(['automaton']);
+    const wasi = new WASI(
+        ['automaton'],
+        [],
+        [
+            new OpenFile(new File([])),
+            ConsoleStdout.lineBuffered((line) => console.log(line)),
+            ConsoleStdout.lineBuffered((line) => console.error(line)),
+        ],
+    );
     const exportsForImports: Record<string, unknown> = {};
 
-    // Kept non-literal so the build system does not resolve it locally.
     const jsFfiUrl = '/static/automaton/automaton.js';
-
-    const jsFfiModule = (await import(jsFfiUrl)) as {
-        default: MakeJsFfiImports;
-    };
+    const wasmUrl = '/static/automaton/automaton.wasm';
+    const [jsFfiModule, response] = await Promise.all([
+        // This module is generated at deployment time, so Vite must leave its
+        // URL external rather than resolving or bundling it at build time.
+        import(/* @vite-ignore */ jsFfiUrl) as Promise<{
+            default: MakeJsFfiImports;
+        }>,
+        fetch(wasmUrl),
+    ]);
 
     const imports = {
         ghc_wasm_jsffi: jsFfiModule.default(exportsForImports),
-        wasi_snapshot_preview1: wasi.imports,
+        wasi_snapshot_preview1: wasi.wasiImport,
     };
-
-    const response = await fetch('/static/automaton/automaton.wasm');
 
     if (!response.ok) {
         throw new Error(
@@ -440,28 +255,20 @@ export async function loadWasm(): Promise<AutomatonExports> {
         );
     }
 
-    let instance: WebAssembly.Instance;
+    const contentType = response.headers.get('content-type')
+        ?.split(';', 1)[0]
+        .trim();
+    const { instance } = contentType === 'application/wasm'
+        ? await WebAssembly.instantiateStreaming(response, imports)
+        : await WebAssembly.instantiate(await response.arrayBuffer(), imports);
 
-    try {
-        ({ instance } = await WebAssembly.instantiateStreaming(
-            response.clone(),
-            imports,
-        ));
-    } catch (error) {
-        if (!(error instanceof TypeError)) {
-            throw error;
-        }
+    const automatonExports = instance.exports as AutomatonExports & {
+        _initialize?: () => unknown;
+    };
+    Object.assign(exportsForImports, automatonExports);
+    wasi.initialize({ exports: automatonExports });
 
-        ({ instance } = await WebAssembly.instantiate(
-            await response.arrayBuffer(),
-            imports,
-        ));
-    }
-
-    Object.assign(exportsForImports, instance.exports);
-    wasi.initialize(instance);
-
-    return instance.exports as AutomatonExports;
+    return automatonExports;
 }
 
 /**
