@@ -1,5 +1,0 @@
-{
-  "workspace": ["./frontend"],
-  "nodeModulesDir": "auto",
-  "unstable": ["sloppy-imports"]
-}

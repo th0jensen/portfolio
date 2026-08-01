@@ -3,8 +3,14 @@ lint:
     deno lint
     deno task --frozen check
 
+dev:
+    deno task build
+
 build:
     deno task --frozen build
 
-install:
+init:
     deno install --frozen
+
+install:
+    deno install

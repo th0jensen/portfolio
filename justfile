@@ -4,7 +4,8 @@ mod cli
 
 lint: backend::lint frontend::lint cli::lint
 build: frontend::build backend::build
-dev: backend::dev
-init: frontend::install
+dev: frontend::dev backend::dev
+init: frontend::init
+install: frontend::install
 clean: backend::clean cli::clean
 ci: lint build
