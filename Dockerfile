@@ -1,32 +1,33 @@
+FROM rust:1.95.0-bookworm AS just-builder
+RUN cargo install just --version 1.57.0 --locked
+
 FROM denoland/deno:2.9.4 AS frontend-builder
 USER root
-WORKDIR /app
-
-COPY deno.json deno.lock ./
-COPY frontend/deno.json ./frontend/deno.json
+COPY --from=just-builder /usr/local/cargo/bin/just /usr/local/bin/just
 WORKDIR /app/frontend
-RUN deno install --frozen
 
-WORKDIR /app
-COPY frontend ./frontend
-WORKDIR /app/frontend
-RUN deno task --frozen build \
+COPY frontend/deno.json frontend/deno.lock frontend/justfile ./
+RUN just init
+
+COPY frontend/ ./
+RUN just build \
     && mkdir -p /output \
     && mv dist/renderer /output/renderer
 
 FROM rust:1.95.0-bookworm AS backend-builder
+COPY --from=just-builder /usr/local/cargo/bin/just /usr/local/bin/just
 WORKDIR /app/backend
 
-COPY backend/Cargo.toml backend/Cargo.lock ./
+COPY backend/Cargo.toml backend/Cargo.lock backend/justfile ./
 RUN mkdir src \
     && printf 'fn main() {}\n' > src/main.rs \
-    && cargo build --release --locked \
+    && just build \
     && rm -rf src
 
 COPY backend/src ./src
 COPY backend/data ./data
 RUN touch src/main.rs \
-    && cargo build --release --locked \
+    && just build \
     && cp target/release/portfolio-backend /portfolio-backend
 
 FROM debian:bookworm-slim AS runtime
