@@ -1,10 +1,12 @@
 import ilha, { batch } from 'ilha';
 import { Check, CircleDot } from 'lucide';
+import { z } from 'zod';
+import type { ApiResponse } from '../bindings/ApiResponse.ts';
 import type { Data } from '../bindings/index.ts';
+import type { EmailPayload } from '../bindings/EmailPayload.ts';
 import PageHeader from '../components/page-header.tsx';
 import Icon from '../lib/icon.tsx';
 import { locale } from '../lib/locale.ts';
-import api from '../lib/rpc.ts';
 
 type PageInput = {
   data: {
@@ -32,6 +34,7 @@ const contactCopy = {
     message: 'Message',
     sending: 'Sending…',
     send: 'Send message',
+    invalid: 'Check the fields and try again.',
   },
   no: {
     description: 'Åpen for roller innen systemutvikling.',
@@ -51,6 +54,7 @@ const contactCopy = {
     message: 'Melding',
     sending: 'Sender…',
     send: 'Send melding',
+    invalid: 'Sjekk feltene og prøv igjen.',
   },
 } as const;
 
@@ -58,6 +62,15 @@ const inputClass =
   'h-9 gap-1.5 rounded-lg border-0 bg-areia-control-background px-3 text-base text-areia-default ring ring-areia-divider outline-none placeholder:text-areia-placeholder focus:ring-[1.5px] focus:ring-areia-ring/50 focus:outline-none disabled:cursor-not-allowed disabled:text-areia-disabled disabled:opacity-50';
 const textareaClass =
   'w-full resize-vertical rounded-lg border-0 bg-areia-control-background px-3 py-2 text-base text-areia-default ring ring-areia-divider outline-none placeholder:text-areia-placeholder focus:ring-[1.5px] focus:ring-areia-ring/50 focus:outline-none disabled:cursor-not-allowed disabled:text-areia-disabled disabled:opacity-50';
+const emailPayloadSchema = z.object({
+  full_name: z.string().trim().min(1),
+  email: z.string().trim().email(),
+  content: z.string().trim().min(10),
+}) satisfies z.ZodType<EmailPayload>;
+const apiResponseSchema = z.object({
+  ok: z.boolean(),
+  message: z.string(),
+}) satisfies z.ZodType<ApiResponse>;
 
 export default ilha
   .input<PageInput>()
@@ -71,11 +84,18 @@ export default ilha
     const form = event.target as HTMLFormElement;
     if (!form.reportValidity()) return;
     const fields = new FormData(form);
-    const payload = {
+    const parsed = emailPayloadSchema.safeParse({
       full_name: String(fields.get('full_name') ?? ''),
       email: String(fields.get('email') ?? ''),
       content: String(fields.get('content') ?? ''),
-    };
+    });
+    if (!parsed.success) {
+      batch(() => {
+        state.status('error');
+        state.message(contactCopy[locale()].invalid);
+      });
+      return;
+    }
 
     batch(() => {
       state.status('loading');
@@ -83,7 +103,12 @@ export default ilha
     });
 
     try {
-      const result = await api.dispatch_email.mutate(payload);
+      const response = await fetch('/contact', {
+        method: 'POST',
+        headers: { 'content-type': 'application/json' },
+        body: JSON.stringify(parsed.data),
+      });
+      const result = apiResponseSchema.parse(await response.json());
       batch(() => {
         state.message(result.message);
         state.status(result.ok ? 'success' : 'error');

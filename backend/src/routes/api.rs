@@ -7,17 +7,22 @@ use std::{
 use qubit::{Router, handler};
 use serde::Deserialize;
 
-use crate::{AppState, routes::mail::dispatch_email, types};
+#[cfg(debug_assertions)]
+use crate::routes::mail;
+use crate::{AppState, types};
 
 pub fn router() -> Router<AppState<'static>> {
     let router = Router::new()
         .handler(data)
         .handler(experience)
-        .handler(render_input)
-        .handler(dispatch_email);
+        .handler(render_input);
 
     #[cfg(debug_assertions)]
-    router.write_bindings_to_dir("../frontend/src/bindings");
+    {
+        let out_dir = std::path::Path::new("../frontend/src/bindings");
+        router.write_bindings_to_dir(out_dir);
+        mail::write_bindings_to_dir(out_dir);
+    }
     router
 }
 
@@ -27,6 +32,7 @@ async fn data(ctx: AppState<'static>) -> types::Data {
     (*ctx.data).clone()
 }
 
+// this is here purely to generate ts bindings
 #[handler(query)]
 async fn render_input(
     _ctx: AppState<'static>,

@@ -15,7 +15,8 @@
     "ilha": "npm:ilha@^0.9.5",
     "lucide": "npm:lucide@^1.17.0",
     "tailwindcss": "npm:tailwindcss@^4.3.3",
-    "vite": "npm:vite@^8.0.1"
+    "vite": "npm:vite@^8.0.1",
+    "zod": "npm:zod@^4.0.0"
   },
   "lint": {
     "exclude": ["src/bindings/**"]

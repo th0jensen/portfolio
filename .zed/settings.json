@@ -14,6 +14,7 @@
   },
   "languages": {
     "TypeScript": {
+      "tab_size": 2,
       "language_servers": [
           "!vtsls",
           "!eslint",
@@ -25,6 +26,7 @@
       "prettier": { "allowed": false }
     },
     "JavaScript": {
+      "tab_size": 2,
       "language_servers": [
           "!vtsls",
           "!eslint",
@@ -36,6 +38,7 @@
       "prettier": { "allowed": false }
     },
     "TSX": {
+      "tab_size": 2,
       "language_servers": [
           "!vtsls",
           "!eslint",

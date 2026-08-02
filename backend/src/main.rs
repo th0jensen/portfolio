@@ -1,5 +1,5 @@
 use crate::{
-    routes::{api::router, assets, pages},
+    routes::{api::router, assets, mail, pages},
     state::{AppState, env_filter, headers, metrics_handler},
 };
 
@@ -31,6 +31,7 @@ async fn main() {
     let app: Router = Router::new()
         .merge(assets::router(State(&state)))
         .merge(page_router)
+        .merge(mail::router())
         .fallback(pages::error_handler)
         .nest_service("/rpc", qubit_service)
         .layer(state.prometheus_layer.as_ref().clone())
@@ -42,6 +43,11 @@ async fn main() {
     tracing::info!(addr = %addr, "server starting");
 
     let listener = tokio::net::TcpListener::bind(&addr).await.unwrap();
-    axum::serve(listener, app).await.unwrap();
+    axum::serve(
+        listener,
+        app.into_make_service_with_connect_info::<SocketAddr>(),
+    )
+    .await
+    .unwrap();
     qubit_handle.stop().unwrap();
 }
