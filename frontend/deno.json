@@ -1,7 +1,7 @@
 {
   "tasks": {
-    "dev": "deno run -A --unstable-raw-imports vite",
-    "check": "vite build && deno check --unstable-raw-imports src/main.ts src/render-worker.ts",
+    "dev": "deno run -A vite",
+    "check": "vite build && deno check src/main.ts src/render-worker.ts",
     "build": "deno task check && deno compile --quiet --allow-net=127.0.0.1:8080 --output renderer src/render-worker.ts && mv renderer dist/renderer"
   },
   "imports": {
