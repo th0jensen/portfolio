@@ -1,28 +1,21 @@
 {
   "version": "5",
   "specifiers": {
-    "jsr:@nick/clsx@~0.3.1": "0.3.1",
     "jsr:@std/bytes@^1.0.6": "1.0.6",
     "jsr:@std/streams@^1.1.1": "1.1.1",
-    "jsr:@zod/zod@^4.3.3": "4.4.3",
     "npm:@bjorn3/browser_wasi_shim@~0.4.2": "0.4.2",
     "npm:@deno/vite-plugin@^2.0.3": "2.0.3_vite@8.1.5",
     "npm:@ilha/router@0.8.9": "0.8.9_ilha@0.9.5_vite@8.1.5",
     "npm:@ilha/router@~0.8.9": "0.8.9_ilha@0.9.5_vite@8.1.5",
-    "npm:@ilha/store@~0.7.7": "0.7.7_@ilha+router@0.8.9__ilha@0.9.5__vite@8.1.5_alien-signals@3.2.1_ilha@0.9.5_vite@8.1.5",
     "npm:@qubit-rs/client@~0.4.5": "0.4.5",
     "npm:@tailwindcss/vite@^4.3.0": "4.3.3_vite@8.1.5",
     "npm:areia@~0.2.2": "0.2.2_ilha@0.9.5_sonner@2.0.7__react@19.2.8__react-dom@19.2.8___react@19.2.8_tailwindcss@4.3.3_react@19.2.8_react-dom@19.2.8__react@19.2.8",
     "npm:ilha@~0.9.5": "0.9.5",
     "npm:lucide@^1.17.0": "1.27.0",
-    "npm:tailwind-merge@^3.6.0": "3.6.0",
     "npm:tailwindcss@^4.3.3": "4.3.3",
     "npm:vite@^8.0.1": "8.1.5"
   },
   "jsr": {
-    "@nick/clsx@0.3.1": {
-      "integrity": "6c7bfc9217a7e5fbf7b0c283fab25336e428f74baf9c011e5c46aa8121eb6713"
-    },
     "@std/bytes@1.0.6": {
       "integrity": "f6ac6adbd8ccd99314045f5703e23af0a68d7f7e58364b47d2c7f408aeb5820a"
     },
@@ -31,9 +24,6 @@
       "dependencies": [
         "jsr:@std/bytes"
       ]
-    },
-    "@zod/zod@4.4.3": {
-      "integrity": "4712ac0967efaa718b37c36eaffb4e1d4457e1a266aef6efb3ab36f54a6fefe4"
     }
   },
   "npm": {
@@ -76,18 +66,6 @@
         "ilha",
         "rou3",
         "unplugin"
-      ]
-    },
-    "@ilha/store@0.7.7_@ilha+router@0.8.9__ilha@0.9.5__vite@8.1.5_alien-signals@3.2.1_ilha@0.9.5_vite@8.1.5": {
-      "integrity": "sha512-f3Pq7APJCLolAflNa2e9gpVQ0B1/1ekfJ/Q7JjfaUlyJRb/BOwoodS6f1SCy4oIKQD9GZz862Ya1EztDaFJP2w==",
-      "dependencies": [
-        "@ilha/router",
-        "alien-signals",
-        "ilha"
-      ],
-      "optionalPeers": [
-        "@ilha/router",
-        "ilha"
       ]
     },
     "@jridgewell/gen-mapping@0.3.13": {
@@ -610,19 +588,15 @@
   },
   "workspace": {
     "dependencies": [
-      "jsr:@nick/clsx@~0.3.1",
       "jsr:@std/streams@^1.1.1",
-      "jsr:@zod/zod@^4.3.3",
       "npm:@bjorn3/browser_wasi_shim@~0.4.2",
       "npm:@deno/vite-plugin@^2.0.3",
       "npm:@ilha/router@~0.8.9",
-      "npm:@ilha/store@~0.7.7",
       "npm:@qubit-rs/client@~0.4.5",
       "npm:@tailwindcss/vite@^4.3.0",
       "npm:areia@~0.2.2",
       "npm:ilha@~0.9.5",
       "npm:lucide@^1.17.0",
-      "npm:tailwind-merge@^3.6.0",
       "npm:tailwindcss@^4.3.3",
       "npm:vite@^8.0.1"
     ]

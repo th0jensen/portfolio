@@ -1,45 +1,33 @@
 import type { IconNode } from 'lucide';
 
-function parseAttrs(attrs: string): Record<string, string> {
-    const result: Record<string, string> = {};
-
-    for (const match of attrs.matchAll(/([\w:-]+)="([^"]*)"/g)) {
-        result[match[1]] = match[2];
-    }
-
-    return result;
-}
-
 export default function Icon({
-    node,
-    size = 24,
-    attrs = '',
+  node,
+  size = 24,
+  class: className,
 }: {
-    node: IconNode;
-    size?: number;
-    attrs?: string;
+  node: IconNode;
+  size?: number;
+  class?: string;
 }) {
-    const svgAttrs = parseAttrs(attrs);
-
-    return (
-        <svg
-            xmlns='http://www.w3.org/2000/svg'
-            width={size}
-            height={size}
-            aria-hidden='true'
-            focusable='false'
-            viewBox='0 0 24 24'
-            fill='none'
-            stroke='currentColor'
-            stroke-width='2'
-            stroke-linecap='round'
-            stroke-linejoin='round'
-            {...svgAttrs}
-        >
-            {node.map(([tag, props], index) => {
-                const Tag = tag;
-                return <Tag key={`${tag}-${index}`} {...props} />;
-            })}
-        </svg>
-    );
+  return (
+    <svg
+      xmlns='http://www.w3.org/2000/svg'
+      width={size}
+      height={size}
+      aria-hidden='true'
+      focusable='false'
+      viewBox='0 0 24 24'
+      fill='none'
+      stroke='currentColor'
+      stroke-width='2'
+      stroke-linecap='round'
+      stroke-linejoin='round'
+      class={className}
+    >
+      {node.map(([tag, props], index) => {
+        const Tag = tag;
+        return <Tag key={`${tag}-${index}`} {...props} />;
+      })}
+    </svg>
+  );
 }

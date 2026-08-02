@@ -77,6 +77,8 @@ pub struct ExperienceItem {
     pub zed_extension_url: Option<String>,
     #[ts(optional)]
     pub github_url: Option<String>,
+    #[ts(optional)]
+    pub featured: Option<bool>,
     #[ts(skip)]
     pub zed_extension_id: Option<String>,
 }
@@ -142,6 +144,8 @@ pub struct Project {
     pub description: String,
     pub source_type: String,
     pub source_link: String,
+    #[ts(optional)]
+    pub featured: Option<bool>,
 }
 
 #[derive(ts_rs::TS, Clone, Serialize, Deserialize, Debug)]

@@ -44,7 +44,7 @@ async fn render_input(
 
 #[handler(query)]
 async fn experience(ctx: AppState<'static>) -> Vec<types::ExperienceItem> {
-    const TTL: Duration = Duration::from_secs(3 * 24 * 60 * 60);
+    const TTL: Duration = Duration::from_secs(6 * 60 * 60);
 
     let cached = {
         let cache = ctx.experience_cache.read().await;
@@ -169,12 +169,22 @@ async fn fetch_repo_info(
     let url = format!("https://api.github.com/repos/{}", repo);
 
     let repo_info = async {
-        let response = client
-            .get(&url)
-            .bearer_auth(api_key.as_str())
+        let mut request = client.get(&url);
+        if !api_key.trim().is_empty() {
+            request = request.bearer_auth(api_key.as_str());
+        }
+
+        let response = request
             .send()
             .await
             .map_err(|e| tracing::error!(repo, error = %e, "Failed to send request"))
+            .ok()?;
+
+        let response = response
+            .error_for_status()
+            .map_err(|e| {
+                tracing::error!(repo, error = %e, "GitHub API returned an error")
+            })
             .ok()?;
 
         response

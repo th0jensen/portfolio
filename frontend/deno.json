@@ -1,53 +1,49 @@
 {
-    "tasks": {
-        "dev": "deno run -A --unstable-raw-imports vite",
-        "check": "vite build && deno check --unstable-raw-imports src/main.ts src/render-worker.ts",
-        "build": "deno task check && deno compile --quiet --allow-net=127.0.0.1:8080 --output renderer src/render-worker.ts && mv renderer dist/renderer"
-    },
-    "imports": {
-        "@bjorn3/browser_wasi_shim": "npm:@bjorn3/browser_wasi_shim@^0.4.2",
-        "@deno/vite-plugin": "npm:@deno/vite-plugin@^2.0.3",
-        "@ilha/router": "npm:@ilha/router@^0.8.9",
-        "@ilha/store": "npm:@ilha/store@^0.7.7",
-        "@tailwindcss/vite": "npm:@tailwindcss/vite@^4.3.0",
-        "@std/streams": "jsr:@std/streams@^1.1.1",
-        "@qubit-rs/client": "npm:@qubit-rs/client@^0.4.5",
-        "areia": "npm:areia@^0.2.2",
-        "clsx": "jsr:@nick/clsx@^0.3.1",
-        "ilha": "npm:ilha@^0.9.5",
-        "lucide": "npm:lucide@^1.17.0",
-        "tailwind-merge": "npm:tailwind-merge@^3.6.0",
-        "tailwindcss": "npm:tailwindcss@^4.3.3",
-        "vite": "npm:vite@^8.0.1",
-        "zod": "jsr:@zod/zod@^4.3.3"
-    },
-    "lint": {
-        "exclude": ["src/bindings/**"]
-    },
-    "fmt": {
-        "useTabs": false,
-        "lineWidth": 80,
-        "indentWidth": 4,
-        "semiColons": true,
-        "singleQuote": true,
-        "proseWrap": "preserve"
-    },
-    "compilerOptions": {
-        "lib": [
-            "dom",
-            "dom.iterable",
-            "dom.asynciterable",
-            "deno.ns"
-        ],
-        "jsx": "react-jsx",
-        "jsxImportSource": "ilha"
-    },
-    "include": ["src/"],
-    "exclude": [
-        "src/bindings/*.ts",
-        ".ilha",
-        "dist"
+  "tasks": {
+    "dev": "deno run -A --unstable-raw-imports vite",
+    "check": "vite build && deno check --unstable-raw-imports src/main.ts src/render-worker.ts",
+    "build": "deno task check && deno compile --quiet --allow-net=127.0.0.1:8080 --output renderer src/render-worker.ts && mv renderer dist/renderer"
+  },
+  "imports": {
+    "@bjorn3/browser_wasi_shim": "npm:@bjorn3/browser_wasi_shim@^0.4.2",
+    "@deno/vite-plugin": "npm:@deno/vite-plugin@^2.0.3",
+    "@ilha/router": "npm:@ilha/router@^0.8.9",
+    "@tailwindcss/vite": "npm:@tailwindcss/vite@^4.3.0",
+    "@std/streams": "jsr:@std/streams@^1.1.1",
+    "@qubit-rs/client": "npm:@qubit-rs/client@^0.4.5",
+    "areia": "npm:areia@^0.2.2",
+    "ilha": "npm:ilha@^0.9.5",
+    "lucide": "npm:lucide@^1.17.0",
+    "tailwindcss": "npm:tailwindcss@^4.3.3",
+    "vite": "npm:vite@^8.0.1"
+  },
+  "lint": {
+    "exclude": ["src/bindings/**"]
+  },
+  "fmt": {
+    "useTabs": false,
+    "lineWidth": 100,
+    "indentWidth": 2,
+    "semiColons": true,
+    "singleQuote": true,
+    "proseWrap": "preserve"
+  },
+  "compilerOptions": {
+    "lib": [
+      "dom",
+      "dom.iterable",
+      "dom.asynciterable",
+      "deno.ns"
     ],
-    "nodeModulesDir": "auto",
-    "unstable": ["sloppy-imports"]
+    "jsx": "react-jsx",
+    "jsxImportSource": "ilha"
+  },
+  "include": ["src/"],
+  "exclude": [
+    "src/bindings/*.ts",
+    ".ilha",
+    "dist"
+  ],
+  "nodeModulesDir": "auto",
+  "unstable": ["sloppy-imports"]
 }
