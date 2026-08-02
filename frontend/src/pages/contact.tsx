@@ -226,7 +226,7 @@ export default ilha
                   {message && <p class={statusClass}>{message}</p>}
                 </div>
                 <button
-                  class='group flex size-9 min-h-11 min-w-36 shrink-0 cursor-pointer select-none items-center justify-center gap-1.5 rounded-sm border-0 bg-areia-primary p-0 px-7 text-base font-bold !text-areia-primary-foreground shadow-xs hover:bg-areia-primary/90 focus:ring-areia-ring/50 focus:outline-none focus-visible:ring-2 focus-visible:ring-areia-ring disabled:cursor-not-allowed disabled:bg-areia-primary/50 disabled:text-areia-disabled'
+                  class='group flex size-9 min-h-11 min-w-36 shrink-0 cursor-pointer select-none items-center justify-center gap-1.5 rounded-sm border-0 bg-areia-primary p-0 px-7 text-base font-bold text-areia-primary-foreground! shadow-xs hover:bg-areia-primary/90 focus:ring-areia-ring/50 focus:outline-none focus-visible:ring-2 focus-visible:ring-areia-ring disabled:cursor-not-allowed disabled:bg-areia-primary/50 disabled:text-areia-disabled'
                   disabled={status === 'loading'}
                   type='submit'
                 >

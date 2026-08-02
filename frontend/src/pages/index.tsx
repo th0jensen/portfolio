@@ -1,6 +1,6 @@
 import { Link, LinkButton } from 'areia';
 import ilha from 'ilha';
-import { ArrowRight, ExternalLink, Play } from 'lucide';
+import { ArrowRight, Download, ExternalLink, Play, Star } from 'lucide';
 import type { Data, ExperienceItem } from '../bindings/index.ts';
 import ProjectCard from '../components/project-card.tsx';
 import SectionHeader from '../components/section-header.tsx';
@@ -75,6 +75,8 @@ export default ilha
       (sum, item) => sum + Number(item.deletions ?? 0),
       0,
     );
+    const extensionDownloads = Number(extensionItem?.downloads ?? 0);
+    const zedStars = Number(prItems[0]?.stars ?? 0);
 
     const personalProjects = data.projects.filter((project) => !project.featured);
 
@@ -82,35 +84,65 @@ export default ilha
       {
         label: copy.prs,
         value: String(prItems.length),
+        show: prItems.length > 0,
       },
       {
         label: copy.lines,
         value: (
           <span
             class='inline-flex flex-wrap items-baseline gap-x-2'
-            aria-label={`${copy.plus} ${String(prAdditions)}, ${copy.minus} ${String(prDeletions)}`}
+            aria-label={[
+              prAdditions > 0 && `${copy.plus} ${String(prAdditions)}`,
+              prDeletions > 0 && `${copy.minus} ${String(prDeletions)}`,
+            ].filter(Boolean).join(', ')}
           >
-            <span class='text-[hsl(142_68%_28%)] dark:text-[hsl(142_52%_68%)]'>
-              +{String(prAdditions)}
-            </span>
-            <span aria-hidden='true' class='text-muted-foreground'>
-              /
-            </span>
-            <span class='text-[hsl(2_72%_42%)] dark:text-[hsl(2_78%_72%)]'>
-              −{String(prDeletions)}
-            </span>
+            {prAdditions > 0 && (
+              <span class='text-diff-addition'>
+                +{String(prAdditions)}
+              </span>
+            )}
+            {prAdditions > 0 && prDeletions > 0 && (
+              <span aria-hidden='true' class='text-muted-foreground'>
+                /
+              </span>
+            )}
+            {prDeletions > 0 && (
+              <span class='text-diff-deletion'>
+                −{String(prDeletions)}
+              </span>
+            )}
           </span>
         ),
+        show: prAdditions > 0 || prDeletions > 0,
       },
       {
         label: copy.downloads,
-        value: formatCompact(extensionItem?.downloads ?? 0),
+        value: (
+          <span class='inline-flex items-center gap-2'>
+            <Icon node={Download} size={18} />
+            {formatCompact(extensionDownloads)}
+          </span>
+        ),
+        show: extensionDownloads > 0,
       },
       {
         label: 'zed-industries/zed',
-        value: `★ ${formatCompact(prItems[0]?.stars ?? 0)}`,
+        value: (
+          <span class='inline-flex items-center gap-2'>
+            <Icon node={Star} size={18} />
+            {formatCompact(zedStars)}
+          </span>
+        ),
+        show: zedStars > 0,
       },
-    ];
+    ].filter((stat) => stat.show);
+    const zedStatColumns = zedStats.length === 1
+      ? 'grid-cols-1'
+      : zedStats.length === 2
+      ? 'grid-cols-2'
+      : zedStats.length === 3
+      ? 'grid-cols-2 sm:grid-cols-3'
+      : 'grid-cols-2 sm:grid-cols-4';
 
     return (
       <>
@@ -120,21 +152,21 @@ export default ilha
 
           <div class='mx-auto grid w-full max-w-7xl grid-cols-1 px-5 sm:px-8 lg:min-h-152 lg:grid-cols-[minmax(0,1.2fr)_minmax(19rem,0.8fr)] lg:px-10'>
             <div class='contents lg:flex lg:flex-col lg:justify-center lg:border-r lg:border-border lg:py-24 lg:pr-16'>
-              <div class='order-1 mb-6 flex items-center gap-2 pt-8 whitespace-nowrap font-mono text-[0.6875rem] uppercase tracking-[0.12em] text-muted-foreground sm:mb-8 sm:gap-3 sm:pt-12 sm:tracking-[0.16em] lg:order-none lg:pt-0'>
+              <div class='order-1 mb-6 flex items-center gap-2 pt-8 whitespace-nowrap font-mono text-[0.6875rem] uppercase tracking-[0.12em] text-muted-foreground sm:mb-8 sm:gap-3 sm:pt-12 sm:tracking-[0.16em] lg:order-0 lg:pt-0'>
                 <span class='h-2 w-2 bg-primary' />
                 <span>{loc.hero.role}</span>
                 <span class='h-px min-w-3 flex-1 bg-border sm:max-w-10' />
                 <span>Rust · Native</span>
               </div>
 
-              <h1 class='order-2 max-w-4xl text-[clamp(3.2rem,8vw,6.8rem)] font-bold leading-[0.88] tracking-[-0.065em] text-foreground lg:order-none'>
+              <h1 class='order-2 max-w-4xl text-[clamp(3.2rem,8vw,6.8rem)] font-bold leading-[0.88] tracking-[-0.065em] text-foreground lg:order-0'>
                 {name}.
               </h1>
-              <p class='order-4 mt-6 max-w-2xl text-lg leading-8 text-muted-foreground sm:mt-8 sm:text-xl sm:leading-9 lg:order-none'>
+              <p class='order-4 mt-6 max-w-2xl text-lg leading-8 text-muted-foreground sm:mt-8 sm:text-xl sm:leading-9 lg:order-0'>
                 {loc.hero.description}
               </p>
 
-              <div class='order-5 mt-7 mb-8 grid w-full grid-cols-2 gap-2.5 sm:mt-9 sm:mb-12 sm:flex sm:w-auto sm:flex-wrap sm:items-center sm:gap-3 lg:order-none lg:mb-0'>
+              <div class='order-5 mt-7 mb-8 grid w-full grid-cols-2 gap-2.5 sm:mt-9 sm:mb-12 sm:flex sm:w-auto sm:flex-wrap sm:items-center sm:gap-3 lg:order-0 lg:mb-0'>
                 <LinkButton
                   href='/projects'
                   variant='primary'
@@ -167,7 +199,7 @@ export default ilha
               </div>
             </div>
 
-            <div class='relative order-3 mt-8 flex items-center px-1 sm:mt-10 sm:px-12 lg:order-none lg:mt-0 lg:min-h-0 lg:items-end lg:px-10 lg:pt-20 lg:pb-0'>
+            <div class='relative order-3 mt-8 flex items-center px-1 sm:mt-10 sm:px-12 lg:order-0 lg:mt-0 lg:min-h-0 lg:items-end lg:px-10 lg:pt-20 lg:pb-0'>
               <div class='relative mx-auto w-full max-w-xl lg:max-w-sm'>
                 <div class='absolute -top-3 -right-3 h-16 w-16 border-t border-r border-primary lg:-top-5 lg:-right-4 lg:h-24 lg:w-24' />
                 <div class='absolute -bottom-3 -left-3 h-16 w-16 border-b border-l border-primary lg:-bottom-4 lg:-left-4 lg:h-24 lg:w-24' />
@@ -221,18 +253,22 @@ export default ilha
               description={copy.zedDescription}
             />
 
-            <div class='mb-10 grid grid-cols-2 gap-px border border-border bg-border sm:grid-cols-4'>
-              {zedStats.map((stat) => (
-                <div class='bg-card p-4 sm:p-6'>
-                  <p class='font-mono text-[0.625rem] uppercase tracking-[0.12em] text-muted-foreground'>
-                    {stat.label}
-                  </p>
-                  <p class='mt-2 text-xl font-bold tracking-[-0.02em] sm:text-2xl'>
-                    {stat.value}
-                  </p>
-                </div>
-              ))}
-            </div>
+            {zedStats.length > 0 && (
+              <div
+                class={`mb-10 grid gap-px border border-border bg-border ${zedStatColumns}`}
+              >
+                {zedStats.map((stat) => (
+                  <div class='bg-card p-4 sm:p-6'>
+                    <p class='font-mono text-[0.625rem] uppercase tracking-[0.12em] text-muted-foreground'>
+                      {stat.label}
+                    </p>
+                    <p class='mt-2 text-xl font-bold tracking-[-0.02em] sm:text-2xl'>
+                      {stat.value}
+                    </p>
+                  </div>
+                ))}
+              </div>
+            )}
 
             <div class='grid grid-cols-1 gap-5 lg:grid-cols-3'>
               {zedItems.map((item, index) => (

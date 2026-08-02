@@ -1,6 +1,6 @@
 import { Link } from 'areia';
 import ilha from 'ilha';
-import { ArrowUpRight, GitFork } from 'lucide';
+import { ArrowUpRight, GitFork, Star } from 'lucide';
 import type { Data, ExperienceItem } from '../bindings/index.ts';
 import PageHeader from '../components/page-header.tsx';
 import ZedContribution from '../components/zed-contribution.tsx';
@@ -150,32 +150,37 @@ export default ilha
                       </p>
                     </div>
 
-                    <dl class='grid grid-cols-2 gap-x-5 gap-y-4 border-t border-border pt-5 sm:col-start-2 sm:grid-cols-4 lg:col-start-auto lg:grid-cols-2 lg:border-t-0 lg:border-l lg:pt-0 lg:pl-8'>
-                      <div>
-                        <dt class='font-mono text-[0.5625rem] uppercase tracking-[0.12em] text-muted-foreground'>
-                          Stars
-                        </dt>
-                        <dd class='mt-1 text-sm font-bold'>
-                          ★ {formatCompact(item.stars)}
-                        </dd>
-                      </div>
-                      {Number(item.forks) > 0 && (
-                        <div>
-                          <dt class='font-mono text-[0.5625rem] uppercase tracking-[0.12em] text-muted-foreground'>
-                            Forks
-                          </dt>
-                          <dd class='mt-1 inline-flex items-center gap-1.5 text-sm font-bold'>
-                            <Icon
-                              node={GitFork}
-                              size={13}
-                            />
-                            {formatCompact(
-                              item.forks,
-                            )}
-                          </dd>
-                        </div>
-                      )}
-                    </dl>
+                    {(Number(item.stars) > 0 || Number(item.forks) > 0) && (
+                      <dl class='grid grid-cols-2 gap-x-5 gap-y-4 border-t border-border pt-5 sm:col-start-2 sm:grid-cols-4 lg:col-start-auto lg:grid-cols-2 lg:border-t-0 lg:border-l lg:pt-0 lg:pl-8'>
+                        {Number(item.stars) > 0 && (
+                          <div>
+                            <dt class='font-mono text-[0.5625rem] uppercase tracking-[0.12em] text-muted-foreground'>
+                              Stars
+                            </dt>
+                            <dd class='mt-1 inline-flex items-center gap-1.5 text-sm font-bold'>
+                              <Icon node={Star} size={13} />
+                              {formatCompact(item.stars)}
+                            </dd>
+                          </div>
+                        )}
+                        {Number(item.forks) > 0 && (
+                          <div>
+                            <dt class='font-mono text-[0.5625rem] uppercase tracking-[0.12em] text-muted-foreground'>
+                              Forks
+                            </dt>
+                            <dd class='mt-1 inline-flex items-center gap-1.5 text-sm font-bold'>
+                              <Icon
+                                node={GitFork}
+                                size={13}
+                              />
+                              {formatCompact(
+                                item.forks,
+                              )}
+                            </dd>
+                          </div>
+                        )}
+                      </dl>
+                    )}
                   </article>
                 ))}
               </div>

@@ -1,8 +1,9 @@
 import { Link } from 'areia';
-import { ArrowUpRight, Download } from 'lucide';
+import { ArrowUpRight, Download, Star } from 'lucide';
 import type { ExperienceItem } from '../bindings/index.ts';
 import { formatCompact } from '../lib/format.ts';
 import Icon from '../lib/icon.tsx';
+import { locale } from '../lib/locale.ts';
 
 export default function ZedContribution({
   item,
@@ -13,6 +14,15 @@ export default function ZedContribution({
 }) {
   const isExtension = item.type === 'zed-extension';
   const typeLabel = item.type === 'pr' ? 'Pull request' : 'Zed extension';
+  const additions = Number(item.additions ?? 0);
+  const deletions = Number(item.deletions ?? 0);
+  const stars = Number(item.stars);
+  const downloads = Number(item.downloads ?? 0);
+  const hasDiff = additions > 0 || deletions > 0;
+  const hasStats = hasDiff || stars > 0 || (isExtension && downloads > 0);
+  const labels = locale() === 'no'
+    ? { stars: 'Stjerner', downloads: 'Nedlastinger' }
+    : { stars: 'Stars', downloads: 'Downloads' };
 
   return (
     <article class='group border border-border bg-card p-6 transition-[border-color,box-shadow] duration-300 hover:border-foreground/25 hover:shadow-[0_24px_60px_-36px_hsl(var(--shadow)/0.5)] sm:p-8'>
@@ -86,20 +96,37 @@ export default function ZedContribution({
           </div>
         )}
 
-      <div class='mt-6 flex flex-wrap gap-x-5 gap-y-2 border-t border-border pt-4 font-mono text-[0.6875rem] text-muted-foreground'>
-        {item.additions != null && (
-          <span>
-            +{String(item.additions)} / −{String(item.deletions)} diff
-          </span>
-        )}
-        <span>★ {formatCompact(item.stars)}</span>
-        {isExtension && item.downloads != null && (
-          <span class='inline-flex items-center gap-1.5'>
-            <Icon node={Download} size={13} />
-            {formatCompact(item.downloads)}
-          </span>
-        )}
-      </div>
+      {hasStats && (
+        <div class='mt-6 flex flex-wrap gap-x-5 gap-y-2 border-t border-border pt-4 font-mono text-[0.6875rem] text-muted-foreground'>
+          {hasDiff && (
+            <span>
+              {additions > 0 && (
+                <span class='text-diff-addition'>
+                  +{String(item.additions)}
+                </span>
+              )}
+              {additions > 0 && deletions > 0 && ' / '}
+              {deletions > 0 && (
+                <span class='text-diff-deletion'>
+                  −{String(item.deletions)}
+                </span>
+              )} diff
+            </span>
+          )}
+          {stars > 0 && (
+            <span class='inline-flex items-center gap-1.5'>
+              <Icon node={Star} size={13} />
+              <span class='sr-only'>{labels.stars}:</span> {formatCompact(item.stars)}
+            </span>
+          )}
+          {isExtension && downloads > 0 && (
+            <span class='inline-flex items-center gap-1.5'>
+              <Icon node={Download} size={13} />
+              <span class='sr-only'>{labels.downloads}:</span> {formatCompact(downloads)}
+            </span>
+          )}
+        </div>
+      )}
     </article>
   );
 }

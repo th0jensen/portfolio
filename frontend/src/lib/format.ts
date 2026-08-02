@@ -1,6 +1,5 @@
-export function formatCompact(value: bigint | number): string {
-  const number = Number(value);
-  if (number >= 1_000_000) return `${(number / 1_000_000).toFixed(1)}m`;
-  if (number >= 1_000) return `${(number / 1_000).toFixed(1)}k`;
-  return String(number);
+export function formatCompact(value: number | bigint): string {
+  if (value >= 1_000_000) return `${(Number(value) / 1_000_000).toFixed(1)}m`;
+  else if (value >= 1_000) return `${(Number(value) / 1_000).toFixed(1)}k`;
+  else return String(value);
 }

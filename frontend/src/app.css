@@ -17,6 +17,8 @@
   --color-secondary-foreground: hsl(var(--secondary-foreground));
   --color-accent: hsl(var(--accent));
   --color-accent-foreground: hsl(var(--accent-foreground));
+  --color-diff-addition: hsl(var(--diff-addition));
+  --color-diff-deletion: hsl(var(--diff-deletion));
   --color-ring: hsl(var(--ring));
   --color-project-surface: hsl(var(--project-surface));
   --font-sans: "Alef", ui-sans-serif, system-ui, sans-serif;
@@ -37,6 +39,8 @@
   --secondary-foreground: 222 22% 16%;
   --accent: 18 45% 91%;
   --accent-foreground: 16 67% 35%;
+  --diff-addition: 142 72% 28%;
+  --diff-deletion: 2 72% 42%;
   --ring: 16 67% 45%;
   --project-surface: 38 20% 93%;
   --shadow: 222 24% 12%;
@@ -57,6 +61,8 @@ html.dark {
   --secondary-foreground: 40 18% 92%;
   --accent: 18 24% 17%;
   --accent-foreground: 18 72% 68%;
+  --diff-addition: 142 76% 58%;
+  --diff-deletion: 2 76% 62%;
   --ring: 18 76% 58%;
   --project-surface: 220 15% 13%;
   --shadow: 222 40% 2%;
