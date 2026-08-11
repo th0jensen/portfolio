@@ -18,9 +18,24 @@ use tokio::{
 };
 
 use crate::{
-    types::{Assets, RenderInput, RenderOutput},
-    util::get_env_key,
+    types::{
+        Assets, Head, OpenGraph, OpenGraphImage, RenderInput, RenderOutput,
+        StructuredData,
+    },
+    util::{get_env_key, get_env_key_or},
 };
+
+/// Public origin used for canonical URLs and social previews. Canonical links
+/// must always point at production, so this stays fixed unless `SITE_ORIGIN`
+/// overrides it (preview deployments).
+const DEFAULT_SITE_ORIGIN: &str = "https://thojensen.com";
+const SITE_NAME: &str = "Thomas Jensen";
+const OG_LOCALE: &str = "en_US";
+const OG_IMAGE_PATH: &str = "/static/images/og-card.png";
+const OG_IMAGE_ALT: &str = "Thomas Jensen — systems engineer";
+const OG_IMAGE_MIME: &str = "image/png";
+const OG_IMAGE_WIDTH: u32 = 1200;
+const OG_IMAGE_HEIGHT: u32 = 630;
 
 #[derive(Clone, Copy, Debug, Eq, Hash, PartialEq)]
 pub enum RenderRoute {
@@ -52,6 +67,81 @@ impl RenderRoute {
             Self::Automata => "/automata",
         }
     }
+
+    pub const fn title(self) -> &'static str {
+        match self {
+            Self::Home => "Thomas Jensen",
+            Self::Projects => "Projects — Thomas Jensen",
+            Self::Experience => "Experience — Thomas Jensen",
+            Self::Contact => "Contact — Thomas Jensen",
+            Self::Automata => "Cellular Automata — Thomas Jensen",
+        }
+    }
+
+    /// `None` keeps the site-wide locale meta description.
+    pub const fn description(self) -> Option<&'static str> {
+        match self {
+            Self::Home => None,
+            Self::Projects => Some(
+                "Selected open-source and personal work in Rust, systems, and native software.",
+            ),
+            Self::Experience => Some(
+                "Open-source contributions, extensions, and tooling built in Rust and Haskell.",
+            ),
+            Self::Contact => Some(
+                "Get in touch with Thomas Jensen about work, collaboration, or open source.",
+            ),
+            Self::Automata => Some(
+                "An interactive cellular automaton compiled from Haskell to WebAssembly.",
+            ),
+        }
+    }
+
+    pub const fn og_type(self) -> &'static str {
+        match self {
+            Self::Home => "profile",
+            _ => "website",
+        }
+    }
+
+    pub const fn structured_data(self) -> StructuredData {
+        match self {
+            Self::Home => StructuredData::Person,
+            _ => StructuredData::None,
+        }
+    }
+
+    /// Canonical URLs always point at the public origin, never at the host the
+    /// request happened to arrive on, so proxies and preview hosts cannot
+    /// split a page's ranking across duplicate URLs.
+    pub fn canonical(self, site_origin: &str) -> String {
+        format!("{}{}", site_origin.trim_end_matches('/'), self.path())
+    }
+
+    pub fn head(self, site_origin: &str) -> Head {
+        Head {
+            title: self.title().to_owned(),
+            description: self.description().map(str::to_owned),
+            canonical: self.canonical(site_origin),
+            robots: "index, follow".to_owned(),
+            og: OpenGraph {
+                og_type: self.og_type().to_owned(),
+                site_name: SITE_NAME.to_owned(),
+                locale: OG_LOCALE.to_owned(),
+                image: OpenGraphImage {
+                    url: format!(
+                        "{}{OG_IMAGE_PATH}",
+                        site_origin.trim_end_matches('/')
+                    ),
+                    alt: OG_IMAGE_ALT.to_owned(),
+                    mime: OG_IMAGE_MIME.to_owned(),
+                    width: OG_IMAGE_WIDTH,
+                    height: OG_IMAGE_HEIGHT,
+                },
+            },
+            structured_data: self.structured_data(),
+        }
+    }
 }
 
 #[derive(Debug)]
@@ -59,6 +149,7 @@ pub struct RendererConfig {
     pub exe: PathBuf,
     pub args: Vec<String>,
     pub origin: String,
+    pub site_origin: String,
     pub assets: Assets,
     pub timeout: Duration,
     pub cold_timeout: Duration,
@@ -78,6 +169,7 @@ impl RendererConfig {
             exe: PathBuf::from(get_env_key("RENDERER_BIN")),
             args: Vec::new(),
             origin: get_env_key("AXUM_ORIGIN"),
+            site_origin: get_env_key_or("SITE_ORIGIN", DEFAULT_SITE_ORIGIN),
             assets,
             timeout: Duration::from_secs(5),
             cold_timeout: Duration::from_secs(15),
@@ -188,6 +280,7 @@ impl RendererClient {
             url: route.path().to_owned(),
             rpc_origin: self.config.origin.clone(),
             assets: self.config.assets.clone(),
+            head: route.head(&self.config.site_origin),
         };
         let exchange_started = Instant::now();
         let res = {

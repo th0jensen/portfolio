@@ -132,20 +132,44 @@ impl S3 {
         let file_name = args.0[0].clone();
         let file_path = PathBuf::from(&args.0[1]);
         let body = ByteStream::from_path(&file_path).await?;
+        let content_type = Self::content_type(&file_name);
 
         self.client
             .put_object()
             .bucket(&self.bucket)
             .key(&file_name)
+            .content_type(content_type)
             .body(body)
             .send()
             .await?;
 
         println!(
-            "Upload successful: {file_name} from {}",
+            "Upload successful: {file_name} from {} ({content_type})",
             file_path.display()
         );
         Ok(())
+    }
+
+    /// Objects are served straight back to browsers and to social crawlers,
+    /// which reject previews that arrive as application/octet-stream.
+    fn content_type(key: &str) -> &'static str {
+        let extension = key
+            .rsplit_once('.')
+            .map(|(_, extension)| extension.to_ascii_lowercase())
+            .unwrap_or_default();
+
+        match extension.as_str() {
+            "jpg" | "jpeg" => "image/jpeg",
+            "png" => "image/png",
+            "webp" => "image/webp",
+            "svg" => "image/svg+xml",
+            "woff2" => "font/woff2",
+            "pdf" => "application/pdf",
+            "js" => "text/javascript",
+            "wasm" => "application/wasm",
+            "json" => "application/json",
+            _ => "application/octet-stream",
+        }
     }
 
     fn get_env_key(key: &str) -> String {

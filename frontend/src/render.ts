@@ -111,7 +111,7 @@ export async function render(input: RenderInput): Promise<RenderOutput> {
 
   const body =
     `<main class="site-layout">${headerHtml}<div class="site-page-content"><div id="app" style="flex: 1">${result.html}</div>${footerHtml}</div></main>`;
-  const html = documentShell(body, data, input.assets);
+  const html = documentShell(body, data, input.assets, input.head);
 
   return {
     id: input.id,
@@ -135,10 +135,19 @@ function documentShell(
   body: string,
   data: Data,
   assets: RenderInput['assets'],
+  head: RenderInput['head'],
 ): string {
   const css = assetPath(assets.css);
   const js = assetPath(assets.js);
-  const description = escapeAttribute(data.en.meta.description);
+  const title = escapeText(head.title);
+  const rawDescription = head.description ?? data.en.meta.description;
+  const description = escapeAttribute(rawDescription);
+  const canonical = escapeAttribute(head.canonical);
+  const { og } = head;
+  const image = og.image;
+  const twitterCard = image.width >= 1200 && image.width > image.height
+    ? 'summary_large_image'
+    : 'summary';
 
   return `<!doctype html>
 <html lang="en" class="dark" style="color-scheme: dark">
@@ -146,7 +155,20 @@ function documentShell(
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta name="description" content="${description}" />
-  <meta name="robots" content="index, follow" />
+  <meta name="robots" content="${escapeAttribute(head.robots)}" />
+  <link rel="canonical" href="${canonical}" />
+  <meta property="og:type" content="${escapeAttribute(og.type)}" />
+  <meta property="og:site_name" content="${escapeAttribute(og.site_name)}" />
+  <meta property="og:locale" content="${escapeAttribute(og.locale)}" />
+  <meta property="og:url" content="${canonical}" />
+  <meta property="og:title" content="${escapeAttribute(head.title)}" />
+  <meta property="og:description" content="${description}" />
+  <meta property="og:image" content="${escapeAttribute(image.url)}" />
+  <meta property="og:image:type" content="${escapeAttribute(image.mime)}" />
+  <meta property="og:image:width" content="${image.width}" />
+  <meta property="og:image:height" content="${image.height}" />
+  <meta property="og:image:alt" content="${escapeAttribute(image.alt)}" />
+  <meta name="twitter:card" content="${twitterCard}" />${jsonLd(head, data)}
   <script>
     (() => {
       const navigation = performance.getEntriesByType('navigation')[0];
@@ -167,7 +189,7 @@ function documentShell(
   </script>
   <link rel="icon" href="/favicon.svg" />
   <link rel="stylesheet" href="${css}" />
-  <title>Thomas Jensen</title>
+  <title>${title}</title>
 </head>
 <body>
   ${body}
@@ -176,14 +198,37 @@ function documentShell(
 </html>`;
 }
 
+function jsonLd(head: RenderInput['head'], data: Data): string {
+  if (head.structured_data !== 'person') return '';
+
+  const { about, en } = data;
+  const graph = {
+    '@context': 'https://schema.org',
+    '@type': 'Person',
+    name: `${about.first_name} ${about.last_name}`,
+    url: head.canonical,
+    image: head.og.image.url,
+    jobTitle: en.hero.role,
+    description: en.meta.description,
+    sameAs: [en.buttons.github.url, en.buttons.linkedin.url],
+  };
+
+  return `\n  <script type="application/ld+json">${
+    JSON.stringify(graph).replaceAll('<', '\\u003c')
+  }</script>`;
+}
+
 function assetPath(path: string): string {
   return path.startsWith('/') ? path : `/${path}`;
 }
 
 function escapeAttribute(value: string): string {
+  return escapeText(value).replaceAll('"', '&quot;');
+}
+
+function escapeText(value: string): string {
   return value
     .replaceAll('&', '&amp;')
-    .replaceAll('"', '&quot;')
     .replaceAll('<', '&lt;')
     .replaceAll('>', '&gt;');
 }

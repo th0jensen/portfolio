@@ -19,12 +19,58 @@ pub struct RenderInput {
     pub url: String,
     pub rpc_origin: String,
     pub assets: Assets,
+    pub head: Head,
 }
 
 #[derive(ts_rs::TS, Clone, Serialize, Deserialize, Debug)]
 pub struct Assets {
     pub css: String,
     pub js: String,
+}
+
+/// Per-route document head, defined on the Rust side and handed to the
+/// renderer so every page gets its own title, canonical URL, and social
+/// preview metadata.
+#[derive(ts_rs::TS, Clone, Serialize, Deserialize, Debug)]
+pub struct Head {
+    pub title: String,
+    /// Falls back to the locale meta description when absent.
+    #[ts(optional = nullable)]
+    pub description: Option<String>,
+    /// Absolute production URL for this route; also used as `og:url`.
+    pub canonical: String,
+    pub robots: String,
+    pub og: OpenGraph,
+    pub structured_data: StructuredData,
+}
+
+/// Open Graph fields that are not already covered by title, description,
+/// and canonical.
+#[derive(ts_rs::TS, Clone, Serialize, Deserialize, Debug)]
+pub struct OpenGraph {
+    #[serde(rename = "type")]
+    #[ts(rename = "type")]
+    pub og_type: String,
+    pub site_name: String,
+    pub locale: String,
+    pub image: OpenGraphImage,
+}
+
+#[derive(ts_rs::TS, Clone, Serialize, Deserialize, Debug)]
+pub struct OpenGraphImage {
+    pub url: String,
+    pub alt: String,
+    pub mime: String,
+    pub width: u32,
+    pub height: u32,
+}
+
+/// Which JSON-LD block, if any, the renderer should emit for a route.
+#[derive(ts_rs::TS, Clone, Copy, Serialize, Deserialize, Debug)]
+#[serde(rename_all = "snake_case")]
+pub enum StructuredData {
+    None,
+    Person,
 }
 
 #[allow(dead_code)]
