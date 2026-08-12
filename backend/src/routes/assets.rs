@@ -16,8 +16,9 @@ use tower_http::{
 
 use crate::{AppState, routes::pages::not_found_response};
 
-const ASSETS: [&str; 16] = [
+const ASSETS: [&str; 17] = [
     "headshot.webp",
+    "images/og-card.png",
     "images/og-card.webp",
     "fonts/alef-700.woff2",
     "fonts/alef-400.woff2",
@@ -226,7 +227,7 @@ mod tests {
 
     #[test]
     fn allowlist_includes_the_automaton_pattern_files() {
-        assert_eq!(ASSETS.len(), 16);
+        assert_eq!(ASSETS.len(), 17);
         assert!(ASSETS.contains(&"automaton/patterns/conway/oscillator.toml"));
         assert!(ASSETS.contains(&"automaton/patterns/wireworld/xor.toml"));
     }

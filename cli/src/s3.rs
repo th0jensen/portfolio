@@ -16,6 +16,21 @@ use crate::command::Args;
 /// getting most of WebP's size advantage over JPEG/PNG.
 const WEBP_QUALITY: f32 = 82.0;
 
+#[derive(Clone, Copy)]
+enum ImageTarget {
+    WebP,
+    Png,
+}
+
+impl ImageTarget {
+    fn extension(self) -> &'static str {
+        match self {
+            Self::WebP => "webp",
+            Self::Png => "png",
+        }
+    }
+}
+
 pub struct S3 {
     client: Client,
     bucket: String,
@@ -143,8 +158,8 @@ impl S3 {
             .with_context(|| format!("failed to read {}", file_path.display()))?;
         let original_size = original.len();
 
-        let (key, body) = match Self::reencode_to_webp(&original)? {
-            Some(webp) => (Self::with_webp_extension(&requested_key), webp),
+        let (key, body) = match Self::reencode_image(&original, ImageTarget::WebP)? {
+            Some(webp) => (Self::with_extension(&requested_key, "webp"), webp),
             None => (requested_key.clone(), original),
         };
         let content_type = Self::content_type(&key);
@@ -172,11 +187,18 @@ impl S3 {
         Ok(())
     }
 
-    /// Re-encodes an object already in the bucket as lossy WebP, uploading
-    /// it under a `.webp` key. The original key is left untouched — use
-    /// `delete` once you've verified the new one looks right.
+    /// Re-encodes an object already in the bucket, uploading it under a key
+    /// with the target format's extension. The original key is left
+    /// untouched — use `delete` once you've verified the new one looks
+    /// right. Defaults to WebP; pass "png" as a second argument to instead
+    /// (re)generate a PNG, e.g. for a compatibility fallback.
     pub async fn reencode(&self, args: Args) -> Result<()> {
         let key = args.0[0].clone();
+        let target = match args.0.get(1).map(String::as_str) {
+            Some("png") => ImageTarget::Png,
+            Some("webp") | None => ImageTarget::WebP,
+            Some(other) => return Err(anyhow!("unknown target format '{other}', expected webp or png")),
+        };
 
         let object = self
             .client
@@ -188,20 +210,20 @@ impl S3 {
         let original = object.body.collect().await?.into_bytes();
         let original_size = original.len();
 
-        let Some(webp) = Self::reencode_to_webp(&original)? else {
+        let Some(encoded) = Self::reencode_image(&original, target)? else {
             return Err(anyhow!(
                 "{key} is not a re-encodable image (JPEG/PNG/WebP)"
             ));
         };
-        let new_key = Self::with_webp_extension(&key);
-        let new_size = webp.len();
+        let new_key = Self::with_extension(&key, target.extension());
+        let new_size = encoded.len();
 
         self.client
             .put_object()
             .bucket(&self.bucket)
             .key(&new_key)
             .content_type(Self::content_type(&new_key))
-            .body(ByteStream::from(webp))
+            .body(ByteStream::from(encoded))
             .send()
             .await?;
 
@@ -233,10 +255,10 @@ impl S3 {
         Ok(())
     }
 
-    /// Re-encodes JPEG/PNG/WebP source bytes as lossy WebP. Returns `None`
-    /// for anything else (SVG, fonts, PDF, WASM, JS, TOML, ...), which
-    /// upload unchanged.
-    fn reencode_to_webp(bytes: &[u8]) -> Result<Option<Vec<u8>>> {
+    /// Re-encodes JPEG/PNG/WebP source bytes into the given target format.
+    /// Returns `None` for anything else (SVG, fonts, PDF, WASM, JS, TOML,
+    /// ...), which upload unchanged.
+    fn reencode_image(bytes: &[u8], target: ImageTarget) -> Result<Option<Vec<u8>>> {
         let Ok(format) = image::guess_format(bytes) else {
             return Ok(None);
         };
@@ -249,17 +271,28 @@ impl S3 {
 
         let decoded = image::load_from_memory_with_format(bytes, format)
             .context("failed to decode source image")?;
-        let encoded = Encoder::from_image(&decoded)
-            .map_err(|err| anyhow!("failed to prepare image for WebP encoding: {err}"))?
-            .encode(WEBP_QUALITY);
 
-        Ok(Some(encoded.to_vec()))
+        let encoded = match target {
+            ImageTarget::WebP => Encoder::from_image(&decoded)
+                .map_err(|err| anyhow!("failed to prepare image for WebP encoding: {err}"))?
+                .encode(WEBP_QUALITY)
+                .to_vec(),
+            ImageTarget::Png => {
+                let mut buf = Vec::new();
+                decoded
+                    .write_to(&mut std::io::Cursor::new(&mut buf), ImageFormat::Png)
+                    .context("failed to encode image as PNG")?;
+                buf
+            }
+        };
+
+        Ok(Some(encoded))
     }
 
-    fn with_webp_extension(key: &str) -> String {
+    fn with_extension(key: &str, extension: &str) -> String {
         match key.rsplit_once('.') {
-            Some((stem, _ext)) => format!("{stem}.webp"),
-            None => format!("{key}.webp"),
+            Some((stem, _ext)) => format!("{stem}.{extension}"),
+            None => format!("{key}.{extension}"),
         }
     }
 
