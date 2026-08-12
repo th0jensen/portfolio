@@ -14,6 +14,7 @@ pub fn router() -> Router<AppState<'static>> {
     Router::new()
         .route("/", get(page_handler))
         .route("/projects", get(page_handler))
+        .route("/projects/{slug}", get(page_handler))
         .route("/experience", get(page_handler))
         .route("/contact", get(page_handler))
         .route("/automata", get(page_handler))
@@ -26,6 +27,13 @@ pub async fn page_handler(
     let Some(route) = RenderRoute::from_path(uri.path()) else {
         return not_found_response();
     };
+
+    if let RenderRoute::Project(slug) = &route
+        && !state.data.projects.iter().any(|project| &project.slug == slug)
+    {
+        return not_found_response();
+    }
+
     tracing::info!(url = route.path(), "rendering page");
     render_page(&state, route).await
 }

@@ -34,9 +34,7 @@ pub struct Assets {
 #[derive(ts_rs::TS, Clone, Serialize, Deserialize, Debug)]
 pub struct Head {
     pub title: String,
-    /// Falls back to the locale meta description when absent.
-    #[ts(optional = nullable)]
-    pub description: Option<String>,
+    pub description: String,
     /// Absolute production URL for this route; also used as `og:url`.
     pub canonical: String,
     pub robots: String,
@@ -53,7 +51,11 @@ pub struct OpenGraph {
     pub og_type: String,
     pub site_name: String,
     pub locale: String,
-    pub image: OpenGraphImage,
+    /// Listed in the order crawlers should try them. Some scrapers only
+    /// ever look at the first `og:image` tag, so the most universally
+    /// decodable format belongs first, with nicer/smaller formats after
+    /// as an upgrade for crawlers that support them.
+    pub images: Vec<OpenGraphImage>,
 }
 
 #[derive(ts_rs::TS, Clone, Serialize, Deserialize, Debug)]
@@ -168,7 +170,10 @@ mod tests {
         assert_eq!(parsed.id, 7);
         assert_eq!(parsed.status, 200);
         assert_eq!(parsed.html.as_deref(), Some("<html></html>"));
-        assert_eq!(parsed.headers.get("x-req").map(String::as_str), Some("abc"));
+        assert_eq!(
+            parsed.headers.get("x-req").map(String::as_str),
+            Some("abc")
+        );
     }
 
     #[test]
@@ -189,13 +194,13 @@ mod tests {
             og_type: "profile".to_owned(),
             site_name: "Thomas Jensen".to_owned(),
             locale: "en_US".to_owned(),
-            image: OpenGraphImage {
+            images: vec![OpenGraphImage {
                 url: "https://example.com/og.png".to_owned(),
                 alt: "alt text".to_owned(),
                 mime: "image/png".to_owned(),
                 width: 1200,
                 height: 630,
-            },
+            }],
         };
 
         let json = serde_json::to_value(&og).unwrap();
@@ -205,7 +210,8 @@ mod tests {
     }
 
     #[test]
-    fn experience_item_deserializes_type_field_and_defaults_missing_optionals() {
+    fn experience_item_deserializes_type_field_and_defaults_missing_optionals()
+    {
         let json = indoc! {r##"
             {
               "name": "portfolio",
@@ -276,10 +282,13 @@ pub struct Hero {
 
 #[derive(ts_rs::TS, Clone, Serialize, Deserialize, Debug)]
 pub struct Project {
+    pub slug: String,
     pub name: String,
     pub image_url: String,
     pub technologies: HashMap<String, String>,
     pub description: String,
+    pub overview: String,
+    pub highlights: Vec<String>,
     pub source_type: String,
     pub source_link: String,
     #[ts(optional)]

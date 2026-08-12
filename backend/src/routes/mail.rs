@@ -156,15 +156,19 @@ mod tests {
             assert!(is_email(valid), "expected {valid} to be valid");
         }
 
-        for invalid in ["", "no-at-sign", "a@b", "a b@c.com", "@c.com", "a@.com"] {
+        for invalid in
+            ["", "no-at-sign", "a@b", "a b@c.com", "@c.com", "a@.com"]
+        {
             assert!(!is_email(invalid), "expected {invalid} to be invalid");
         }
     }
 
     #[tokio::test]
-    async fn rate_limited_response_maps_too_many_requests_to_429_with_headers() {
+    async fn rate_limited_response_maps_too_many_requests_to_429_with_headers()
+    {
         let mut retry_headers = http::HeaderMap::new();
-        retry_headers.insert("retry-after", http::HeaderValue::from_static("5"));
+        retry_headers
+            .insert("retry-after", http::HeaderValue::from_static("5"));
 
         let response = rate_limited_response(GovernorError::TooManyRequests {
             wait_time: 5,

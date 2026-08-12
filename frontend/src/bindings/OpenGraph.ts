@@ -5,4 +5,11 @@ import type { OpenGraphImage } from "./OpenGraphImage";
  * Open Graph fields that are not already covered by title, description,
  * and canonical.
  */
-export type OpenGraph = { type: string, site_name: string, locale: string, image: OpenGraphImage, };
+export type OpenGraph = { type: string, site_name: string, locale: string, 
+/**
+ * Listed in the order crawlers should try them. Some scrapers only
+ * ever look at the first `og:image` tag, so the most universally
+ * decodable format belongs first, with nicer/smaller formats after
+ * as an upgrade for crawlers that support them.
+ */
+images: Array<OpenGraphImage>, };

@@ -7,11 +7,7 @@ import type { StructuredData } from "./StructuredData";
  * renderer so every page gets its own title, canonical URL, and social
  * preview metadata.
  */
-export type Head = { title: string, 
-/**
- * Falls back to the locale meta description when absent.
- */
-description?: string | null, 
+export type Head = { title: string, description: string, 
 /**
  * Absolute production URL for this route; also used as `og:url`.
  */

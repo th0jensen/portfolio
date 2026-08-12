@@ -37,7 +37,10 @@ mod tests {
 
         // SAFETY: test-only, and this key is unique to this test.
         unsafe { std::env::set_var("UTIL_TEST_BLANK_KEY", "   ") };
-        assert_eq!(get_env_key_or("UTIL_TEST_BLANK_KEY", "fallback"), "fallback");
+        assert_eq!(
+            get_env_key_or("UTIL_TEST_BLANK_KEY", "fallback"),
+            "fallback"
+        );
 
         // SAFETY: test-only, and this key is unique to this test.
         unsafe { std::env::set_var("UTIL_TEST_SET_KEY", "value") };

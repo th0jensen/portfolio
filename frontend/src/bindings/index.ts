@@ -10,9 +10,9 @@
 ############### && @@@@@@@@@@@@@@
 ############### & @@@@@@@@@@@@@    */
 
-import type { About } from "./About.ts";
 import type { Locale } from "./Locale.ts";
 import type { ExperienceItem } from "./ExperienceItem.ts";
+import type { About } from "./About.ts";
 import type { Project } from "./Project.ts";
 import type { LocaleData } from "./LocaleData.ts";
 import type { Data } from "./Data.ts";
@@ -22,9 +22,9 @@ import type { Head } from "./Head.ts";
 import type { Assets } from "./Assets.ts";
 import type { RenderInput } from "./RenderInput.ts";
 
-export type { About } from "./About.ts";
 export type { Locale } from "./Locale.ts";
 export type { ExperienceItem } from "./ExperienceItem.ts";
+export type { About } from "./About.ts";
 export type { Project } from "./Project.ts";
 export type { LocaleData } from "./LocaleData.ts";
 export type { Data } from "./Data.ts";

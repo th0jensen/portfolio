@@ -100,6 +100,7 @@
   },
   "projects": [
     {
+      "slug": "zed-editor-contributions",
       "name": "Zed Editor - Contributions",
       "image_url": "/static/images/zed.webp",
       "technologies": {
@@ -108,11 +109,18 @@
         "JSON": "#ffffff"
       },
       "description": "Zed Guild member and Gruber Darker maintainer. Two Rust and GPUI contributions merged into Zed: bottom-dock layouts and WSL-safe extension uploads.",
+      "overview": "Zed is a native code editor built in Rust on GPUI, the UI framework its team also maintains. Two contributions from this project are merged into the main Zed repository: a configurable bottom-dock panel layout with a title-bar control (PR #26211), and a fix for Windows extension-manifest paths that broke reliable uploads to WSL remotes (PR #50653).\n\nOutside of direct contributions, this also includes maintaining Gruber Darker, a Zed theme extension ported from Rexim's Emacs theme, and being part of the Zed Guild, the informal group of contributors who work on and support the editor.",
+      "highlights": [
+        "Bottom-dock panel layout and title-bar control merged into zed-industries/zed (#26211)",
+        "Fixed Windows extension-manifest paths for WSL remote uploads (#50653)",
+        "Maintain Gruber Darker, a Zed theme extension"
+      ],
       "source_type": "github",
       "source_link": "https://github.com/zed-industries/zed/pull/26211",
       "featured": true
     },
     {
+      "slug": "cellular-automata",
       "name": "Cellular Automata",
       "image_url": "/static/images/automaton.svg",
       "technologies": {
@@ -121,10 +129,17 @@
         "TypeScript": "#3178C6"
       },
       "description": "A Haskell-to-WASM cellular automata lab with live editing, multiple rules, and a responsive interface.",
+      "overview": "This is a cellular automata engine written in Haskell and compiled to WebAssembly, with a TypeScript frontend for running and editing it in the browser. The engine supports several classic rule sets, including Conway's Game of Life, Seeds, Brian's Brain, and WireWorld, each with its own starting patterns.\n\nThe interface lets you edit the grid directly, step through generations, and switch rule sets without reloading, so the WASM engine and the UI stay in sync as state changes.",
+      "highlights": [
+        "Haskell automaton engine compiled to WebAssembly",
+        "Conway's Game of Life, Seeds, Brian's Brain, and WireWorld rule sets",
+        "Live grid editing and rule switching in the browser"
+      ],
       "source_type": "internal",
       "source_link": "/automata"
     },
     {
+      "slug": "crabdash",
       "name": "Crabdash",
       "image_url": "/static/images/crabdash.webp",
       "technologies": {
@@ -133,10 +148,17 @@
         "Docker": "#2496ED"
       },
       "description": "A native Rust and GPUI homelab dashboard for containers, services, disks, and remote Linux hosts.",
+      "overview": "Crabdash is a native homelab dashboard written in Rust with GPUI, the same UI framework used by the Zed editor. It's built to keep an eye on a home server: running containers, systemd services, disk usage, and other machines on the network, from one native window instead of a browser tab per tool.\n\nIt talks to Docker and remote Linux hosts directly, rather than going through a browser-based dashboard, which keeps it lightweight and fast to open.",
+      "highlights": [
+        "Native Rust and GPUI desktop application",
+        "Docker container and systemd service monitoring",
+        "Disk usage and remote Linux host status in one window"
+      ],
       "source_type": "github",
       "source_link": "https://github.com/th0jensen/crabdash"
     },
     {
+      "slug": "appleosophy",
       "name": "Appleosophy",
       "image_url": "/static/images/appleosophy.webp",
       "technologies": {
@@ -146,6 +168,12 @@
         "WordPress": "#21759B"
       },
       "description": "My first shipped product: an iOS app taken from idea to App Store release.",
+      "overview": "Appleosophy is an iOS app built in Swift and SwiftUI, with some Objective-C, backed by a WordPress content source. It was the first project taken all the way from an idea to a published release on the App Store: designing the app, connecting it to a backend, and going through the App Store submission and review process end to end.",
+      "highlights": [
+        "Native iOS app in Swift, SwiftUI, and Objective-C",
+        "WordPress-backed content",
+        "Shipped and published on the App Store"
+      ],
       "source_type": "appstore",
       "source_link": "https://apps.apple.com/us/app/appleosophy/id1635844078"
     }

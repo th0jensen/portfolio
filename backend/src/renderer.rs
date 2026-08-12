@@ -3,7 +3,10 @@ use std::{
     fs,
     path::{Path, PathBuf},
     process::Stdio,
-    sync::atomic::{AtomicBool, AtomicU32, Ordering},
+    sync::{
+        Arc,
+        atomic::{AtomicBool, AtomicU32, Ordering},
+    },
     time::Duration,
 };
 
@@ -17,6 +20,7 @@ use tokio::{
     time::{Instant, timeout},
 };
 
+use crate::types::Data as PortfolioData;
 use crate::{
     types::{
         Assets, Head, OpenGraph, OpenGraphImage, RenderInput, RenderOutput,
@@ -31,16 +35,42 @@ use crate::{
 const DEFAULT_SITE_ORIGIN: &str = "https://thojensen.com";
 const SITE_NAME: &str = "Thomas Jensen";
 const OG_LOCALE: &str = "en_US";
-const OG_IMAGE_PATH: &str = "/static/images/og-card.png";
+// PNG first: some crawlers only ever look at the first `og:image` tag, and
+// PNG decodes everywhere, whereas WebP support is broad but not universal.
+// WebP second is a smaller-and-just-as-sharp upgrade for crawlers that do
+// support it.
+const OG_IMAGE_PATH_PNG: &str = "/static/images/og-card.png";
+const OG_IMAGE_MIME_PNG: &str = "image/png";
+const OG_IMAGE_PATH_WEBP: &str = "/static/images/og-card.webp";
+const OG_IMAGE_MIME_WEBP: &str = "image/webp";
 const OG_IMAGE_ALT: &str = "Thomas Jensen — systems engineer";
-const OG_IMAGE_MIME: &str = "image/png";
 const OG_IMAGE_WIDTH: u32 = 1200;
 const OG_IMAGE_HEIGHT: u32 = 630;
 
-#[derive(Clone, Copy, Debug, Eq, Hash, PartialEq)]
+fn og_image(site_origin: &str, path: &str, mime: &str) -> OpenGraphImage {
+    OpenGraphImage {
+        url: format!("{}{path}", site_origin.trim_end_matches('/')),
+        alt: OG_IMAGE_ALT.to_owned(),
+        mime: mime.to_owned(),
+        width: OG_IMAGE_WIDTH,
+        height: OG_IMAGE_HEIGHT,
+    }
+}
+
+#[derive(Clone, Copy, Debug)]
+struct RouteSeo {
+    title: &'static str,
+    description: &'static str,
+    og_type: &'static str,
+    structured_data: StructuredData,
+}
+
+#[derive(Clone, Debug, Eq, Hash, PartialEq)]
 pub enum RenderRoute {
     Home,
     Projects,
+    /// A single project's detail page, keyed by `Project::slug`.
+    Project(String),
     Experience,
     Contact,
     Automata,
@@ -54,92 +84,111 @@ impl RenderRoute {
             "/experience" => Some(Self::Experience),
             "/contact" => Some(Self::Contact),
             "/automata" => Some(Self::Automata),
-            _ => None,
+            _ => {
+                let slug = path.strip_prefix("/projects/")?;
+                (!slug.is_empty() && !slug.contains('/'))
+                    .then(|| Self::Project(slug.to_owned()))
+            }
         }
     }
 
-    pub const fn path(self) -> &'static str {
+    pub fn path(&self) -> String {
         match self {
-            Self::Home => "/",
-            Self::Projects => "/projects",
-            Self::Experience => "/experience",
-            Self::Contact => "/contact",
-            Self::Automata => "/automata",
+            Self::Home => "/".to_owned(),
+            Self::Projects => "/projects".to_owned(),
+            Self::Project(slug) => format!("/projects/{slug}"),
+            Self::Experience => "/experience".to_owned(),
+            Self::Contact => "/contact".to_owned(),
+            Self::Automata => "/automata".to_owned(),
         }
     }
 
-    pub const fn title(self) -> &'static str {
+    const fn seo(&self) -> RouteSeo {
         match self {
-            Self::Home => "Thomas Jensen",
-            Self::Projects => "Projects — Thomas Jensen",
-            Self::Experience => "Experience — Thomas Jensen",
-            Self::Contact => "Contact — Thomas Jensen",
-            Self::Automata => "Cellular Automata — Thomas Jensen",
-        }
-    }
-
-    /// `None` keeps the site-wide locale meta description.
-    pub const fn description(self) -> Option<&'static str> {
-        match self {
-            Self::Home => None,
-            Self::Projects => Some(
-                "Selected open-source and personal work in Rust, systems, and native software.",
-            ),
-            Self::Experience => Some(
-                "Open-source contributions, extensions, and tooling built in Rust and Haskell.",
-            ),
-            Self::Contact => Some(
-                "Get in touch with Thomas Jensen about work, collaboration, or open source.",
-            ),
-            Self::Automata => Some(
-                "An interactive cellular automaton compiled from Haskell to WebAssembly.",
-            ),
-        }
-    }
-
-    pub const fn og_type(self) -> &'static str {
-        match self {
-            Self::Home => "profile",
-            _ => "website",
-        }
-    }
-
-    pub const fn structured_data(self) -> StructuredData {
-        match self {
-            Self::Home => StructuredData::Person,
-            _ => StructuredData::None,
+            Self::Home => RouteSeo {
+                title: "Thomas Jensen",
+                description: "Software engineer working in Rust — systems tools, native apps, and open-source contributions.",
+                og_type: "profile",
+                structured_data: StructuredData::Person,
+            },
+            Self::Projects => RouteSeo {
+                title: "Projects — Thomas Jensen",
+                description: "A collection of things I've built: native apps, systems tools, and open-source contributions.",
+                og_type: "website",
+                structured_data: StructuredData::None,
+            },
+            Self::Project(_) => RouteSeo {
+                title: "Project — Thomas Jensen",
+                description: "Details on a project by Thomas Jensen.",
+                og_type: "article",
+                structured_data: StructuredData::None,
+            },
+            Self::Experience => RouteSeo {
+                title: "Experience — Thomas Jensen",
+                description: "Open-source contributions and things I've shipped — Zed extensions, GPUI features, and a few tools of my own.",
+                og_type: "website",
+                structured_data: StructuredData::None,
+            },
+            Self::Contact => RouteSeo {
+                title: "Contact — Thomas Jensen",
+                description: "Get in touch about Rust development, systems work, or potential collaboration.",
+                og_type: "website",
+                structured_data: StructuredData::None,
+            },
+            Self::Automata => RouteSeo {
+                title: "Cellular Automata — Thomas Jensen",
+                description: "An interactive cellular automaton engine, written in Haskell and compiled to WebAssembly.",
+                og_type: "website",
+                structured_data: StructuredData::None,
+            },
         }
     }
 
     /// Canonical URLs always point at the public origin, never at the host the
     /// request happened to arrive on, so proxies and preview hosts cannot
     /// split a page's ranking across duplicate URLs.
-    pub fn canonical(self, site_origin: &str) -> String {
+    pub fn canonical(&self, site_origin: &str) -> String {
         format!("{}{}", site_origin.trim_end_matches('/'), self.path())
     }
 
-    pub fn head(self, site_origin: &str) -> Head {
+    /// Looks up the title and description for a `Project(slug)` route from
+    /// the live project data, so subpage `<title>`s stay in sync with
+    /// `data.json` instead of duplicating project copy in Rust.
+    fn project_seo(&self, data: &PortfolioData) -> Option<(String, String)> {
+        let Self::Project(slug) = self else {
+            return None;
+        };
+        let project =
+            data.projects.iter().find(|project| &project.slug == slug)?;
+
+        Some((
+            format!("{} — Thomas Jensen", project.name),
+            project.description.clone(),
+        ))
+    }
+
+    pub fn head(&self, site_origin: &str, data: &PortfolioData) -> Head {
+        let seo = self.seo();
+        let (title, description) =
+            self.project_seo(data).unwrap_or_else(|| {
+                (seo.title.to_owned(), seo.description.to_owned())
+            });
+
         Head {
-            title: self.title().to_owned(),
-            description: self.description().map(str::to_owned),
+            title,
+            description,
             canonical: self.canonical(site_origin),
             robots: "index, follow".to_owned(),
             og: OpenGraph {
-                og_type: self.og_type().to_owned(),
+                og_type: seo.og_type.to_owned(),
                 site_name: SITE_NAME.to_owned(),
                 locale: OG_LOCALE.to_owned(),
-                image: OpenGraphImage {
-                    url: format!(
-                        "{}{OG_IMAGE_PATH}",
-                        site_origin.trim_end_matches('/')
-                    ),
-                    alt: OG_IMAGE_ALT.to_owned(),
-                    mime: OG_IMAGE_MIME.to_owned(),
-                    width: OG_IMAGE_WIDTH,
-                    height: OG_IMAGE_HEIGHT,
-                },
+                images: vec![
+                    og_image(site_origin, OG_IMAGE_PATH_PNG, OG_IMAGE_MIME_PNG),
+                    og_image(site_origin, OG_IMAGE_PATH_WEBP, OG_IMAGE_MIME_WEBP),
+                ],
             },
-            structured_data: self.structured_data(),
+            structured_data: seo.structured_data,
         }
     }
 }
@@ -151,6 +200,9 @@ pub struct RendererConfig {
     pub origin: String,
     pub site_origin: String,
     pub assets: Assets,
+    /// Used to resolve per-project titles/descriptions in `RenderRoute::head`
+    /// without re-parsing `data.json` on every render.
+    pub data: Arc<PortfolioData>,
     pub timeout: Duration,
     pub cold_timeout: Duration,
     pub startup_timeout: Duration,
@@ -171,6 +223,7 @@ impl RendererConfig {
             origin: get_env_key("AXUM_ORIGIN"),
             site_origin: get_env_key_or("SITE_ORIGIN", DEFAULT_SITE_ORIGIN),
             assets,
+            data: Arc::new(PortfolioData::get()),
             timeout: Duration::from_secs(5),
             cold_timeout: Duration::from_secs(15),
             startup_timeout: Duration::from_secs(20),
@@ -217,7 +270,7 @@ impl RendererClient {
     pub async fn render(&self, route: RenderRoute) -> Result<RenderOutput> {
         let id = self.next_id.fetch_add(1, Ordering::Relaxed);
 
-        if let Some(output) = self.cached(route, id).await {
+        if let Some(output) = self.cached(&route, id).await {
             counter!(
                 "portfolio_ssr_cache_requests_total",
                 "result" => "hit",
@@ -260,7 +313,7 @@ impl RendererClient {
             );
         }
 
-        if let Some(output) = self.cached(route, id).await {
+        if let Some(output) = self.cached(&route, id).await {
             counter!(
                 "portfolio_ssr_cache_requests_total",
                 "result" => "coalesced",
@@ -277,10 +330,10 @@ impl RendererClient {
 
         let req = RenderInput {
             id,
-            url: route.path().to_owned(),
+            url: route.path(),
             rpc_origin: self.config.origin.clone(),
             assets: self.config.assets.clone(),
-            head: route.head(&self.config.site_origin),
+            head: route.head(&self.config.site_origin, &self.config.data),
         };
         let exchange_started = Instant::now();
         let res = {
@@ -342,7 +395,7 @@ impl RendererClient {
             && (200..300).contains(&out.status)
         {
             self.cache.write().await.insert(
-                route,
+                route.clone(),
                 CacheEntry {
                     inserted_at: Instant::now(),
                     output: out.clone(),
@@ -355,12 +408,12 @@ impl RendererClient {
 
     async fn cached(
         &self,
-        route: RenderRoute,
+        route: &RenderRoute,
         request_id: u32,
     ) -> Option<RenderOutput> {
         let mut output = {
             let cache = self.cache.read().await;
-            let entry = cache.get(&route)?;
+            let entry = cache.get(route)?;
             if entry.inserted_at.elapsed() >= self.config.cache_ttl {
                 return None;
             }
@@ -585,28 +638,73 @@ mod tests {
     }
 
     #[test]
-    fn head_builds_canonical_and_og_image_urls_without_double_slashes() {
-        let head = RenderRoute::Contact.head("https://example.com/");
-
-        assert_eq!(head.canonical, "https://example.com/contact");
+    fn from_path_parses_project_slugs_and_rejects_malformed_ones() {
         assert_eq!(
-            head.og.image.url,
-            "https://example.com/static/images/og-card.png"
+            RenderRoute::from_path("/projects/crabdash"),
+            Some(RenderRoute::Project("crabdash".to_owned()))
         );
-        assert_eq!(head.title, "Contact — Thomas Jensen");
-        assert!(head.description.is_some());
+        assert_eq!(RenderRoute::from_path("/projects/"), None);
+        assert_eq!(RenderRoute::from_path("/projects/crabdash/extra"), None);
     }
 
     #[test]
-    fn home_has_no_meta_description_and_person_structured_data() {
-        let head = RenderRoute::Home.head("https://example.com");
+    fn head_builds_canonical_and_og_image_urls_without_double_slashes() {
+        let fixture_data = PortfolioData::get();
+        let head =
+            RenderRoute::Contact.head("https://example.com/", &fixture_data);
 
-        assert_eq!(head.description, None);
+        assert_eq!(head.canonical, "https://example.com/contact");
+        assert_eq!(
+            head.og.images.iter().map(|i| i.url.as_str()).collect::<Vec<_>>(),
+            vec![
+                "https://example.com/static/images/og-card.png",
+                "https://example.com/static/images/og-card.webp",
+            ]
+        );
+        assert_eq!(head.title, "Contact — Thomas Jensen");
+        assert!(!head.description.is_empty());
+    }
+
+    #[test]
+    fn home_seo_is_defined_in_rust_and_uses_person_structured_data() {
+        let fixture_data = PortfolioData::get();
+        let head = RenderRoute::Home.head("https://example.com", &fixture_data);
+
+        assert_eq!(head.title, "Thomas Jensen");
+        assert!(!head.description.is_empty());
         assert!(matches!(head.structured_data, StructuredData::Person));
         assert!(matches!(
-            RenderRoute::Contact.structured_data(),
+            RenderRoute::Contact.seo().structured_data,
             StructuredData::None
         ));
+    }
+
+    #[test]
+    fn head_uses_the_matching_projects_name_and_description() {
+        let fixture_data = PortfolioData::get();
+        let project = fixture_data
+            .projects
+            .iter()
+            .find(|project| project.slug == "crabdash")
+            .expect("fixture data.json should contain the crabdash project");
+        let route = RenderRoute::Project("crabdash".to_owned());
+
+        let head = route.head("https://example.com", &fixture_data);
+
+        assert_eq!(head.canonical, "https://example.com/projects/crabdash");
+        assert!(head.title.contains(&project.name));
+        assert!(head.description.starts_with(&project.description));
+    }
+
+    #[test]
+    fn head_falls_back_to_generic_project_seo_for_an_unknown_slug() {
+        let fixture_data = PortfolioData::get();
+        let route = RenderRoute::Project("does-not-exist".to_owned());
+
+        let head = route.head("https://example.com", &fixture_data);
+
+        assert_eq!(head.title, route.seo().title);
+        assert_eq!(head.description, route.seo().description);
     }
 
     #[test]
@@ -615,9 +713,10 @@ mod tests {
             serde_json::from_str(r#"{"type":"ready"}"#).unwrap();
         assert!(matches!(ready, RendererStartupMessage::Ready));
 
-        let error =
-            serde_json::from_str::<RendererStartupMessage>(r#"{"type":"nope"}"#)
-                .unwrap_err();
+        let error = serde_json::from_str::<RendererStartupMessage>(
+            r#"{"type":"nope"}"#,
+        )
+        .unwrap_err();
         assert!(error.to_string().contains("unknown variant"));
     }
 
@@ -743,6 +842,7 @@ mod tests {
                 css: "assets/index.css".to_owned(),
                 js: "assets/index.js".to_owned(),
             },
+            data: Arc::new(PortfolioData::get()),
             timeout: Duration::from_millis(700),
             cold_timeout: Duration::from_secs(3),
             startup_timeout: Duration::from_secs(5),
@@ -830,10 +930,10 @@ mod tests {
     // The binary is `deno compile`d with its outbound network permission
     // locked to exactly 127.0.0.1:8080 (see frontend/deno.json's `build`
     // task), so the stub server must bind that literal address. Both tests
-    // below share `REAL_RENDERER_LOCK` so they never fight over that port,
+    // below share `REAL_RENDERER_SLOTS` so they never fight over that port,
     // but it will still conflict with a `just dev` server already running.
-    static REAL_RENDERER_LOCK: tokio::sync::Mutex<()> =
-        tokio::sync::Mutex::const_new(());
+    static REAL_RENDERER_SLOTS: tokio::sync::Semaphore =
+        tokio::sync::Semaphore::const_new(1);
 
     #[derive(Clone)]
     struct StubRpcCtx {
@@ -878,7 +978,8 @@ mod tests {
                 hang_data: hang_data.clone(),
                 data_calls: data_calls.clone(),
             };
-            let rpc_router = qubit::Router::new().handler(data).handler(experience);
+            let rpc_router =
+                qubit::Router::new().handler(data).handler(experience);
             let (rpc_service, handle) = rpc_router.to_service(ctx);
             let rpc_app = axum::Router::new().nest_service("/rpc", rpc_service);
             let listener = tokio::net::TcpListener::bind("127.0.0.1:8080")
@@ -899,7 +1000,8 @@ mod tests {
         }
 
         fn set_hang_data(&self, hang: bool) {
-            self.hang_data.store(hang, std::sync::atomic::Ordering::SeqCst);
+            self.hang_data
+                .store(hang, std::sync::atomic::Ordering::SeqCst);
         }
 
         fn data_call_count(&self) -> u32 {
@@ -944,6 +1046,7 @@ mod tests {
             origin: "http://127.0.0.1:8080".to_owned(),
             site_origin: "https://example.com".to_owned(),
             assets,
+            data: Arc::new(PortfolioData::get()),
             timeout,
             cold_timeout,
             startup_timeout: Duration::from_secs(10),
@@ -953,7 +1056,7 @@ mod tests {
 
     #[tokio::test]
     async fn real_renderer_binary_renders_every_route() {
-        let _guard = REAL_RENDERER_LOCK.lock().await;
+        let _permit = REAL_RENDERER_SLOTS.acquire().await.unwrap();
         let (renderer_bin, dist_dir) = real_renderer_paths();
         let assets = load_assets(&dist_dir).expect(
             "failed to read the built Vite manifest; run `just frontend::build` first",
@@ -977,7 +1080,7 @@ mod tests {
         ];
         let mut home_html = None;
         for route in routes {
-            let output = client.render(route).await.unwrap();
+            let output = client.render(route.clone()).await.unwrap();
 
             assert!(
                 output.error.is_none(),
@@ -985,9 +1088,12 @@ mod tests {
                 output.error
             );
             let html = output.html.expect("renderer returned no html");
-            assert!(html.contains("<!doctype html>"), "{route:?} missing doctype");
             assert!(
-                html.contains(route.title()),
+                html.contains("<!doctype html>"),
+                "{route:?} missing doctype"
+            );
+            assert!(
+                html.contains(&route.seo().title.replace('&', "&amp;")),
                 "{route:?} missing its <title>"
             );
             assert!(
@@ -1000,7 +1106,7 @@ mod tests {
             }
         }
 
-        // Only Home carries Person structured data (see `structured_data`).
+        // Only Home carries Person structured data (see `seo`).
         let home_html = home_html.unwrap();
         assert!(home_html.contains(r#""@type":"Person""#));
 
@@ -1017,8 +1123,49 @@ mod tests {
     }
 
     #[tokio::test]
+    async fn real_renderer_binary_renders_a_project_subpage() {
+        let _permit = REAL_RENDERER_SLOTS.acquire().await.unwrap();
+        let (renderer_bin, dist_dir) = real_renderer_paths();
+        let assets = load_assets(&dist_dir).expect(
+            "failed to read the built Vite manifest; run `just frontend::build` first",
+        );
+
+        let server = StubRpcServer::spawn().await;
+        let config = real_renderer_config(
+            renderer_bin,
+            assets,
+            Duration::from_secs(5),
+            Duration::from_secs(10),
+        );
+        let client = RendererClient::new(config).await.unwrap();
+        let fixture_data = PortfolioData::get();
+        let project = fixture_data
+            .projects
+            .iter()
+            .find(|project| project.slug == "crabdash")
+            .expect("fixture data.json should contain the crabdash project");
+
+        let route = RenderRoute::Project("crabdash".to_owned());
+        let output = client.render(route.clone()).await.unwrap();
+
+        assert!(output.error.is_none(), "render returned an error: {:?}", output.error);
+        let html = output.html.expect("renderer returned no html");
+        assert!(html.contains(&project.name), "missing the project name");
+        assert!(
+            html.contains("Crabdash is a native homelab dashboard"),
+            "missing the project overview text"
+        );
+        assert!(
+            html.contains(&route.canonical("https://example.com")),
+            "missing its canonical link"
+        );
+
+        server.shutdown().await;
+    }
+
+    #[tokio::test]
     async fn real_renderer_worker_times_out_and_is_replaced() {
-        let _guard = REAL_RENDERER_LOCK.lock().await;
+        let _permit = REAL_RENDERER_SLOTS.acquire().await.unwrap();
         let (renderer_bin, dist_dir) = real_renderer_paths();
         let assets = load_assets(&dist_dir).expect(
             "failed to read the built Vite manifest; run `just frontend::build` first",
