@@ -1,13 +1,20 @@
 use std::path::PathBuf;
 
-use anyhow::{Result, anyhow};
+use anyhow::{Context, Result, anyhow};
 use aws_config::{BehaviorVersion, Region, defaults};
 use aws_sdk_s3::error::ProvideErrorMetadata;
 use aws_sdk_s3::primitives::ByteStream;
 use aws_sdk_s3::types::Object;
 use aws_sdk_s3::{Client, config::Credentials};
+use image::ImageFormat;
+use webp::Encoder;
 
 use crate::command::Args;
+
+/// Lossy WebP quality (0-100). High enough that re-encoding photos and
+/// screenshots is visually lossless at web display sizes, while still
+/// getting most of WebP's size advantage over JPEG/PNG.
+const WEBP_QUALITY: f32 = 82.0;
 
 pub struct S3 {
     client: Client,
@@ -129,25 +136,131 @@ impl S3 {
     }
 
     pub async fn upload(&self, args: Args) -> Result<()> {
-        let file_name = args.0[0].clone();
+        let requested_key = args.0[0].clone();
         let file_path = PathBuf::from(&args.0[1]);
-        let body = ByteStream::from_path(&file_path).await?;
-        let content_type = Self::content_type(&file_name);
+        let original = tokio::fs::read(&file_path)
+            .await
+            .with_context(|| format!("failed to read {}", file_path.display()))?;
+        let original_size = original.len();
+
+        let (key, body) = match Self::reencode_to_webp(&original)? {
+            Some(webp) => (Self::with_webp_extension(&requested_key), webp),
+            None => (requested_key.clone(), original),
+        };
+        let content_type = Self::content_type(&key);
 
         self.client
             .put_object()
             .bucket(&self.bucket)
-            .key(&file_name)
+            .key(&key)
             .content_type(content_type)
-            .body(body)
+            .body(ByteStream::from(body.clone()))
+            .send()
+            .await?;
+
+        if key != requested_key {
+            println!(
+                "Re-encoded to WebP: {requested_key} -> {key} ({} -> {})",
+                Self::calculate_size(Some(original_size as i64)),
+                Self::calculate_size(Some(body.len() as i64)),
+            );
+        }
+        println!(
+            "Upload successful: {key} from {} ({content_type})",
+            file_path.display()
+        );
+        Ok(())
+    }
+
+    /// Re-encodes an object already in the bucket as lossy WebP, uploading
+    /// it under a `.webp` key. The original key is left untouched — use
+    /// `delete` once you've verified the new one looks right.
+    pub async fn reencode(&self, args: Args) -> Result<()> {
+        let key = args.0[0].clone();
+
+        let object = self
+            .client
+            .get_object()
+            .bucket(&self.bucket)
+            .key(&key)
+            .send()
+            .await?;
+        let original = object.body.collect().await?.into_bytes();
+        let original_size = original.len();
+
+        let Some(webp) = Self::reencode_to_webp(&original)? else {
+            return Err(anyhow!(
+                "{key} is not a re-encodable image (JPEG/PNG/WebP)"
+            ));
+        };
+        let new_key = Self::with_webp_extension(&key);
+        let new_size = webp.len();
+
+        self.client
+            .put_object()
+            .bucket(&self.bucket)
+            .key(&new_key)
+            .content_type(Self::content_type(&new_key))
+            .body(ByteStream::from(webp))
             .send()
             .await?;
 
         println!(
-            "Upload successful: {file_name} from {} ({content_type})",
-            file_path.display()
+            "Re-encoded: {key} -> {new_key} ({} -> {})",
+            Self::calculate_size(Some(original_size as i64)),
+            Self::calculate_size(Some(new_size as i64)),
         );
+        if new_key != key {
+            println!(
+                "Note: old key '{key}' is still in the bucket; run /delete {key} once you've verified {new_key}."
+            );
+        }
+
         Ok(())
+    }
+
+    pub async fn delete(&self, args: Args) -> Result<()> {
+        let key = args.0[0].clone();
+
+        self.client
+            .delete_object()
+            .bucket(&self.bucket)
+            .key(&key)
+            .send()
+            .await?;
+
+        println!("Deleted: {key}");
+        Ok(())
+    }
+
+    /// Re-encodes JPEG/PNG/WebP source bytes as lossy WebP. Returns `None`
+    /// for anything else (SVG, fonts, PDF, WASM, JS, TOML, ...), which
+    /// upload unchanged.
+    fn reencode_to_webp(bytes: &[u8]) -> Result<Option<Vec<u8>>> {
+        let Ok(format) = image::guess_format(bytes) else {
+            return Ok(None);
+        };
+        if !matches!(
+            format,
+            ImageFormat::Jpeg | ImageFormat::Png | ImageFormat::WebP
+        ) {
+            return Ok(None);
+        }
+
+        let decoded = image::load_from_memory_with_format(bytes, format)
+            .context("failed to decode source image")?;
+        let encoded = Encoder::from_image(&decoded)
+            .map_err(|err| anyhow!("failed to prepare image for WebP encoding: {err}"))?
+            .encode(WEBP_QUALITY);
+
+        Ok(Some(encoded.to_vec()))
+    }
+
+    fn with_webp_extension(key: &str) -> String {
+        match key.rsplit_once('.') {
+            Some((stem, _ext)) => format!("{stem}.webp"),
+            None => format!("{key}.webp"),
+        }
     }
 
     /// Objects are served straight back to browsers and to social crawlers,

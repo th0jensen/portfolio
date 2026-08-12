@@ -205,7 +205,7 @@ export default ilha
                 <div class='absolute -bottom-3 -left-3 h-16 w-16 border-b border-l border-primary lg:-bottom-4 lg:-left-4 lg:h-24 lg:w-24' />
                 <div class='relative aspect-4/3 overflow-hidden border border-border bg-muted sm:aspect-16/10 lg:aspect-3/4'>
                   <img
-                    src='/static/headshot.jpg'
+                    src='/static/headshot.webp'
                     alt={`Portrait of ${name}`}
                     width='360'
                     height='540'

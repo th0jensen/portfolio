@@ -10,6 +10,8 @@ mod s3;
 
 static COMMANDS: &[CommandSpec] = &[
     command_spec!(Upload, "/upload", ["<name>", "<path>"]),
+    command_spec!(Reencode, "/reencode", ["<name>"]),
+    command_spec!(Delete, "/delete", ["<name>"]),
     command_spec!(Verify, "/verify", ["<name>"]),
     command_spec!(List, "/list"),
     command_spec!(Help, "/help"),
@@ -27,6 +29,8 @@ async fn main() -> Result<()> {
         let result = match cmd {
             Ok(cmd) => match cmd {
                 Command::Upload { args } => s3.upload(args).await,
+                Command::Reencode { args } => s3.reencode(args).await,
+                Command::Delete { args } => s3.delete(args).await,
                 Command::Verify { args } => s3.verify(args).await,
                 Command::List => s3.list().await,
                 Command::Help => {

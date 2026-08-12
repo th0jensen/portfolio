@@ -65,6 +65,12 @@ pub enum Command {
     Upload {
         args: Args,
     },
+    Reencode {
+        args: Args,
+    },
+    Delete {
+        args: Args,
+    },
     Verify {
         args: Args,
     },

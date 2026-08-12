@@ -17,8 +17,8 @@ use tower_http::{
 use crate::{AppState, routes::pages::not_found_response};
 
 const ASSETS: [&str; 16] = [
-    "headshot.jpg",
-    "images/og-card.png",
+    "headshot.webp",
+    "images/og-card.webp",
     "fonts/alef-700.woff2",
     "fonts/alef-400.woff2",
     "images/appleosophy.webp",
