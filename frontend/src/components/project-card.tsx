@@ -4,6 +4,7 @@ import type { Project } from '../bindings/index.ts';
 import type { Work } from '../bindings/Work.ts';
 import { cn } from '../lib/cn.ts';
 import Icon from '../lib/icon.tsx';
+import { locale } from '../lib/locale.ts';
 
 export default function ProjectCard({
   project,
@@ -25,6 +26,8 @@ export default function ProjectCard({
     ? 'Portfolio lab'
     : 'GitHub';
   const Heading = headingLevel === 2 ? 'h2' : 'h3';
+  const detailHref = `/projects/${project.slug}`;
+  const detailLabel = locale() === 'no' ? 'prosjektdetaljer' : 'project details';
 
   return (
     <article
@@ -36,9 +39,8 @@ export default function ProjectCard({
       )}
     >
       <Link
-        href={project.source_link}
-        external={!isInternal}
-        aria-label={`${copy.visit_project}: ${project.name}`}
+        href={detailHref}
+        aria-label={`${project.name} — ${detailLabel}`}
         class={cn(
           'relative isolate flex min-h-0 items-center justify-center overflow-hidden border-border bg-project-surface p-8 no-underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-ring',
           featured ? 'border-b lg:border-r lg:border-b-0 lg:p-12' : 'border-b',
@@ -84,7 +86,12 @@ export default function ProjectCard({
             featured ? 'text-3xl sm:text-4xl' : 'text-2xl',
           )}
         >
-          {project.name}
+          <Link
+            href={detailHref}
+            class='text-inherit no-underline transition-colors hover:text-primary'
+          >
+            {project.name}
+          </Link>
         </Heading>
         <p
           class={cn(

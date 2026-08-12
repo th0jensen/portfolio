@@ -1,5 +1,5 @@
 import { build_client, http } from '@qubit-rs/client';
-import { loader } from '@ilha/router';
+import { error, loader } from '@ilha/router';
 
 import { pageRouter, registry } from '../.ilha/pages.server.ts';
 import type {
@@ -51,6 +51,22 @@ async function attachLoaders(input: RenderInput): Promise<{
     })),
   );
   pageRouter.attachLoader(
+    '/projects/:slug',
+    loader(({ params }) => {
+      const project = data.projects.find((project) => project.slug === params.slug);
+      if (!project) error(404, 'Project not found');
+
+      return {
+        data: {
+          project,
+          projects: data.projects,
+          en: pick(data.en, 'nav', 'work'),
+          no: pick(data.no, 'nav', 'work'),
+        },
+      };
+    }),
+  );
+  pageRouter.attachLoader(
     '/experience',
     loader(() => ({
       data: {
@@ -76,11 +92,9 @@ async function attachLoaders(input: RenderInput): Promise<{
 export async function render(input: RenderInput): Promise<RenderOutput> {
   const { data } = await attachLoaders(input);
 
-  const result = await pageRouter.renderResponse(
-    input.url,
-    registry,
-    { snapshot: false },
-  );
+  const result = await pageRouter.renderResponse(input.url, registry, {
+    snapshot: false,
+  });
 
   if (result.kind === 'redirect') {
     return {
@@ -104,10 +118,7 @@ export async function render(input: RenderInput): Promise<RenderOutput> {
     { name: 'header', as: 'div' },
   );
 
-  const footerHtml = await footer.hydratable(
-    {},
-    { name: 'footer', as: 'div' },
-  );
+  const footerHtml = await footer.hydratable({}, { name: 'footer', as: 'div' });
 
   const body =
     `<main class="site-layout">${headerHtml}<div class="site-page-content"><div id="app" style="flex: 1">${result.html}</div>${footerHtml}</div></main>`;
@@ -115,7 +126,7 @@ export async function render(input: RenderInput): Promise<RenderOutput> {
 
   return {
     id: input.id,
-    status: result.kind === 'error' ? result.status : result.status ?? 200,
+    status: result.kind === 'error' ? result.status : (result.status ?? 200),
     html,
     error: null,
     headers: {},
@@ -128,7 +139,10 @@ function pickHeaderCopy(locale: Data['en']) {
 }
 
 function pick<T, K extends keyof T>(source: T, ...keys: K[]): Pick<T, K> {
-  return Object.fromEntries(keys.map((key) => [key, source[key]])) as Pick<T, K>;
+  return Object.fromEntries(keys.map((key) => [key, source[key]])) as Pick<
+    T,
+    K
+  >;
 }
 
 function documentShell(
@@ -140,12 +154,11 @@ function documentShell(
   const css = assetPath(assets.css);
   const js = assetPath(assets.js);
   const title = escapeText(head.title);
-  const rawDescription = head.description ?? data.en.meta.description;
-  const description = escapeAttribute(rawDescription);
+  const description = escapeAttribute(head.description);
   const canonical = escapeAttribute(head.canonical);
   const { og } = head;
-  const image = og.image;
-  const twitterCard = image.width >= 1200 && image.width > image.height
+  const primaryImage = og.images[0];
+  const twitterCard = primaryImage.width >= 1200 && primaryImage.width > primaryImage.height
     ? 'summary_large_image'
     : 'summary';
 
@@ -163,11 +176,7 @@ function documentShell(
   <meta property="og:url" content="${canonical}" />
   <meta property="og:title" content="${escapeAttribute(head.title)}" />
   <meta property="og:description" content="${description}" />
-  <meta property="og:image" content="${escapeAttribute(image.url)}" />
-  <meta property="og:image:type" content="${escapeAttribute(image.mime)}" />
-  <meta property="og:image:width" content="${image.width}" />
-  <meta property="og:image:height" content="${image.height}" />
-  <meta property="og:image:alt" content="${escapeAttribute(image.alt)}" />
+  ${ogImageTags(og.images)}
   <meta name="twitter:card" content="${twitterCard}" />${jsonLd(head, data)}
   <script>
     (() => {
@@ -198,6 +207,24 @@ function documentShell(
 </html>`;
 }
 
+// One block of og:image/type/width/height/alt per candidate, in the order
+// crawlers should try them (see the `images` field docs in Rust).
+function ogImageTags(
+  images: RenderInput['head']['og']['images'],
+): string {
+  return images
+    .map((image) =>
+      [
+        `<meta property="og:image" content="${escapeAttribute(image.url)}" />`,
+        `<meta property="og:image:type" content="${escapeAttribute(image.mime)}" />`,
+        `<meta property="og:image:width" content="${image.width}" />`,
+        `<meta property="og:image:height" content="${image.height}" />`,
+        `<meta property="og:image:alt" content="${escapeAttribute(image.alt)}" />`,
+      ].join('\n  ')
+    )
+    .join('\n  ');
+}
+
 function jsonLd(head: RenderInput['head'], data: Data): string {
   if (head.structured_data !== 'person') return '';
 
@@ -207,14 +234,16 @@ function jsonLd(head: RenderInput['head'], data: Data): string {
     '@type': 'Person',
     name: `${about.first_name} ${about.last_name}`,
     url: head.canonical,
-    image: head.og.image.url,
+    image: head.og.images[0].url,
     jobTitle: en.hero.role,
-    description: en.meta.description,
+    description: head.description,
     sameAs: [en.buttons.github.url, en.buttons.linkedin.url],
   };
 
   return `\n  <script type="application/ld+json">${
-    JSON.stringify(graph).replaceAll('<', '\\u003c')
+    JSON.stringify(
+      graph,
+    ).replaceAll('<', '\\u003c')
   }</script>`;
 }
 
