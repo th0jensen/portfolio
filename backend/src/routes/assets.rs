@@ -36,18 +36,18 @@ const ASSETS: [&str; 16] = [
 ];
 
 pub fn router(State(state): State<&AppState>) -> Router<AppState<'static>> {
+    let compression = CompressionLayer::new()
+        .gzip(true)
+        .br(true)
+        .deflate(true)
+        .zstd(true);
+
     let vite_assets = ServiceBuilder::new()
         .layer(SetResponseHeaderLayer::overriding(
             header::CACHE_CONTROL,
             HeaderValue::from_static("public, max-age=31536000, immutable"),
         ))
-        .layer(
-            CompressionLayer::new()
-                .gzip(true)
-                .br(true)
-                .deflate(true)
-                .zstd(true),
-        )
+        .layer(compression.clone())
         .service(ServeDir::new(format!("{}/assets", state.dist_dir)));
 
     Router::new()
@@ -64,6 +64,13 @@ pub fn router(State(state): State<&AppState>) -> Router<AppState<'static>> {
             "/favicon.svg",
             ServeFile::new(format!("{}/favicon.svg", state.static_dir)),
         )
+        // `.layer` only wraps routes registered before this call, so this
+        // leaves `/assets` (nested below) on its own compression layer
+        // rather than double-wrapping it. The default predicate skips
+        // already-compressed formats (JPG/PNG/WEBP/WOFF2) automatically but
+        // still compresses the SVGs, WASM, JS, and pattern TOML files
+        // served from S3 above.
+        .layer(compression)
         .nest_service("/assets", vite_assets)
 }
 
