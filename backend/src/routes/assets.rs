@@ -183,3 +183,44 @@ fn request_header(
 ) -> Option<Result<&str, http::header::ToStrError>> {
     headers.get(name).map(HeaderValue::to_str)
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn request_header_is_none_when_absent() {
+        let headers = HeaderMap::new();
+
+        assert!(request_header(&headers, header::RANGE).is_none());
+    }
+
+    #[test]
+    fn request_header_returns_the_value_when_present() {
+        let mut headers = HeaderMap::new();
+        headers.insert(header::RANGE, HeaderValue::from_static("bytes=0-1"));
+
+        assert_eq!(
+            request_header(&headers, header::RANGE).unwrap().unwrap(),
+            "bytes=0-1"
+        );
+    }
+
+    #[test]
+    fn request_header_surfaces_non_utf8_values_as_an_error() {
+        let mut headers = HeaderMap::new();
+        headers.insert(
+            header::IF_MATCH,
+            HeaderValue::from_bytes(&[0xFF, 0xFE]).unwrap(),
+        );
+
+        assert!(request_header(&headers, header::IF_MATCH).unwrap().is_err());
+    }
+
+    #[test]
+    fn allowlist_includes_the_automaton_pattern_files() {
+        assert_eq!(ASSETS.len(), 16);
+        assert!(ASSETS.contains(&"automaton/patterns/conway/oscillator.toml"));
+        assert!(ASSETS.contains(&"automaton/patterns/wireworld/xor.toml"));
+    }
+}

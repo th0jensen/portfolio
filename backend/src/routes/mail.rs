@@ -144,3 +144,46 @@ fn rate_limited_response(error: GovernorError) -> Response {
 
     response
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use axum::body::to_bytes;
+
+    #[test]
+    fn is_email_accepts_valid_and_rejects_invalid_addresses() {
+        for valid in ["a@b.com", "first.last@sub.example.co", "x@y.io"] {
+            assert!(is_email(valid), "expected {valid} to be valid");
+        }
+
+        for invalid in ["", "no-at-sign", "a@b", "a b@c.com", "@c.com", "a@.com"] {
+            assert!(!is_email(invalid), "expected {invalid} to be invalid");
+        }
+    }
+
+    #[tokio::test]
+    async fn rate_limited_response_maps_too_many_requests_to_429_with_headers() {
+        let mut retry_headers = http::HeaderMap::new();
+        retry_headers.insert("retry-after", http::HeaderValue::from_static("5"));
+
+        let response = rate_limited_response(GovernorError::TooManyRequests {
+            wait_time: 5,
+            headers: Some(retry_headers),
+        });
+
+        assert_eq!(response.status(), StatusCode::TOO_MANY_REQUESTS);
+        assert_eq!(response.headers().get("retry-after").unwrap(), "5");
+
+        let body = to_bytes(response.into_body(), usize::MAX).await.unwrap();
+        let parsed: serde_json::Value = serde_json::from_slice(&body).unwrap();
+        assert_eq!(parsed["ok"], false);
+        assert!(parsed["message"].as_str().unwrap().contains("5 seconds"));
+    }
+
+    #[test]
+    fn rate_limited_response_maps_other_governor_errors_to_500() {
+        let response = rate_limited_response(GovernorError::UnableToExtractKey);
+
+        assert_eq!(response.status(), StatusCode::INTERNAL_SERVER_ERROR);
+    }
+}

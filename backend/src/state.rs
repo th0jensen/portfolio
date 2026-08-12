@@ -193,3 +193,57 @@ pub fn headers() -> ServiceBuilder<Headers> {
             HeaderValue::from_static("no-cache"),
         ))
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    fn item(name: &str) -> ExperienceItem {
+        ExperienceItem {
+            name: name.to_owned(),
+            description: String::new(),
+            url: String::new(),
+            stars: 0,
+            forks: 0,
+            language: String::new(),
+            language_color: String::new(),
+            item_type: "repo".to_owned(),
+            downloads: None,
+            pr_number: None,
+            pr_state: None,
+            additions: None,
+            deletions: None,
+            zed_extension_url: None,
+            github_url: None,
+            featured: None,
+            zed_extension_id: None,
+        }
+    }
+
+    #[test]
+    fn fresh_is_none_before_anything_is_stored() {
+        let cache = ExperienceCache::new();
+
+        assert!(cache.fresh(Duration::from_secs(60)).is_none());
+    }
+
+    #[test]
+    fn fresh_returns_stored_items_within_the_ttl() {
+        let mut cache = ExperienceCache::new();
+        cache.store(vec![item("portfolio")]);
+
+        let items = cache.fresh(Duration::from_secs(60)).unwrap();
+
+        assert_eq!(items.len(), 1);
+        assert_eq!(items[0].name, "portfolio");
+    }
+
+    #[test]
+    fn fresh_is_none_once_the_ttl_has_elapsed() {
+        let mut cache = ExperienceCache::new();
+        cache.store(vec![item("portfolio")]);
+        std::thread::sleep(Duration::from_millis(20));
+
+        assert!(cache.fresh(Duration::from_millis(1)).is_none());
+    }
+}

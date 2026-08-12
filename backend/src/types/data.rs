@@ -138,6 +138,98 @@ impl Data {
     }
 }
 
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use indoc::indoc;
+
+    #[test]
+    fn data_get_parses_the_embedded_data_json() {
+        let data = Data::get();
+
+        assert!(!data.projects.is_empty());
+        assert!(!data.experience_items.is_empty());
+        assert!(!data.locales.is_empty());
+    }
+
+    #[test]
+    fn render_output_round_trips_through_json() {
+        let output = RenderOutput {
+            id: 7,
+            status: 200,
+            html: Some("<html></html>".to_owned()),
+            error: None,
+            headers: HashMap::from([("x-req".to_owned(), "abc".to_owned())]),
+        };
+
+        let json = serde_json::to_string(&output).unwrap();
+        let parsed: RenderOutput = serde_json::from_str(&json).unwrap();
+
+        assert_eq!(parsed.id, 7);
+        assert_eq!(parsed.status, 200);
+        assert_eq!(parsed.html.as_deref(), Some("<html></html>"));
+        assert_eq!(parsed.headers.get("x-req").map(String::as_str), Some("abc"));
+    }
+
+    #[test]
+    fn structured_data_serializes_to_snake_case() {
+        assert_eq!(
+            serde_json::to_string(&StructuredData::Person).unwrap(),
+            "\"person\""
+        );
+        assert_eq!(
+            serde_json::to_string(&StructuredData::None).unwrap(),
+            "\"none\""
+        );
+    }
+
+    #[test]
+    fn open_graph_serializes_og_type_field_as_type() {
+        let og = OpenGraph {
+            og_type: "profile".to_owned(),
+            site_name: "Thomas Jensen".to_owned(),
+            locale: "en_US".to_owned(),
+            image: OpenGraphImage {
+                url: "https://example.com/og.png".to_owned(),
+                alt: "alt text".to_owned(),
+                mime: "image/png".to_owned(),
+                width: 1200,
+                height: 630,
+            },
+        };
+
+        let json = serde_json::to_value(&og).unwrap();
+
+        assert_eq!(json["type"], "profile");
+        assert!(json.get("og_type").is_none());
+    }
+
+    #[test]
+    fn experience_item_deserializes_type_field_and_defaults_missing_optionals() {
+        let json = indoc! {r##"
+            {
+              "name": "portfolio",
+              "description": "a website",
+              "url": "https://github.com/th0jensen/portfolio",
+              "stars": 3,
+              "forks": 1,
+              "language": "Rust",
+              "language_color": "#dea584",
+              "type": "repo",
+              "downloads": null
+            }
+        "##};
+
+        let item: ExperienceItem = serde_json::from_str(json).unwrap();
+
+        assert_eq!(item.item_type, "repo");
+        assert_eq!(item.downloads, None);
+        assert_eq!(item.pr_number, None);
+        assert_eq!(item.zed_extension_id, None);
+        assert_eq!(item.featured, None);
+    }
+}
+
 #[derive(ts_rs::TS, Clone, Serialize, Deserialize, Debug)]
 pub struct LocaleData {
     pub meta: Meta,
