@@ -25,7 +25,9 @@ jobs:
       - uses: denoland/setup-deno@v2
         with:
           deno-version: v2.9.4
-      - run: cargo install just --version 1.57.0 --locked
+      - uses: extractions/setup-just@v4
+        with:
+          just-version: "1.57.0"
       - run: just init
       - run: just lint
 
@@ -41,7 +43,9 @@ jobs:
       - uses: denoland/setup-deno@v2
         with:
           deno-version: v2.9.4
-      - run: cargo install just --version 1.57.0 --locked
+      - uses: extractions/setup-just@v4
+        with:
+          just-version: "1.57.0"
       - run: just init
       - run: just test
 
