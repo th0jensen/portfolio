@@ -42,10 +42,77 @@ export default ilha
     document.documentElement.classList.toggle('dark', next === 'dark');
     document.documentElement.style.colorScheme = next;
   })
+  .effect(({ state, signal }) => {
+    const openMenus = () =>
+      document.querySelectorAll<HTMLDetailsElement>('[data-locale-menu][open]');
+    const toggleButton = () => document.querySelector<HTMLElement>('[data-menu-toggle]');
+
+    const closeMobile = () => {
+      state.mobileOpen(false);
+      document.documentElement.classList.remove('mobile-nav-open');
+    };
+
+    const onPointerDown = (event: PointerEvent) => {
+      for (const menu of openMenus()) {
+        if (!menu.contains(event.target as Node)) menu.removeAttribute('open');
+      }
+    };
+
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') {
+        for (const menu of openMenus()) {
+          menu.removeAttribute('open');
+          menu.querySelector('summary')?.focus();
+        }
+        if (state.mobileOpen()) {
+          closeMobile();
+          toggleButton()?.focus();
+        }
+        return;
+      }
+
+      if (event.key !== 'Tab' || !state.mobileOpen()) return;
+
+      const panel = document.getElementById('mobile-nav');
+      const toggle = toggleButton();
+      if (!panel || !toggle) return;
+
+      // The toggle doubles as the panel's close button, so it is part of the
+      // cycle rather than an escape hatch out of it.
+      const stops = [
+        toggle,
+        ...panel.querySelectorAll<HTMLElement>('a[href], button'),
+      ];
+      const first = stops[0];
+      const last = stops[stops.length - 1];
+
+      if (event.shiftKey && document.activeElement === first) {
+        event.preventDefault();
+        last.focus();
+      } else if (!event.shiftKey && document.activeElement === last) {
+        event.preventDefault();
+        first.focus();
+      }
+    };
+
+    // The panel is md:hidden, so a resize past the breakpoint would otherwise
+    // strand both the open state and the scroll lock.
+    const onResize = () => {
+      if (globalThis.innerWidth >= 768 && state.mobileOpen()) closeMobile();
+    };
+
+    document.addEventListener('pointerdown', onPointerDown, { signal });
+    document.addEventListener('keydown', onKeyDown, { signal });
+    globalThis.addEventListener('resize', onResize, { passive: true, signal });
+  })
   .on('[data-menu-toggle]@click', ({ state }) => {
     const next = !state.mobileOpen();
     state.mobileOpen(next);
     document.documentElement.classList.toggle('mobile-nav-open', next);
+    if (!next) return;
+    requestAnimationFrame(() => {
+      document.querySelector<HTMLElement>('#mobile-nav a')?.focus();
+    });
   })
   .on('[data-menu-close]@click', ({ state }) => {
     state.mobileOpen(false);
@@ -76,9 +143,9 @@ export default ilha
     const mobileOpen = state.mobileOpen();
     const activeLocale = data.locales.find((item) => item.code === locale());
     const navLinks = [
-      { href: '/projects', label: loc.nav.work, marker: '01' },
-      { href: '/experience', label: loc.nav.experience, marker: '02' },
-      { href: '/contact', label: loc.nav.contact, marker: '03' },
+      { href: '/projects', label: loc.nav.work },
+      { href: '/experience', label: loc.nav.experience },
+      { href: '/contact', label: loc.nav.contact },
     ];
 
     const navLinkClass = (href: string, mobile = false) =>
@@ -92,7 +159,7 @@ export default ilha
       );
 
     return (
-      <div class='fixed inset-x-0 top-0 z-50'>
+      <div class='fixed inset-x-0 top-0 z-50 select-none'>
         <header
           class={cn(
             'h-16 border-b border-border transition-[background-color,box-shadow] duration-200',
@@ -125,9 +192,6 @@ export default ilha
                   href={link.href}
                   class={navLinkClass(link.href)}
                 >
-                  <span class='mr-1.5 font-mono text-[0.5625rem] font-normal text-muted-foreground'>
-                    {link.marker}
-                  </span>
                   {link.label}
                   {path === link.href && (
                     <span class='absolute inset-x-3 bottom-0 h-0.5 bg-primary' />
@@ -144,7 +208,10 @@ export default ilha
                 {loc.buttons.resume}
               </a>
 
-              <details class='group relative flex items-center [&::-webkit-details-marker]:hidden'>
+              <details
+                class='group relative flex items-center [&::-webkit-details-marker]:hidden'
+                data-locale-menu
+              >
                 <summary class='flex h-16 cursor-pointer list-none items-center gap-1.5 px-3 font-mono text-[0.6875rem] uppercase tracking-[0.08em] text-muted-foreground transition-colors hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring'>
                   <span aria-hidden='true'>
                     {activeLocale?.flag ?? '🇬🇧'}
@@ -191,7 +258,8 @@ export default ilha
               class='my-auto grid h-9 w-9 cursor-pointer place-items-center border border-border bg-transparent text-foreground transition-colors hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring md:hidden'
               data-menu-toggle
               aria-label={mobileOpen ? loc.nav.close_menu : loc.nav.open_menu}
-              aria-expanded={mobileOpen}
+              aria-expanded={mobileOpen ? 'true' : 'false'}
+              aria-controls='mobile-nav'
             >
               {mobileOpen ? <Icon node={X} size={18} /> : <Icon node={Menu} size={18} />}
             </button>
@@ -200,6 +268,7 @@ export default ilha
 
         {mobileOpen && (
           <nav
+            id='mobile-nav'
             class='h-[calc(100dvh-4rem)] overflow-y-auto border-b border-border bg-background px-5 py-5 sm:px-8 md:hidden'
             aria-label='Mobile navigation'
           >
@@ -210,9 +279,6 @@ export default ilha
                 data-menu-close
               >
                 <span>{link.label}</span>
-                <span class='font-mono text-[0.6875rem] font-normal text-muted-foreground'>
-                  /{link.marker}
-                </span>
               </a>
             ))}
             <a

@@ -13,7 +13,7 @@ export default ilha.render(() => {
         <div class='relative mx-auto flex h-full w-full max-w-7xl items-center justify-between gap-5 px-7 py-6 sm:px-9 sm:py-6 lg:px-10 lg:py-4'>
           <div class='min-w-0'>
             <p class='font-mono text-[0.625rem] uppercase tracking-[0.16em] text-primary'>
-              ##LAB## / Haskell → WASM
+              04 / Haskell → WASM
             </p>
             <h1 class='mt-1 text-[clamp(1.65rem,4vw,2.75rem)] font-bold leading-none tracking-tighter'>
               Cellular Automata

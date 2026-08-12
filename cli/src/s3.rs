@@ -168,6 +168,7 @@ impl S3 {
             "js" => "text/javascript",
             "wasm" => "application/wasm",
             "json" => "application/json",
+            "toml" => "text/plain; charset=utf-8",
             _ => "application/octet-stream",
         }
     }

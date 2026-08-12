@@ -45,6 +45,10 @@
   --project-surface: 38 20% 93%;
   --shadow: 222 24% 12%;
   --radius: 0.5rem;
+  /* Tuned per theme so the grid holds ~5 dL* against the background at the
+     hero's layer opacity, rather than sitting at the threshold of vision. */
+  --grid-major: 0.95;
+  --grid-minor: 0.66;
 }
 
 html.dark {
@@ -66,6 +70,8 @@ html.dark {
   --ring: 18 76% 58%;
   --project-surface: 220 15% 13%;
   --shadow: 222 40% 2%;
+  --grid-major: 0.85;
+  --grid-minor: 0.6;
 }
 
 @layer base {
@@ -76,12 +82,22 @@ html.dark {
 
   * {
     border-color: hsl(var(--border));
-    user-select: none;
     -webkit-tap-highlight-color: transparent;
-    -webkit-touch-callout: none;
     box-sizing: border-box;
     -webkit-text-size-adjust: none;
     text-size-adjust: none;
+  }
+
+  /* Prose stays selectable so it can be quoted or copied. Only controls and
+     the canvas suppress selection, where a stray highlight is pure noise.
+     Deliberately not `header` — page headers carry real copy. */
+  nav,
+  button,
+  summary,
+  [role="button"],
+  .automaton-page {
+    user-select: none;
+    -webkit-touch-callout: none;
   }
 
   input,
@@ -91,7 +107,6 @@ html.dark {
   }
 
   html {
-    overflow-x: hidden;
     scroll-behavior: smooth;
     scrollbar-gutter: stable;
     background: hsl(var(--background));
@@ -131,11 +146,13 @@ html.dark {
 
 .site-layout {
   min-height: 100vh;
+  min-height: 100dvh;
 }
 
 .site-page-content {
   display: flex;
   min-height: 100vh;
+  min-height: 100dvh;
   flex-direction: column;
   padding-top: 4rem;
 }
@@ -191,10 +208,10 @@ body:has(.automaton-page) footer {
 
 .technical-grid {
   background-image:
-    linear-gradient(to right, hsl(var(--border) / 0.32) 1px, transparent
-    1px),
-    linear-gradient(to bottom, hsl(var(--border) / 0.22) 1px, transparent
-    1px);
+    linear-gradient(to right, hsl(var(--border) / var(--grid-major)) 1px,
+    transparent 1px),
+    linear-gradient(to bottom, hsl(var(--border) / var(--grid-minor)) 1px,
+    transparent 1px);
   background-size: 4rem 4rem;
   background-position: center top;
 }
