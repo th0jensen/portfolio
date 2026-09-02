@@ -56,7 +56,7 @@ type PrometheusLayer<'a> = GenericMetricLayer<'a, PrometheusHandle, Handle>;
 
 #[derive(Derivative, Clone)]
 #[derivative(Debug)]
-pub(crate) struct AppState<'a> {
+pub struct AppState<'a> {
     pub(crate) renderer: Arc<RendererClient>,
     pub(crate) s3: Arc<Client>,
     pub(crate) bucket: Arc<String>,
@@ -161,6 +161,58 @@ impl<'a> AppState<'a> {
                 .load()
                 .await,
         )
+    }
+}
+
+#[cfg(test)]
+impl AppState<'static> {
+    /// Builds a state around `renderer` for tests of the HTTP layer.
+    ///
+    /// The S3 and Resend clients are constructed but pointed nowhere: the page
+    /// routes never touch them, and a test that does would fail loudly on
+    /// connect rather than quietly reaching a real bucket.
+    pub(crate) async fn for_tests(
+        renderer: RendererClient,
+        font_css: &str,
+    ) -> Self {
+        // `pair()` installs a process-global recorder, so every test in this
+        // binary has to share one.
+        static METRICS: std::sync::OnceLock<(
+            Arc<PrometheusLayer<'static>>,
+            Arc<PrometheusHandle>,
+        )> = std::sync::OnceLock::new();
+        let (prometheus_layer, metric_handle) = METRICS
+            .get_or_init(|| {
+                let (layer, handle) = PrometheusMetricLayer::pair();
+                (Arc::new(layer), Arc::new(handle))
+            })
+            .clone();
+        let creds =
+            Credentials::new("test", "test", None, None, "portfolio-tests");
+        let s3_config = defaults(BehaviorVersion::latest())
+            .credentials_provider(creds)
+            .region(Region::new("auto"))
+            // Reserved as "discard"; nothing listens here.
+            .endpoint_url("http://127.0.0.1:9")
+            .load()
+            .await;
+
+        Self {
+            renderer: Arc::new(renderer),
+            s3: Arc::new(Client::new(&s3_config)),
+            bucket: Arc::new("test-bucket".to_owned()),
+            resend_client: Arc::new(Resend::new("test-key")),
+            experience_cache: Arc::new(RwLock::new(ExperienceCache::new())),
+            github_api_key: Arc::new("test-key".to_owned()),
+            contact_mail: Arc::new("contact@example.com".to_owned()),
+            sender_mail: Arc::new("sender@example.com".to_owned()),
+            data: Arc::new(Data::get()),
+            font_css: Arc::new(font_css.to_owned()),
+            dist_dir: Arc::new("dist".to_owned()),
+            static_dir: Arc::new("static".to_owned()),
+            prometheus_layer,
+            metric_handle,
+        }
     }
 }
 

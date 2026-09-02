@@ -150,6 +150,55 @@ mod tests {
     use super::*;
     use axum::body::to_bytes;
 
+    use crate::renderer::{RendererClient, test_support::fake_renderer_config};
+
+    async fn test_state() -> AppState<'static> {
+        let renderer = RendererClient::new(fake_renderer_config(None))
+            .await
+            .expect("fake renderer should start; is `deno` on PATH?");
+
+        AppState::for_tests(renderer, "").await
+    }
+
+    fn payload(full_name: &str, email: &str, content: &str) -> EmailPayload {
+        EmailPayload {
+            full_name: full_name.to_owned(),
+            email: email.to_owned(),
+            content: content.to_owned(),
+        }
+    }
+
+    /// The browser gates these with `required` / `type=email` / `minlength`, but
+    /// that is only a convenience: the form posts JSON, so anything can reach
+    /// this handler. These cases are the reason the client ships no validator.
+    #[tokio::test]
+    async fn a_submission_missing_any_field_is_rejected_before_sending() {
+        let state = test_state().await;
+
+        let rejected = [
+            payload("", "a@b.com", "a real message"),
+            payload("Ada", "", "a real message"),
+            payload("Ada", "a@b.com", ""),
+            // Whitespace passes the browser's `required`, so Rust has to trim.
+            payload("   ", "a@b.com", "a real message"),
+            payload("Ada", "a@b.com", "   "),
+            payload("Ada", "not-an-email", "a real message"),
+            payload("Ada", "a@b", "a real message"),
+        ];
+
+        for input in rejected {
+            let described = format!("{input:?}");
+            let Json(response) =
+                dispatch_email(State(state.clone()), Json(input)).await;
+
+            assert!(!response.ok, "should have been rejected: {described}");
+            assert_eq!(
+                response.message,
+                "All fields are required to be non-empty and valid."
+            );
+        }
+    }
+
     #[test]
     fn is_email_accepts_valid_and_rejects_invalid_addresses() {
         for valid in ["a@b.com", "first.last@sub.example.co", "x@y.io"] {
