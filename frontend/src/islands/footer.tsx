@@ -1,17 +1,13 @@
-import ilha from 'ilha';
 import { ArrowUpRight } from 'lucide';
 import Icon from '../lib/icon.tsx';
-import { locale } from '../lib/locale.ts';
+import { useLocale } from '../lib/locale.ts';
 
-export default ilha.render(() => {
+export default function Footer() {
   const year = String(new Date().getFullYear());
-  const isNorwegian = locale() === 'no';
+  const isNorwegian = useLocale()() === 'no';
   const channels = [
     ['https://github.com/th0jensen', 'GitHub'],
-    [
-      'https://www.linkedin.com/in/thomas-jensen-75a488208/',
-      'LinkedIn',
-    ],
+    ['https://www.linkedin.com/in/thomas-jensen-75a488208/', 'LinkedIn'],
     ['/static/resume.pdf', isNorwegian ? 'CV' : 'Resume'],
   ] as const;
 
@@ -26,9 +22,7 @@ export default ilha.render(() => {
             <span class='grid h-8 w-8 place-items-center bg-black font-mono text-[0.625rem] font-bold text-white'>
               TJ
             </span>
-            <span class='font-bold tracking-[-0.02em]'>
-              Thomas Jensen
-            </span>
+            <span class='font-bold tracking-[-0.02em]'>Thomas Jensen</span>
           </a>
           <p class='mt-5 max-w-md text-sm leading-6 text-muted-foreground'>
             {isNorwegian
@@ -36,12 +30,8 @@ export default ilha.render(() => {
               : 'Systems engineer working with Rust, native software, and backend infrastructure.'}
           </p>
           <div class='mt-5 flex flex-wrap items-baseline gap-x-2 gap-y-1 font-mono text-[0.625rem] uppercase tracking-[0.12em] text-muted-foreground'>
-            <span>
-              {isNorwegian ? 'Porteføljestack' : 'Portfolio stack'}
-            </span>
-            <span class='text-foreground'>
-              Ilha · Areia · Rust · Axum
-            </span>
+            <span>{isNorwegian ? 'Porteføljestack' : 'Portfolio stack'}</span>
+            <span class='text-foreground'>Ilha · Effect · Rust · Axum</span>
           </div>
         </div>
 
@@ -66,4 +56,4 @@ export default ilha.render(() => {
       </div>
     </footer>
   );
-});
+}

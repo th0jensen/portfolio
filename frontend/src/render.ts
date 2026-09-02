@@ -1,99 +1,26 @@
 import { build_client, http } from '@qubit-rs/client';
-import { error, loader } from '@ilha/router';
+import { renderToString } from 'ilha';
 
-import { pageRouter, registry } from '../.ilha/pages.server.ts';
-import type {
-  Data,
-  ExperienceItem,
-  QubitServer,
-  RenderInput,
-  RenderOutput,
-} from './bindings/index.ts';
+import { pageRouter } from './router.ts';
+import { islandPages } from './islands/pages.ts';
+import type { Data, QubitServer, RenderInput, RenderOutput } from './bindings/index.ts';
 import footer from './islands/footer.tsx';
 import header from './islands/header.tsx';
-
-async function attachLoaders(input: RenderInput): Promise<{
-  data: Data;
-  experience: ExperienceItem[];
-}> {
-  const api = build_client<QubitServer>(http(`${input.rpc_origin}/rpc`));
-  const pathname = new URL(input.url, 'http://renderer').pathname;
-  const dataPromise = api.data.query();
-  const experiencePromise = pathname === '/' || pathname === '/experience'
-    ? api.experience.query()
-    : Promise.resolve([]);
-
-  const [data, experience] = await Promise.all([
-    dataPromise,
-    experiencePromise,
-  ]);
-
-  pageRouter.attachLoader(
-    '/',
-    loader(() => ({
-      data: {
-        about: data.about,
-        projects: data.projects,
-        en: pick(data.en, 'nav', 'hero', 'buttons', 'work'),
-        no: pick(data.no, 'nav', 'hero', 'buttons', 'work'),
-      },
-      experience,
-    })),
-  );
-  pageRouter.attachLoader(
-    '/projects',
-    loader(() => ({
-      data: {
-        projects: data.projects,
-        en: pick(data.en, 'nav', 'work'),
-        no: pick(data.no, 'nav', 'work'),
-      },
-    })),
-  );
-  pageRouter.attachLoader(
-    '/projects/:slug',
-    loader(({ params }) => {
-      const project = data.projects.find((project) => project.slug === params.slug);
-      if (!project) error(404, 'Project not found');
-
-      return {
-        data: {
-          project,
-          projects: data.projects,
-          en: pick(data.en, 'nav', 'work'),
-          no: pick(data.no, 'nav', 'work'),
-        },
-      };
-    }),
-  );
-  pageRouter.attachLoader(
-    '/experience',
-    loader(() => ({
-      data: {
-        en: pick(data.en, 'nav', 'experience'),
-        no: pick(data.no, 'nav', 'experience'),
-      },
-      experience,
-    })),
-  );
-  pageRouter.attachLoader(
-    '/contact',
-    loader(() => ({
-      data: {
-        en: pick(data.en, 'nav', 'contact'),
-        no: pick(data.no, 'nav', 'contact'),
-      },
-    })),
-  );
-
-  return { data, experience };
-}
+import { setServerData } from './lib/server-data.ts';
 
 export async function render(input: RenderInput): Promise<RenderOutput> {
-  const { data } = await attachLoaders(input);
+  const url = new URL(input.url, 'http://renderer');
+  const api = build_client<QubitServer>(http(`${input.rpc_origin}/rpc`));
+  const [data, experience] = await Promise.all([
+    api.data.query(),
+    url.pathname === '/' || url.pathname === '/experience'
+      ? api.experience.query()
+      : Promise.resolve([]),
+  ]);
 
-  const result = await pageRouter.renderResponse(input.url, registry, {
-    snapshot: false,
+  setServerData({ data, experience });
+  const result = await pageRouter.renderResponse(url, {
+    snapshot: url.pathname in islandPages,
   });
 
   if (result.kind === 'redirect') {
@@ -106,43 +33,27 @@ export async function render(input: RenderInput): Promise<RenderOutput> {
     };
   }
 
-  const headerHtml = await header.hydratable(
-    {
-      data: {
-        locales: data.locales,
-        en: pickHeaderCopy(data.en),
-        no: pickHeaderCopy(data.no),
-      },
-      path: new URL(input.url, 'http://renderer').pathname,
-    },
-    { name: 'header', as: 'div' },
+  const headerHtml = markIsland(await renderToString(header), 'header');
+  const footerHtml = markIsland(
+    await renderToString(footer, { snapshot: false }),
+    'footer',
   );
-
-  const footerHtml = await footer.hydratable({}, { name: 'footer', as: 'div' });
-
   const body =
     `<main class="site-layout">${headerHtml}<div class="site-page-content"><div id="app" style="flex: 1">${result.html}</div>${footerHtml}</div></main>`;
-  const html = documentShell(body, data, input.assets, input.head);
 
   return {
     id: input.id,
     status: result.kind === 'error' ? result.status : (result.status ?? 200),
-    html,
+    html: documentShell(body, data, input.assets, input.head),
     error: null,
     headers: {},
   };
 }
 
-function pickHeaderCopy(locale: Data['en']) {
-  const { nav, buttons, theme } = locale;
-  return { nav, buttons: { resume: buttons.resume }, theme };
-}
-
-function pick<T, K extends keyof T>(source: T, ...keys: K[]): Pick<T, K> {
-  return Object.fromEntries(keys.map((key) => [key, source[key]])) as Pick<
-    T,
-    K
-  >;
+function markIsland(html: string, name: string): string {
+  const marked = html.replace('<div data-ilha', `<div data-island="${name}" data-ilha`);
+  if (marked === html) throw new Error(`no island root to mark for "${name}"`);
+  return marked;
 }
 
 function documentShell(
@@ -209,9 +120,7 @@ function documentShell(
 
 // One block of og:image/type/width/height/alt per candidate, in the order
 // crawlers should try them (see the `images` field docs in Rust).
-function ogImageTags(
-  images: RenderInput['head']['og']['images'],
-): string {
+function ogImageTags(images: RenderInput['head']['og']['images']): string {
   return images
     .map((image) =>
       [

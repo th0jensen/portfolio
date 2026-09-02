@@ -1,4 +1,3 @@
-import { pages } from '@ilha/router/vite';
 import tailwindcss from '@tailwindcss/vite';
 import { defineConfig } from 'vite';
 import deno from '@deno/vite-plugin';
@@ -7,7 +6,7 @@ export default defineConfig({
   oxc: {
     jsx: {
       runtime: 'automatic',
-      importSource: 'ilha',
+      importSource: '@jsx',
     },
   },
   build: {
@@ -20,7 +19,7 @@ export default defineConfig({
       },
     },
   },
-  plugins: [pages({ interceptLinks: false }), tailwindcss(), deno()],
+  plugins: [tailwindcss(), deno()],
   server: {
     watch: { usePolling: true },
   },

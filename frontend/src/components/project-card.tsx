@@ -1,24 +1,22 @@
-import { Link } from 'areia';
+import { Link } from './link.tsx';
 import { ArrowRight, ArrowUpRight } from 'lucide';
 import type { Project } from '../bindings/index.ts';
 import type { Work } from '../bindings/Work.ts';
 import { cn } from '../lib/cn.ts';
 import Icon from '../lib/icon.tsx';
-import { locale } from '../lib/locale.ts';
+import { useLocale } from '../lib/locale.ts';
 
-export default function ProjectCard({
-  project,
-  index,
-  featured = false,
-  headingLevel = 3,
-  copy,
-}: {
+type Props = {
   project: Project;
   index: number;
   featured?: boolean;
   headingLevel?: 2 | 3;
   copy: Work;
-}) {
+};
+
+export default function ProjectCard(
+  { project, index, featured = false, headingLevel = 3, copy }: Props,
+) {
   const isInternal = project.source_link.startsWith('/');
   const sourceLabel = project.source_type === 'appstore'
     ? 'App Store'
@@ -27,7 +25,7 @@ export default function ProjectCard({
     : 'GitHub';
   const Heading = headingLevel === 2 ? 'h2' : 'h3';
   const detailHref = `/projects/${project.slug}`;
-  const detailLabel = locale() === 'no' ? 'prosjektdetaljer' : 'project details';
+  const detailLabel = useLocale()() === 'no' ? 'prosjektdetaljer' : 'project details';
 
   return (
     <article
@@ -117,10 +115,7 @@ export default function ProjectCard({
           external={!isInternal}
         >
           {project.source_type === 'appstore' ? copy.download_app_store : copy.visit_project}
-          <Icon
-            node={isInternal ? ArrowRight : ArrowUpRight}
-            size={15}
-          />
+          <Icon node={isInternal ? ArrowRight : ArrowUpRight} size={15} />
         </Link>
       </div>
     </article>

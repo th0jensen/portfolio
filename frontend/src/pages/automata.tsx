@@ -1,7 +1,6 @@
-import ilha from 'ilha';
 import Automaton from '../islands/automaton_island.tsx';
 
-export default ilha.render(() => {
+export default function Automata() {
   return (
     <section
       id='automaton'
@@ -27,4 +26,4 @@ export default ilha.render(() => {
       </div>
     </section>
   );
-});
+}

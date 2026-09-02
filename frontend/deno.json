@@ -7,16 +7,16 @@
   "imports": {
     "@bjorn3/browser_wasi_shim": "npm:@bjorn3/browser_wasi_shim@^0.4.2",
     "@deno/vite-plugin": "npm:@deno/vite-plugin@^2.0.3",
-    "@ilha/router": "npm:@ilha/router@^0.8.9",
+    "@ilha/router": "npm:@ilha/router@^0.11.3",
     "@tailwindcss/vite": "npm:@tailwindcss/vite@^4.3.0",
     "@std/streams": "jsr:@std/streams@^1.1.1",
     "@qubit-rs/client": "npm:@qubit-rs/client@^0.4.5",
-    "areia": "npm:areia@^0.2.2",
-    "ilha": "npm:ilha@^0.9.5",
+    "effect": "npm:effect@^4.0.0-rc.112",
+    "ilha": "npm:ilha@^0.14.3",
+    "@jsx/jsx-runtime": "./src/lib/jsx-runtime.ts",
     "lucide": "npm:lucide@^1.17.0",
     "tailwindcss": "npm:tailwindcss@^4.3.3",
-    "vite": "npm:vite@^8.0.1",
-    "zod": "npm:zod@^4.0.0"
+    "vite": "npm:vite@^8.0.1"
   },
   "lint": {
     "exclude": ["src/bindings/**"]
@@ -37,7 +37,7 @@
       "deno.ns"
     ],
     "jsx": "react-jsx",
-    "jsxImportSource": "ilha"
+    "jsxImportSource": "@jsx"
   },
   "include": ["src/"],
   "exclude": [

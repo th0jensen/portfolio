@@ -1,27 +1,32 @@
-import { context } from 'ilha';
+import { atom, type AtomHandle } from 'ilha';
 
-type LocaleCode = 'en' | 'no';
+export type LocaleCode = 'en' | 'no';
 
-export const locale = context('locale', 'en' as LocaleCode);
+let current: LocaleCode = 'en';
+const mounted = new Map<object, AtomHandle<LocaleCode>>();
 
-export function initLocale() {
-  if (typeof window === 'undefined') return;
-  const saved = localStorage.getItem('locale') as LocaleCode | null;
-  if (saved === 'en' || saved === 'no') {
-    locale(saved);
-    document.documentElement.lang = saved === 'no' ? 'nb' : 'en';
-    return;
-  }
-  const lang = navigator.language.toLowerCase();
-  if (lang.includes('no') || lang.startsWith('nb') || lang.startsWith('nn')) {
-    locale('no');
-    document.documentElement.lang = 'nb';
-  } else {
-    document.documentElement.lang = 'en';
-  }
+export function useLocale(): AtomHandle<LocaleCode> {
+  const value = atom(current);
+  if (typeof window !== 'undefined') mounted.set(value.atom, value);
+  return value;
 }
 
-export function setLocale(code: LocaleCode) {
-  locale(code);
+export function initLocale(): void {
+  const saved = localStorage.getItem('locale');
+  const preferred = saved === 'en' || saved === 'no' ? saved : undefined;
+  current = preferred ??
+    (/no|^nb|^nn/.test(navigator.language.toLowerCase()) ? 'no' : 'en');
+  applyDocumentLocale(current);
+}
+
+export function setLocale(code: LocaleCode): void {
+  current = code;
   localStorage.setItem('locale', code);
+  applyDocumentLocale(code);
+  for (const value of mounted.values()) value.set(code);
+}
+
+function applyDocumentLocale(code: LocaleCode): void {
+  document.documentElement.dataset.locale = code;
+  document.documentElement.lang = code === 'no' ? 'nb' : 'en';
 }

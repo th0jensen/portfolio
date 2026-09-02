@@ -1,17 +1,16 @@
-import { Link } from 'areia';
+import { Link } from './link.tsx';
 import { ArrowUpRight, Download, Star } from 'lucide';
 import type { ExperienceItem } from '../bindings/index.ts';
 import { formatCompact } from '../lib/format.ts';
 import Icon from '../lib/icon.tsx';
-import { locale } from '../lib/locale.ts';
+import { useLocale } from '../lib/locale.ts';
 
-export default function ZedContribution({
-  item,
-  index,
-}: {
+type Props = {
   item: ExperienceItem;
   index: number;
-}) {
+};
+
+export default function ZedContribution({ item, index }: Props) {
   const isExtension = item.type === 'zed-extension';
   const typeLabel = item.type === 'pr' ? 'Pull request' : 'Zed extension';
   const additions = Number(item.additions ?? 0);
@@ -20,7 +19,7 @@ export default function ZedContribution({
   const downloads = Number(item.downloads ?? 0);
   const hasDiff = additions > 0 || deletions > 0;
   const hasStats = hasDiff || stars > 0 || (isExtension && downloads > 0);
-  const labels = locale() === 'no'
+  const labels = useLocale()() === 'no'
     ? { stars: 'Stjerner', downloads: 'Nedlastinger' }
     : { stars: 'Stars', downloads: 'Downloads' };
 
