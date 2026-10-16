@@ -169,7 +169,22 @@ export default function Automaton() {
     teardown = undefined;
     hostElement = nextHost;
     if (!nextHost || typeof window === 'undefined') return;
-    const host = nextHost;
+    let cancelled = false;
+    teardown = () => {
+      cancelled = true;
+    };
+    // Ilha invokes refs before attaching children (including during hydration).
+    // Wait for the completed render and skip refs disposed by a newer render.
+    queueMicrotask(() => {
+      if (cancelled) return;
+      try {
+        teardown = initializeAutomaton(nextHost);
+      } catch (error) {
+        fail(error);
+      }
+    });
+  };
+  const initializeAutomaton = (host: HTMLDivElement): () => void => {
     let disposed = false;
     let animationFrameId = 0;
     let lastStepTime = performance.now();
@@ -272,7 +287,7 @@ export default function Automaton() {
 
     animationFrameId = requestAnimationFrame(animate);
 
-    teardown = () => {
+    return () => {
       disposed = true;
       cancelAnimationFrame(animationFrameId);
       resizeObserver.disconnect();
