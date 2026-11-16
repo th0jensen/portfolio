@@ -6,7 +6,8 @@ let current: LocaleCode = 'en';
 const mounted = new Map<object, AtomHandle<LocaleCode>>();
 
 export function useLocale(): AtomHandle<LocaleCode> {
-  const value = atom(current);
+  // Locale belongs to the browser, not the server's English hydration snapshot.
+  const value = atom(current, { snapshot: false });
   if (typeof window !== 'undefined') mounted.set(value.atom, value);
   return value;
 }

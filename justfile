@@ -18,4 +18,5 @@ test:
     if [ ! -x frontend/dist/renderer ]; then
         just frontend::build
     fi
+    just frontend::test
     just backend::test

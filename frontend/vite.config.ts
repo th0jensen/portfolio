@@ -6,7 +6,7 @@ export default defineConfig({
   oxc: {
     jsx: {
       runtime: 'automatic',
-      importSource: '@jsx',
+      importSource: 'ilha',
     },
   },
   build: {

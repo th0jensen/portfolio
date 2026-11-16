@@ -1,4 +1,3 @@
-import { routePath } from '@ilha/router';
 import { atom } from 'ilha';
 import { ChevronDown, Menu, Moon, Sun, X } from 'lucide';
 import { cn } from '../lib/cn.ts';
@@ -6,7 +5,7 @@ import Icon from '../lib/icon.tsx';
 import { setLocale, useLocale } from '../lib/locale.ts';
 import { useServerData } from '../lib/server-data.ts';
 
-export default function Header() {
+export default function Header({ path }: { path: string }) {
   const { data } = useServerData(({ data }) => ({
     data: {
       locales: data.locales,
@@ -122,7 +121,6 @@ export default function Header() {
 
   const localeCode = locale();
   const loc = data[localeCode];
-  const path = typeof window === 'undefined' ? routePath() : location.pathname;
   const isDark = theme() === 'dark';
   const themeLabel = isDark ? loc.theme.light : loc.theme.dark;
   const themeIcon = isDark ? Sun : Moon;

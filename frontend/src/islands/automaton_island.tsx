@@ -713,7 +713,7 @@ export default function Automaton() {
               id='automaton-rule'
               data-rule
               class={fieldClass}
-              value={automatonId}
+              value={automatonId()}
               onchange={(event) => run(() => onRule(event))}
               disabled={status() !== 'ready'}
             >

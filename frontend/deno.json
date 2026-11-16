@@ -2,21 +2,22 @@
   "tasks": {
     "dev": "deno run -A vite",
     "check": "vite build && deno check src/main.ts src/render-worker.ts",
-    "build": "deno task check && deno compile --quiet --bundle --allow-net=127.0.0.1:8080 --output renderer src/render-worker.ts && mv renderer dist/renderer"
+    "build": "deno task check && deno bundle --platform deno --output dist/render-worker.js src/render-worker.ts && deno compile --quiet --no-config --no-lock --no-npm --allow-net=127.0.0.1:8080 --output dist/renderer dist/render-worker.js && rm dist/render-worker.js"
   },
   "imports": {
     "@bjorn3/browser_wasi_shim": "npm:@bjorn3/browser_wasi_shim@^0.4.2",
-    "@deno/vite-plugin": "npm:@deno/vite-plugin@^2.0.3",
-    "@ilha/router": "npm:@ilha/router@^0.11.3",
-    "@tailwindcss/vite": "npm:@tailwindcss/vite@^4.3.0",
-    "@std/streams": "jsr:@std/streams@^1.1.1",
+    "@deno/vite-plugin": "npm:@deno/vite-plugin@2.0.4",
+    "@happy-dom/global-registrator": "npm:@happy-dom/global-registrator@21.0.4",
+    "@ilha/void": "npm:@ilha/void@0.1.7",
+    "@tailwindcss/vite": "npm:@tailwindcss/vite@4.3.5",
+    "@std/streams": "jsr:@std/streams@1.2.0",
     "@qubit-rs/client": "npm:@qubit-rs/client@^0.4.5",
-    "effect": "npm:effect@^4.0.0-rc.112",
-    "ilha": "npm:ilha@^0.14.3",
-    "@jsx/jsx-runtime": "./src/lib/jsx-runtime.ts",
-    "lucide": "npm:lucide@^1.17.0",
-    "tailwindcss": "npm:tailwindcss@^4.3.3",
-    "vite": "npm:vite@^8.0.1"
+    "effect": "npm:effect@4.1.4",
+    "ilha": "npm:ilha@0.16.3",
+    "lucide": "npm:lucide@1.73.0",
+    "tailwindcss": "npm:tailwindcss@4.3.5",
+    "vite": "npm:vite@8.3.8",
+    "void": "npm:void@1.9.1"
   },
   "lint": {
     "exclude": ["src/bindings/**"]
@@ -37,12 +38,11 @@
       "deno.ns"
     ],
     "jsx": "react-jsx",
-    "jsxImportSource": "@jsx"
+    "jsxImportSource": "ilha"
   },
   "include": ["src/"],
   "exclude": [
     "src/bindings/*.ts",
-    ".ilha",
     "dist"
   ],
   "nodeModulesDir": "auto",

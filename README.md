@@ -16,7 +16,7 @@ an installed JavaScript runtime in the production image.
 | Area | Technology |
 | --- | --- |
 | HTTP and application state | Rust, Axum, Tokio |
-| Server rendering | Ilha in a compiled Deno renderer |
+| Server rendering | Ilha/Void in a compiled Deno renderer |
 | Browser application | Ilha, TypeScript, Vite, Tailwind CSS |
 | Type-safe API | Qubit RPC with Rust-generated TypeScript types |
 | Object storage | S3-compatible storage |
@@ -54,7 +54,8 @@ allowing Ilha to render in its native TypeScript environment.
 
 ### The renderer process
 
-The frontend build produces a standalone executable with `deno compile --bundle`.
+The frontend build bundles the worker, then compiles that standalone JavaScript
+with npm resolution disabled, keeping build/deployment dependencies out of the executable.
 Axum starts that executable before binding port 8080 and keeps it alive as a
 long-running child process.
 
@@ -74,14 +75,16 @@ would make the Rust binary and runtime integration considerably more complex.
 
 ### Runtime SSR
 
-The renderer imports Ilha's generated server page registry and keeps all route
-loader wiring in `frontend/src/render.ts`.
+The renderer uses `@ilha/void`'s island page renderer with the explicit component
+manifest in `frontend/src/pages.ts`; loaders stay in `frontend/src/render.ts`.
+Void renders documents and independent islands at request time, not at build time.
+Its HTTP server and deployment plugins are not used: Axum keeps public routing.
 
 For each page it:
 
 - Requests portfolio data from Axum's internal Qubit endpoint.
-- Requests enriched experience data only for `/experience`.
-- Renders the route with Ilha.
+- Requests enriched experience data for `/` and `/experience`.
+- Renders the route through Ilha/Void and the shared `pages/layout.tsx`.
 - Renders hydratable header and footer islands.
 - Produces the complete document shell, hydration markers, stylesheet entry,
   and browser module entry.

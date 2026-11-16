@@ -3,6 +3,9 @@ lint:
     deno lint
     deno task --frozen check
 
+test:
+    deno test --frozen --allow-env src/
+
 dev:
     deno task build
 
