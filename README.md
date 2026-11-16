@@ -54,7 +54,7 @@ allowing Ilha to render in its native TypeScript environment.
 
 ### The renderer process
 
-The frontend build produces a standalone executable with `deno compile`.
+The frontend build produces a standalone executable with `deno compile --bundle`.
 Axum starts that executable before binding port 8080 and keeps it alive as a
 long-running child process.
 
@@ -113,8 +113,8 @@ The experience route enriches configured entries with live information:
 - GitHub stars and forks
 - Zed extension download counts
 
-That upstream data is cached for three days. If an upstream item is unavailable,
-the configured portfolio data remains usable.
+That upstream data is cached for six hours. Refreshes run in the background;
+requests use the last available values, or the configured data on a cold start.
 
 The contact form calls a Qubit mutation, and Axum dispatches the email through
 Resend. The browser never communicates with Resend directly.
@@ -148,8 +148,9 @@ of rendering the same page repeatedly.
 
 ### Data cache
 
-Experience metadata is cached independently for three days. A short HTML cache
-therefore does not cause expensive upstream refreshes.
+Experience metadata refreshes independently of SSR, with one refresh at a time
+and two-second upstream deadlines. Failed refreshes retain available values and
+may retry after a minute instead of blocking a page render.
 
 ### Vite assets
 
@@ -164,13 +165,9 @@ cached permanently without revalidation.
 
 ### Fonts
 
-Alef 400 and 700 are stored as Latin-subset WOFF2 objects in S3 object storage. Together
-they are about 40 KB before base64 encoding.
-
-Axum fetches both objects concurrently during startup and embeds them into the
-HTML as `data:font/woff2` sources. Font loading therefore adds no browser HTTP
-requests or request waterfall. The HTML response compressor reduces the cost of
-the encoded payload on the wire.
+Alef 400 and 700 are packaged under `backend/static/fonts` with their OFL license
+and embedded into HTML as `data:font/woff2` sources. The same 40 KB of font data
+adds no startup network dependency or browser request waterfall.
 
 ### Object storage gateway
 
@@ -243,9 +240,8 @@ process uses an unprivileged user, and no development JavaScript runtime or
 package manager is included.
 
 Fly runs the application on a `shared-cpu-1x` Machine with 256 MB of memory.
-Machines start when traffic arrives and stop when idle, trading cold-start
-latency for lower idle cost. Startup fetches the embedded-font sources and
-spawns the renderer before the server begins accepting requests.
+Idle stopping is disabled, keeping the renderer and caches warm between visits.
+Bundling, local fonts, and background metadata refresh also speed up restarts.
 
 ## Repository map
 

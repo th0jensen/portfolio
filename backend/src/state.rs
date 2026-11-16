@@ -3,7 +3,6 @@ use std::{
     time::{Duration, Instant},
 };
 
-use anyhow::{Context, Result};
 use aws_config::{BehaviorVersion, Region, defaults};
 use aws_sdk_s3::{Client, config::Credentials};
 use axum::extract::State;
@@ -33,22 +32,34 @@ use crate::{
 };
 
 #[derive(Clone, Debug)]
-pub(crate) struct ExperienceCache(Option<(Instant, Vec<ExperienceItem>)>);
+pub(crate) struct ExperienceCache {
+    pub(crate) items: Option<Vec<ExperienceItem>>,
+    pub(crate) updated_at: Option<Instant>,
+    pub(crate) refresh_started_at: Option<Instant>,
+    pub(crate) refreshing: bool,
+}
 
 impl ExperienceCache {
     pub(crate) fn new() -> Self {
-        Self(None)
+        Self {
+            items: None,
+            updated_at: None,
+            refresh_started_at: None,
+            refreshing: false,
+        }
     }
 
     pub(crate) fn fresh(&self, ttl: Duration) -> Option<Vec<ExperienceItem>> {
-        match &self.0 {
-            Some((t, items)) if t.elapsed() < ttl => Some(items.clone()),
-            _ => None,
+        if self.updated_at.is_some_and(|t| t.elapsed() < ttl) {
+            self.items.clone()
+        } else {
+            None
         }
     }
 
     pub(crate) fn store(&mut self, items: Vec<ExperienceItem>) {
-        self.0 = Some((Instant::now(), items))
+        self.items = Some(items);
+        self.updated_at = Some(Instant::now());
     }
 }
 
@@ -62,6 +73,7 @@ pub struct AppState<'a> {
     pub(crate) bucket: Arc<String>,
     pub(crate) resend_client: Arc<Resend>,
     pub(crate) experience_cache: Arc<RwLock<ExperienceCache>>,
+    pub(crate) experience_client: reqwest::Client,
     pub(crate) github_api_key: Arc<String>,
     pub(crate) contact_mail: Arc<String>,
     pub(crate) sender_mail: Arc<String>,
@@ -80,11 +92,6 @@ impl<'a> AppState<'a> {
         let (prometheus_layer, metric_handle) = PrometheusMetricLayer::pair();
         let s3 = Arc::new(Self::create_s3_client().await);
         let bucket = Arc::new(get_env_key("BUCKET_NAME"));
-        let font_css = Self::load_font_css(s3.as_ref(), bucket.as_ref())
-            .await
-            .unwrap_or_else(|error| {
-                panic!("failed to embed fonts from S3: {error:#}")
-            });
 
         Self {
             s3,
@@ -98,11 +105,12 @@ impl<'a> AppState<'a> {
             ),
             resend_client: Arc::new(Self::create_resend_client()),
             experience_cache: Arc::new(RwLock::new(ExperienceCache::new())),
+            experience_client: Self::create_experience_client(),
             github_api_key: Arc::new(get_env_key("GITHUB_API_KEY")),
             contact_mail: Arc::new(get_env_key("CONTACT_MAIL")),
             sender_mail: Arc::new(get_env_key("SENDER_MAIL")),
             data: Arc::new(Data::get()),
-            font_css: Arc::new(font_css),
+            font_css: Arc::new(Self::font_css()),
             dist_dir: Arc::new(get_env_key("DIST_DIR")),
             static_dir: Arc::new(get_env_key("STATIC_DIR")),
             prometheus_layer: Arc::new(prometheus_layer),
@@ -114,37 +122,24 @@ impl<'a> AppState<'a> {
         Resend::new(&get_env_key("RESEND_API_KEY"))
     }
 
-    async fn load_font_css(client: &Client, bucket: &str) -> Result<String> {
-        let (regular, bold) = tokio::try_join!(
-            Self::load_font(client, bucket, "fonts/alef-400.woff2"),
-            Self::load_font(client, bucket, "fonts/alef-700.woff2"),
-        )?;
+    fn font_css() -> String {
+        let regular =
+            STANDARD.encode(include_bytes!("../static/fonts/alef-400.woff2"));
+        let bold =
+            STANDARD.encode(include_bytes!("../static/fonts/alef-700.woff2"));
 
-        Ok(format!(
+        format!(
             "<style>@font-face{{font-family:'Alef';src:url('data:font/woff2;base64,{regular}') format('woff2');font-weight:400;font-style:normal;font-display:swap}}@font-face{{font-family:'Alef';src:url('data:font/woff2;base64,{bold}') format('woff2');font-weight:700;font-style:normal;font-display:swap}}</style>"
-        ))
+        )
     }
 
-    async fn load_font(
-        client: &Client,
-        bucket: &str,
-        key: &str,
-    ) -> Result<String> {
-        let object = client
-            .get_object()
-            .bucket(bucket)
-            .key(key)
-            .send()
-            .await
-            .with_context(|| format!("failed to fetch {key}"))?;
-        let bytes = object
-            .body
-            .collect()
-            .await
-            .with_context(|| format!("failed to read {key}"))?
-            .into_bytes();
-
-        Ok(STANDARD.encode(bytes))
+    fn create_experience_client() -> reqwest::Client {
+        reqwest::Client::builder()
+            .user_agent("portfolio-backend")
+            .connect_timeout(Duration::from_millis(500))
+            .timeout(Duration::from_secs(2))
+            .build()
+            .expect("failed to build experience HTTP client")
     }
 
     async fn create_s3_client() -> Client {
@@ -203,6 +198,7 @@ impl AppState<'static> {
             bucket: Arc::new("test-bucket".to_owned()),
             resend_client: Arc::new(Resend::new("test-key")),
             experience_cache: Arc::new(RwLock::new(ExperienceCache::new())),
+            experience_client: Self::create_experience_client(),
             github_api_key: Arc::new("test-key".to_owned()),
             contact_mail: Arc::new("contact@example.com".to_owned()),
             sender_mail: Arc::new("sender@example.com".to_owned()),

@@ -26,6 +26,7 @@ RUN mkdir src \
 
 COPY backend/src ./src
 COPY backend/data ./data
+COPY backend/static/fonts ./static/fonts
 RUN touch src/main.rs \
     && just build \
     && cp target/release/portfolio-backend /portfolio-backend

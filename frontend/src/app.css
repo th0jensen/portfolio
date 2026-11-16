@@ -1,5 +1,14 @@
 @import "tailwindcss";
 
+/* @fontsource-variable/jetbrains-mono 5.3.0; license: /assets/jetbrains-mono-OFL.txt. */
+@font-face {
+  font-family: "JetBrains Mono";
+  font-style: normal;
+  font-weight: 100 800;
+  font-display: swap;
+  src: url("./assets/fonts/jetbrains-mono-latin-wght-normal.woff2") format("woff2");
+}
+
 @custom-variant dark (&:where(.dark, .dark *));
 
 @theme {

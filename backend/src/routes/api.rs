@@ -1,7 +1,7 @@
 use std::{
     collections::{HashMap, HashSet},
     sync::Arc,
-    time::Duration,
+    time::{Duration, Instant},
 };
 
 use qubit::{Router, handler};
@@ -59,22 +59,52 @@ async fn load_experience(
     ctx: &AppState<'static>,
 ) -> Vec<types::ExperienceItem> {
     const TTL: Duration = Duration::from_secs(6 * 60 * 60);
+    const RETRY_INTERVAL: Duration = Duration::from_secs(60);
 
-    let cached = {
-        let cache = ctx.experience_cache.read().await;
-        cache.fresh(TTL)
-    };
-
-    if let Some(items) = cached {
+    let mut cache = ctx.experience_cache.write().await;
+    if let Some(items) = cache.fresh(TTL) {
         tracing::debug!("serving experience from cache");
         return items;
     }
 
+    let items = cache
+        .items
+        .clone()
+        .unwrap_or_else(|| ctx.data.experience_items.clone());
+    if cache.refreshing
+        || cache
+            .refresh_started_at
+            .is_some_and(|t| t.elapsed() < RETRY_INTERVAL)
+    {
+        return items;
+    }
+
+    cache.refreshing = true;
+    cache.refresh_started_at = Some(Instant::now());
+    drop(cache);
+
+    let ctx = ctx.clone();
+    let previous = items.clone();
+    tokio::spawn(async move {
+        let (items, complete) = refresh_experience(&ctx, previous).await;
+        let mut cache = ctx.experience_cache.write().await;
+        if complete {
+            cache.store(items);
+        } else {
+            cache.items = Some(items);
+        }
+        cache.refreshing = false;
+    });
+
+    items
+}
+
+async fn refresh_experience(
+    ctx: &AppState<'static>,
+    mut items: Vec<types::ExperienceItem>,
+) -> (Vec<types::ExperienceItem>, bool) {
     tracing::info!("fetching experience data");
-    let client = reqwest::Client::builder()
-        .user_agent("portfolio-backend")
-        .build()
-        .expect("Failed to build HTTP client");
+    let client = &ctx.experience_client;
 
     let unique_repos: Vec<String> = {
         let mut seen = HashSet::new();
@@ -98,7 +128,7 @@ async fn load_experience(
         .collect();
 
     let (gruber_dl, repo_info) = tokio::join!(
-        fetch_extension_downloads(&client, "gruber-darker"),
+        fetch_extension_downloads(client, "gruber-darker"),
         async {
             let mut info: HashMap<String, GitHubRepoInfo> = HashMap::new();
             for handle in handles {
@@ -110,29 +140,18 @@ async fn load_experience(
         }
     );
 
-    let items: Vec<types::ExperienceItem> = ctx
-        .data
-        .experience_items
-        .iter()
-        .map(|item| {
-            let mut item = item.clone();
-            if let Some(info) = repo_info.get(&item.name) {
-                item.stars = info.stargazers_count;
-                item.forks = info.forks_count;
-            }
-            if item.zed_extension_id.as_deref() == Some("gruber-darker") {
-                item.downloads = gruber_dl.or(item.downloads);
-            }
-            item
-        })
-        .collect();
-
-    {
-        let mut cache = ctx.experience_cache.write().await;
-        cache.store(items.clone())
+    for item in &mut items {
+        if let Some(info) = repo_info.get(&item.name) {
+            item.stars = info.stargazers_count;
+            item.forks = info.forks_count;
+        }
+        if item.zed_extension_id.as_deref() == Some("gruber-darker") {
+            item.downloads = gruber_dl.or(item.downloads);
+        }
     }
 
-    items
+    let complete = repo_info.len() == unique_repos.len() && gruber_dl.is_some();
+    (items, complete)
 }
 
 #[derive(Deserialize)]
@@ -163,6 +182,11 @@ async fn fetch_extension_downloads(
         .send()
         .await
         .map_err(|e| tracing::error!(extension_id, error = %e, "Failed to send request"))
+        .ok()?;
+
+    let response = response
+        .error_for_status()
+        .map_err(|e| tracing::error!(extension_id, error = %e, "Zed API returned an error"))
         .ok()?;
 
     let parsed = response
@@ -265,6 +289,72 @@ mod tests {
         assert_eq!(items.len(), 1);
         assert_eq!(items[0].name, "cached/repo");
         assert_eq!(items[0].stars, 123);
+    }
+
+    #[tokio::test]
+    async fn experience_rpc_does_not_wait_for_metadata_refresh() {
+        use axum::{
+            body::{Body, to_bytes},
+            http::{Request, StatusCode},
+        };
+        use tower::ServiceExt;
+
+        for stale in [false, true] {
+            let listener =
+                tokio::net::TcpListener::bind("127.0.0.1:0").await.unwrap();
+            let proxy = format!("http://{}", listener.local_addr().unwrap());
+            let connected = Arc::new(tokio::sync::Notify::new());
+            let accepted = connected.clone();
+            let proxy_task = tokio::spawn(async move {
+                let mut connections = Vec::new();
+                while let Ok((stream, _)) = listener.accept().await {
+                    connections.push(stream);
+                    accepted.notify_one();
+                }
+            });
+
+            let mut state = test_state().await;
+            state.experience_client = reqwest::Client::builder()
+                .proxy(reqwest::Proxy::https(&proxy).unwrap())
+                .timeout(Duration::from_secs(5))
+                .build()
+                .unwrap();
+            let expected = if stale {
+                let items = vec![item("last-good/repo", 987)];
+                let mut cache = state.experience_cache.write().await;
+                cache.store(items.clone());
+                cache.updated_at =
+                    Some(Instant::now() - Duration::from_secs(7 * 60 * 60));
+                items
+            } else {
+                state.data.experience_items.clone()
+            };
+            let (service, _handle) =
+                Router::new().handler(experience).to_service(state);
+            let app = axum::Router::new().nest_service("/rpc", service);
+            let request = Request::post("/rpc")
+                .header("content-type", "application/json")
+                .body(Body::from(r#"{"jsonrpc":"2.0","id":1,"method":"experience","params":[]}"#))
+                .unwrap();
+            let response = tokio::time::timeout(
+                Duration::from_millis(500),
+                app.oneshot(request),
+            )
+            .await
+            .expect("experience RPC waited for the stalled upstream")
+            .unwrap();
+            assert_eq!(response.status(), StatusCode::OK);
+            let bytes =
+                to_bytes(response.into_body(), 1024 * 1024).await.unwrap();
+            let body: serde_json::Value =
+                serde_json::from_slice(&bytes).unwrap();
+            assert_eq!(body["result"], serde_json::to_value(expected).unwrap());
+
+            tokio::time::timeout(Duration::from_secs(1), connected.notified())
+                .await
+                .expect("the refresh must actually reach the stalled upstream");
+            proxy_task.abort();
+        }
     }
 
     /// `fetch_repo_info` discards parse failures with `.ok()?`, so a change in

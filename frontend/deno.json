@@ -2,7 +2,7 @@
   "tasks": {
     "dev": "deno run -A vite",
     "check": "vite build && deno check src/main.ts src/render-worker.ts",
-    "build": "deno task check && deno compile --quiet --allow-net=127.0.0.1:8080 --output renderer src/render-worker.ts && mv renderer dist/renderer"
+    "build": "deno task check && deno compile --quiet --bundle --allow-net=127.0.0.1:8080 --output renderer src/render-worker.ts && mv renderer dist/renderer"
   },
   "imports": {
     "@bjorn3/browser_wasi_shim": "npm:@bjorn3/browser_wasi_shim@^0.4.2",
