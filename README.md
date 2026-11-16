@@ -55,16 +55,8 @@ allowing Ilha to render in its native TypeScript environment.
 ### The renderer process
 
 The frontend build produces a standalone executable with `deno compile --bundle`.
-Bundling tree-shakes the server entry point instead of embedding the entire
-resolved `node_modules` tree, reducing executable size and module startup work.
-This bundles JavaScript, not HTML: pages are still rendered on demand from RPC
-data on cache misses. The compiler's bundling flag is experimental, so the real
-renderer tests must run against a freshly built executable when dependencies change.
-
 Axum starts that executable before binding port 8080 and keeps it alive as a
-long-running child process. There is no worker idle shutdown. The executable
-embeds Deno's runtime and V8 but requires no installed Deno CLI; its only granted
-permission is network access to `127.0.0.1:8080`.
+long-running child process.
 
 Rendering uses a small NDJSON protocol:
 
@@ -114,17 +106,15 @@ observability path.
 
 Portfolio content is compiled into the Rust application from
 `backend/data/data.json`. Qubit exposes that content to the renderer through a
-type-safe API. Runtime SSR does not make this embedded JSON live-editable:
-changing it still requires rebuilding the backend. Live experience metadata is
-fetched at runtime, independently of the renderer build.
+type-safe API.
 
 The experience route enriches configured entries with live information:
 
 - GitHub stars and forks
 - Zed extension download counts
 
-That upstream data is cached for three days. If an upstream item is unavailable,
-the configured portfolio data remains usable.
+That upstream data is cached for six hours. Refreshes run in the background;
+requests use the last available values, or the configured data on a cold start.
 
 The contact form calls a Qubit mutation, and Axum dispatches the email through
 Resend. The browser never communicates with Resend directly.
@@ -158,8 +148,9 @@ of rendering the same page repeatedly.
 
 ### Data cache
 
-Experience metadata is cached independently for three days. A short HTML cache
-therefore does not cause expensive upstream refreshes.
+Experience metadata refreshes independently of SSR, with one refresh at a time
+and two-second upstream deadlines. Failed refreshes retain available values and
+may retry after a minute instead of blocking a page render.
 
 ### Vite assets
 
@@ -174,13 +165,9 @@ cached permanently without revalidation.
 
 ### Fonts
 
-Alef 400 and 700 are stored as Latin-subset WOFF2 objects in S3 object storage. Together
-they are about 40 KB before base64 encoding.
-
-Axum fetches both objects concurrently during startup and embeds them into the
-HTML as `data:font/woff2` sources. Font loading therefore adds no browser HTTP
-requests or request waterfall. The HTML response compressor reduces the cost of
-the encoded payload on the wire.
+Alef 400 and 700 are packaged under `backend/static/fonts` with their OFL license
+and embedded into HTML as `data:font/woff2` sources. The same 40 KB of font data
+adds no startup network dependency or browser request waterfall.
 
 ### Object storage gateway
 
@@ -253,12 +240,9 @@ process uses an unprivileged user, and no development JavaScript runtime or
 package manager is included.
 
 Fly runs the application on a `shared-cpu-1x` Machine with 256 MB of memory.
-`min_machines_running = 1` keeps one Machine running in the primary region
-(`arn`), retaining the renderer and its caches between visits. Extra Machines
-can still start on demand and stop when idle. This intentionally trades idle
-compute cost for avoiding full application cold starts on sporadic visits.
-Cold starts still occur on deployments or Machine replacement: startup fetches
-the embedded-font sources and spawns the renderer before accepting requests.
+Machines start when traffic arrives and stop when idle, trading cold-start
+latency for lower idle cost. Startup spawns the bundled renderer without waiting
+for S3 fonts or live experience metadata.
 
 ## Repository map
 
