@@ -1,5 +1,5 @@
 import { cn } from '../lib/cn.ts';
-import type { JSX } from '../lib/jsx-runtime.ts';
+import type { JSX } from 'ilha/jsx-runtime';
 
 type Props = JSX.IntrinsicElements['a'] & {
   href: string;

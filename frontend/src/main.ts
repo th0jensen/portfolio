@@ -1,20 +1,16 @@
 import './app.css';
-import { mount } from 'ilha';
-import footer from './islands/footer.tsx';
-import header from './islands/header.tsx';
+import { mountIsland } from '@ilha/void/islands';
+import type { IslandModule } from '@ilha/void/islands';
+import type { JsonRecord } from '@ilha/void';
+import { initIslands } from 'void/pages-client';
 import { islandPages } from './islands/pages.ts';
 import { initLocale } from './lib/locale.ts';
 
 initLocale();
-mount(document.querySelector('[data-island="header"]')!, header, {
-  hydrate: true,
+initIslands({
+  header: () => import('./islands/header.tsx'),
+  footer: () => import('./islands/footer.tsx'),
+  ...islandPages,
+}, (el, module, props) => {
+  mountIsland(el as HTMLElement, module as IslandModule<JsonRecord>, props as JsonRecord);
 });
-mount(document.querySelector('[data-island="footer"]')!, footer, {
-  hydrate: true,
-});
-
-const pageHost = document.querySelector('#app > [data-ilha]');
-const loadPage = islandPages[location.pathname];
-if (pageHost && loadPage) {
-  mount(pageHost, (await loadPage()).default, { hydrate: true });
-}

@@ -165,11 +165,15 @@ html.dark {
   padding-top: 4rem;
 }
 
-.site-page-content > #app {
+.site-page-main {
   display: flex;
   min-width: 0;
   flex: 1;
   flex-direction: column;
+}
+
+.site-page-main > [data-island] {
+  display: contents;
 }
 
 html:has(.automaton-page),

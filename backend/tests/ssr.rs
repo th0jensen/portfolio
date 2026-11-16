@@ -2,9 +2,8 @@
 //!
 //! These drive the real compiled renderer (`frontend/dist/renderer`) against a
 //! qubit RPC stub, so they assert on the exact markup production serves. They
-//! are the frontend's only automated coverage: the TypeScript side has no test
-//! suite of its own, and the invariants it depends on — island markers,
-//! hydration snapshots, escaping — are only observable in the rendered output.
+//! cover the production boundary: island markers, hydration snapshots and
+//! escaping are only observable in the rendered output.
 //!
 //! Run `just frontend::build` first; these need the compiled binary.
 
@@ -203,6 +202,11 @@ async fn real_renderer_binary_renders_every_route() {
             output.error
         );
         let html = output.html.expect("renderer returned no html");
+        assert_eq!(output.status, 200, "{route:?} should render successfully");
+        assert!(
+            !html.contains("data-ilha-error"),
+            "{route:?} embedded an SSR error in its HTML"
+        );
         assert!(
             html.contains("<!doctype html>"),
             "{route:?} missing doctype"
@@ -281,6 +285,24 @@ async fn real_renderer_binary_renders_a_project_subpage() {
         html.contains(&route.canonical("https://example.com")),
         "missing its canonical link"
     );
+
+    // A second slug must select a different page in the same persistent worker.
+    let second = client
+        .render(RenderRoute::Project("cellular-automata".to_owned()))
+        .await
+        .unwrap();
+    assert_eq!(second.status, 200);
+    let second_html = second.html.expect("missing second project HTML");
+    let heading = second_html.split_once("<h1").unwrap().1;
+    let heading = heading.split_once("</h1>").unwrap().0;
+    assert!(heading.contains("Cellular Automata"));
+
+    let missing = client
+        .render(RenderRoute::Project("missing-project".to_owned()))
+        .await
+        .unwrap();
+    assert_eq!(missing.status, 404);
+    assert!(missing.html.unwrap().contains("This route doesn’t exist."));
 
     server.shutdown().await;
 }
@@ -361,9 +383,7 @@ fn all_routes() -> Vec<RenderRoute> {
     ]
 }
 
-/// `render.ts` tags the header and footer roots by string-replacing Ilha's own
-/// markup. If Ilha ever changes that shape the replace stops matching, and
-/// `main.ts` asserts non-null on the query, so every page would break at once.
+/// Every document must identify its interactive chrome to Void's island loader.
 #[tokio::test]
 async fn every_route_marks_both_islands_and_ships_one_entry_module() {
     let _permit = REAL_RENDERER_SLOTS.acquire().await.unwrap();
@@ -390,15 +410,15 @@ async fn every_route_marks_both_islands_and_ships_one_entry_module() {
 /// The frontend's `islandPages` table decides both which routes hydrate and
 /// which get a snapshot. A hydrated page without its snapshot reads `undefined`
 /// server data and dies on the client, so the two must never drift apart. The
-/// header is always snapshotted, hence the baseline of one.
+/// header and footer are independent Void islands, hence the baseline of two.
 #[tokio::test]
 async fn only_hydrated_routes_carry_a_page_snapshot() {
     let _permit = REAL_RENDERER_SLOTS.acquire().await.unwrap();
 
     for (route, html) in render_all(&all_routes()).await {
         let expected = match route {
-            RenderRoute::Contact | RenderRoute::Automata => 2,
-            _ => 1,
+            RenderRoute::Contact | RenderRoute::Automata => 3,
+            _ => 2,
         };
         assert_eq!(
             snapshot_count(&html),
@@ -437,7 +457,7 @@ async fn og_images_list_png_before_webp_and_canonicalise_to_the_site_origin() {
 
         assert!(
             html.contains(&format!(
-                r#"<link rel="canonical" href="{}" />"#,
+                r#"<link rel="canonical" href="{}""#,
                 route.canonical("https://example.com")
             )),
             "{route:?} should canonicalise to the configured site origin"

@@ -1,4 +1,4 @@
-import { error, routeParams } from '@ilha/router';
+import type { Project } from '../../bindings/index.ts';
 import { Link, LinkButton } from '../../components/link.tsx';
 import { ArrowLeft, ArrowRight, ArrowUpRight } from 'lucide';
 import ProjectCard from '../../components/project-card.tsx';
@@ -26,11 +26,9 @@ const copy = {
   },
 } as const;
 
-export default function ProjectDetails() {
+export default function ProjectDetails({ project }: { project: Project }) {
   const { data } = useServerData((value) => value);
   const projects = data.projects;
-  const project = projects.find((item) => item.slug === routeParams().slug);
-  if (!project) error(404, 'Project not found');
   const locale = useLocale()();
   const loc = data[locale];
   const text = copy[locale];
