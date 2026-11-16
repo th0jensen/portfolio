@@ -54,9 +54,17 @@ allowing Ilha to render in its native TypeScript environment.
 
 ### The renderer process
 
-The frontend build produces a standalone executable with `deno compile`.
+The frontend build produces a standalone executable with `deno compile --bundle`.
+Bundling tree-shakes the server entry point instead of embedding the entire
+resolved `node_modules` tree, reducing executable size and module startup work.
+This bundles JavaScript, not HTML: pages are still rendered on demand from RPC
+data on cache misses. The compiler's bundling flag is experimental, so the real
+renderer tests must run against a freshly built executable when dependencies change.
+
 Axum starts that executable before binding port 8080 and keeps it alive as a
-long-running child process.
+long-running child process. There is no worker idle shutdown. The executable
+embeds Deno's runtime and V8 but requires no installed Deno CLI; its only granted
+permission is network access to `127.0.0.1:8080`.
 
 Rendering uses a small NDJSON protocol:
 
@@ -106,7 +114,9 @@ observability path.
 
 Portfolio content is compiled into the Rust application from
 `backend/data/data.json`. Qubit exposes that content to the renderer through a
-type-safe API.
+type-safe API. Runtime SSR does not make this embedded JSON live-editable:
+changing it still requires rebuilding the backend. Live experience metadata is
+fetched at runtime, independently of the renderer build.
 
 The experience route enriches configured entries with live information:
 
@@ -243,9 +253,12 @@ process uses an unprivileged user, and no development JavaScript runtime or
 package manager is included.
 
 Fly runs the application on a `shared-cpu-1x` Machine with 256 MB of memory.
-Machines start when traffic arrives and stop when idle, trading cold-start
-latency for lower idle cost. Startup fetches the embedded-font sources and
-spawns the renderer before the server begins accepting requests.
+`min_machines_running = 1` keeps one Machine running in the primary region
+(`arn`), retaining the renderer and its caches between visits. Extra Machines
+can still start on demand and stop when idle. This intentionally trades idle
+compute cost for avoiding full application cold starts on sporadic visits.
+Cold starts still occur on deployments or Machine replacement: startup fetches
+the embedded-font sources and spawns the renderer before accepting requests.
 
 ## Repository map
 
