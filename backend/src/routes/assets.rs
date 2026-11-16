@@ -16,6 +16,8 @@ use tower_http::{
 
 use crate::{AppState, routes::pages::not_found_response};
 
+const HEADSHOT_CACHE_CONTROL: &str = "public, max-age=86400";
+
 const ASSETS: [&str; 17] = [
     "headshot.webp",
     "images/og-card.png",
@@ -118,6 +120,11 @@ pub async fn s3_handler(
                 .map(|response| response.status().as_u16());
 
             return match upstream_status {
+                Some(304) if *asset_name == "headshot.webp" => (
+                    StatusCode::NOT_MODIFIED,
+                    [(header::CACHE_CONTROL, HEADSHOT_CACHE_CONTROL)],
+                )
+                    .into_response(),
                 Some(304) => StatusCode::NOT_MODIFIED.into_response(),
                 Some(404) => not_found_response(),
                 Some(416) => StatusCode::RANGE_NOT_SATISFIABLE.into_response(),
@@ -155,9 +162,13 @@ pub async fn s3_handler(
         )
         .header(
             header::CACHE_CONTROL,
-            asset.cache_control().unwrap_or(
-                "public, max-age=3600, stale-while-revalidate=86400",
-            ),
+            if *asset_name == "headshot.webp" {
+                HEADSHOT_CACHE_CONTROL
+            } else {
+                asset.cache_control().unwrap_or(
+                    "public, max-age=3600, stale-while-revalidate=86400",
+                )
+            },
         )
         .header(header::CONTENT_DISPOSITION, content_disposition);
 
@@ -223,6 +234,143 @@ mod tests {
         );
 
         assert!(request_header(&headers, header::IF_MATCH).unwrap().is_err());
+    }
+
+    #[tokio::test]
+    async fn headshot_has_a_one_day_cache_including_ranges_and_revalidation() {
+        use std::sync::Arc;
+
+        use http::Request;
+        use tower::ServiceExt;
+
+        use crate::renderer::{
+            RendererClient, test_support::fake_renderer_config,
+        };
+
+        let upstream = Router::new().route(
+            "/{*key}",
+            get(|headers: HeaderMap, uri: http::Uri| async move {
+                let (status, body) =
+                    if headers.contains_key(header::IF_NONE_MATCH) {
+                        (StatusCode::NOT_MODIFIED, "")
+                    } else if headers.contains_key(header::RANGE) {
+                        (StatusCode::PARTIAL_CONTENT, "po")
+                    } else {
+                        (StatusCode::OK, "portrait")
+                    };
+                let mut response = (status, body).into_response();
+                response.headers_mut().insert(
+                    header::CONTENT_TYPE,
+                    HeaderValue::from_static("image/webp"),
+                );
+                response.headers_mut().insert(
+                    header::ETAG,
+                    HeaderValue::from_static("\"portrait\""),
+                );
+                if status == StatusCode::PARTIAL_CONTENT {
+                    response.headers_mut().insert(
+                        header::CONTENT_RANGE,
+                        HeaderValue::from_static("bytes 0-1/8"),
+                    );
+                }
+                if !uri.path().ends_with("og-card.webp") {
+                    response.headers_mut().insert(
+                        header::CACHE_CONTROL,
+                        HeaderValue::from_static("public, max-age=60"),
+                    );
+                }
+                response
+            }),
+        );
+        let listener =
+            tokio::net::TcpListener::bind("127.0.0.1:0").await.unwrap();
+        let origin = format!("http://{}", listener.local_addr().unwrap());
+        let server = tokio::spawn(async move {
+            axum::serve(listener, upstream).await.unwrap();
+        });
+
+        let renderer = RendererClient::new(fake_renderer_config(None))
+            .await
+            .unwrap();
+        let mut state = AppState::for_tests(renderer, "").await;
+        state.s3 = Arc::new(aws_sdk_s3::Client::from_conf(
+            state
+                .s3
+                .config()
+                .to_builder()
+                .endpoint_url(origin)
+                .force_path_style(true)
+                .build(),
+        ));
+        let app = router(State(&state)).with_state(state);
+
+        for (path, condition, status, cache, body) in [
+            (
+                "headshot.webp",
+                None,
+                StatusCode::OK,
+                "public, max-age=86400",
+                "portrait",
+            ),
+            (
+                "headshot.webp",
+                Some((header::RANGE, "bytes=0-1")),
+                StatusCode::PARTIAL_CONTENT,
+                "public, max-age=86400",
+                "po",
+            ),
+            (
+                "headshot.webp",
+                Some((header::IF_NONE_MATCH, "\"portrait\"")),
+                StatusCode::NOT_MODIFIED,
+                "public, max-age=86400",
+                "",
+            ),
+            (
+                "images/zed.webp",
+                None,
+                StatusCode::OK,
+                "public, max-age=60",
+                "portrait",
+            ),
+            (
+                "images/og-card.webp",
+                None,
+                StatusCode::OK,
+                "public, max-age=3600, stale-while-revalidate=86400",
+                "portrait",
+            ),
+        ] {
+            let mut request = Request::get(format!("/static/{path}"));
+            if let Some((name, value)) = condition {
+                request = request.header(name, value);
+            }
+            let response = app
+                .clone()
+                .oneshot(request.body(Body::empty()).unwrap())
+                .await
+                .unwrap();
+            assert_eq!(response.status(), status, "{path}");
+            assert_eq!(
+                response.headers().get(header::CACHE_CONTROL).unwrap(),
+                cache,
+                "{path}"
+            );
+            if status != StatusCode::NOT_MODIFIED {
+                assert_eq!(response.headers()[header::ETAG], "\"portrait\"");
+            }
+            if status == StatusCode::PARTIAL_CONTENT {
+                assert_eq!(
+                    response.headers()[header::CONTENT_RANGE],
+                    "bytes 0-1/8"
+                );
+            }
+            let bytes = axum::body::to_bytes(response.into_body(), usize::MAX)
+                .await
+                .unwrap();
+            assert_eq!(bytes.as_ref(), body.as_bytes());
+        }
+        server.abort();
     }
 
     #[test]
