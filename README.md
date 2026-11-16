@@ -240,9 +240,8 @@ process uses an unprivileged user, and no development JavaScript runtime or
 package manager is included.
 
 Fly runs the application on a `shared-cpu-1x` Machine with 256 MB of memory.
-Machines start when traffic arrives and stop when idle, trading cold-start
-latency for lower idle cost. Startup spawns the bundled renderer without waiting
-for S3 fonts or live experience metadata.
+Idle stopping is disabled, keeping the renderer and caches warm between visits.
+Bundling, local fonts, and background metadata refresh also speed up restarts.
 
 ## Repository map
 
