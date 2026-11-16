@@ -377,6 +377,7 @@ fn all_routes() -> Vec<RenderRoute> {
     vec![
         RenderRoute::Home,
         RenderRoute::Projects,
+        RenderRoute::Project("crabdash".to_owned()),
         RenderRoute::Experience,
         RenderRoute::Contact,
         RenderRoute::Automata,
@@ -409,20 +410,16 @@ async fn every_route_marks_both_islands_and_ships_one_entry_module() {
 
 /// The frontend's `islandPages` table decides both which routes hydrate and
 /// which get a snapshot. A hydrated page without its snapshot reads `undefined`
-/// server data and dies on the client, so the two must never drift apart. The
-/// header and footer are independent Void islands, hence the baseline of two.
+/// server data and dies on the client. Every page needs to hydrate so language
+/// changes update its content alongside the independent header and footer.
 #[tokio::test]
-async fn only_hydrated_routes_carry_a_page_snapshot() {
+async fn every_page_carries_a_snapshot_for_live_language_changes() {
     let _permit = REAL_RENDERER_SLOTS.acquire().await.unwrap();
 
     for (route, html) in render_all(&all_routes()).await {
-        let expected = match route {
-            RenderRoute::Contact | RenderRoute::Automata => 3,
-            _ => 2,
-        };
         assert_eq!(
             snapshot_count(&html),
-            expected,
+            3,
             "{route:?} has the wrong number of hydration snapshots"
         );
     }

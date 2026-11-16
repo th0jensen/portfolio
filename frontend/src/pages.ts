@@ -4,10 +4,6 @@ import { islandPages } from './islands/pages.ts';
 // Axum owns public routing. This manifest selects components inside its private
 // NDJSON renderer; no Void HTTP server or build-time prerendering is involved.
 export const pages = {
-  '/': () => import('./pages/index.tsx'),
-  '/experience': () => import('./pages/experience.tsx'),
-  '/projects': () => import('./pages/projects.tsx'),
-  '/projects/[slug]': () => import('./pages/projects/[slug].tsx'),
   '/error': () => import('./pages/error.tsx'),
   ...islandPages,
 };
