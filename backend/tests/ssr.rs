@@ -386,7 +386,7 @@ fn all_routes() -> Vec<RenderRoute> {
 
 /// Every document must identify its interactive chrome to Void's island loader.
 #[tokio::test]
-async fn every_route_marks_both_islands_and_ships_one_entry_module() {
+async fn every_route_marks_its_layout_islands_and_ships_one_entry_module() {
     let _permit = REAL_RENDERER_SLOTS.acquire().await.unwrap();
 
     for (route, html) in render_all(&all_routes()).await {
@@ -397,8 +397,8 @@ async fn every_route_marks_both_islands_and_ships_one_entry_module() {
         );
         assert_eq!(
             html.matches(r#"data-island="footer""#).count(),
-            1,
-            "{route:?} should mark exactly one footer island"
+            if route == RenderRoute::Contact { 0 } else { 1 },
+            "{route:?} has the wrong number of footer islands"
         );
         assert_eq!(
             html.matches(r#"<script type="module""#).count(),
@@ -411,7 +411,8 @@ async fn every_route_marks_both_islands_and_ships_one_entry_module() {
 /// The frontend's `islandPages` table decides both which routes hydrate and
 /// which get a snapshot. A hydrated page without its snapshot reads `undefined`
 /// server data and dies on the client. Every page needs to hydrate so language
-/// changes update its content alongside the independent header and footer.
+/// changes update its content alongside the header and, except on contact,
+/// footer.
 #[tokio::test]
 async fn every_page_carries_a_snapshot_for_live_language_changes() {
     let _permit = REAL_RENDERER_SLOTS.acquire().await.unwrap();
@@ -419,7 +420,7 @@ async fn every_page_carries_a_snapshot_for_live_language_changes() {
     for (route, html) in render_all(&all_routes()).await {
         assert_eq!(
             snapshot_count(&html),
-            3,
+            if route == RenderRoute::Contact { 2 } else { 3 },
             "{route:?} has the wrong number of hydration snapshots"
         );
     }
