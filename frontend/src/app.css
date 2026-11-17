@@ -99,9 +99,8 @@ html.dark {
     text-size-adjust: none;
   }
 
-  /* Prose stays selectable so it can be quoted or copied. Only controls and
-     the canvas suppress selection, where a stray highlight is pure noise.
-     Deliberately not `header` — page headers carry real copy. */
+  /* Desktop prose stays selectable. Touchscreens suppress accidental word
+     selection; editable fields keep native selection on every device. */
   nav,
   button,
   summary,
@@ -117,7 +116,15 @@ html.dark {
     user-select: text;
   }
 
+  @media (hover: none) and (pointer: coarse) {
+    body {
+      user-select: none;
+    }
+  }
+
   html {
+    /* Keep scrolling and pinch zoom, but not double-tap zoom. */
+    touch-action: manipulation;
     scroll-behavior: smooth;
     scrollbar-gutter: stable;
     background: hsl(var(--background));

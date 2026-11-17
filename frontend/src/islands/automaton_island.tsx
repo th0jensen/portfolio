@@ -131,7 +131,7 @@ const toolButtonClass =
 const toolbarButtonClass = `${toolButtonClass} max-[430px]:w-9 max-[430px]:px-0`;
 
 const fieldClass =
-  'mt-2 h-9 w-full rounded-sm border border-border bg-background px-2.5 text-sm text-foreground focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-ring';
+  'mt-2 h-9 w-full rounded-sm border border-border bg-background px-2.5 text-base text-foreground focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-ring lg:text-sm';
 
 const controlSectionClass =
   'min-w-0 border border-border bg-card p-3 max-[540px]:p-2.5 lg:border-x-0 lg:border-t-0 lg:bg-transparent lg:p-4';
@@ -941,7 +941,7 @@ export default function Automaton() {
                   </span>
                   <input
                     data-grid-size={axis}
-                    class={`${fieldClass} max-[1023px]:text-[16px]`}
+                    class={fieldClass}
                     type='number'
                     oninput={onGridSize}
                     min={minimumGridSize}
