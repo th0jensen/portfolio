@@ -180,10 +180,9 @@ export default function Header({ path }: { path: string }) {
       <header
         data-site-header
         class={cn(
-          'relative h-16 border-b border-transparent transition-[background-color,box-shadow] duration-200',
-          scrolled()
-            ? 'bg-background/80 shadow-[0_10px_30px_-24px_hsl(var(--shadow)/0.55)] backdrop-blur-md'
-            : 'bg-background/65 backdrop-blur-[2px]',
+          'glass-surface relative h-16 border-b border-transparent transition-[background-color,box-shadow] duration-200',
+          scrolled() &&
+            'bg-background/80 shadow-[0_10px_30px_-24px_hsl(var(--shadow)/0.55)] backdrop-blur-md',
         )}
       >
         <div class='mx-auto flex h-full w-full max-w-7xl items-stretch justify-between px-5 sm:px-8 lg:px-10'>

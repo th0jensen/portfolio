@@ -32,7 +32,7 @@ export default function ProjectCard(
     <article
       data-spotlight
       class={cn(
-        'project-card spotlight group grid overflow-clip border [overflow-clip-margin:1px] border-border bg-card transition-[border-color,box-shadow,transform] duration-300 hover:-translate-y-0.5 hover:border-foreground/25 hover:shadow-[0_24px_60px_-36px_hsl(var(--shadow)/0.5)]',
+        'project-card glass-card spotlight group grid overflow-clip border [overflow-clip-margin:1px] border-border transition-[border-color,box-shadow,transform] duration-300 hover:-translate-y-0.5 hover:border-foreground/25 hover:shadow-[0_24px_60px_-36px_hsl(var(--shadow)/0.5)]',
         featured
           ? 'lg:grid-cols-[minmax(17rem,0.85fr)_minmax(0,1.15fr)]'
           : 'h-full grid-rows-[15rem_1fr]',
@@ -43,7 +43,7 @@ export default function ProjectCard(
         aria-label={`${project.name} — ${detailLabel}`}
         data-tilt
         class={cn(
-          'tilt relative isolate flex min-h-0 items-center justify-center overflow-hidden border-border bg-project-surface p-8 no-underline [transform:perspective(90rem)_rotateX(calc(var(--tilt-x,0deg)*0.4))_rotateY(calc(var(--tilt-y,0deg)*0.4))]! focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-ring',
+          'tilt relative isolate flex min-h-0 items-center justify-center overflow-hidden border-border bg-project-surface/40 p-8 no-underline [transform:perspective(90rem)_rotateX(calc(var(--tilt-x,0deg)*0.4))_rotateY(calc(var(--tilt-y,0deg)*0.4))]! focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-ring',
           featured ? 'border-b lg:border-r lg:border-b-0 lg:p-12' : 'border-b',
         )}
       >

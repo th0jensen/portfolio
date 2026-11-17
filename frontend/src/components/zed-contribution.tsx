@@ -32,7 +32,7 @@ export default function ZedContribution({ item, index }: Props) {
 
   return (
     <article
-      class='spotlight group flex flex-col border border-border bg-card transition-[border-color,box-shadow] duration-300 hover:border-foreground/25 hover:shadow-[0_24px_60px_-36px_hsl(var(--shadow)/0.5)]'
+      class='glass-card spotlight group flex flex-col border border-border transition-[border-color,box-shadow] duration-300 hover:border-foreground/25 hover:shadow-[0_24px_60px_-36px_hsl(var(--shadow)/0.5)]'
       data-spotlight
     >
       <div class='flex items-center gap-3 border-b border-border px-4 py-2.5 font-mono text-[0.625rem] text-muted-foreground sm:px-5'>

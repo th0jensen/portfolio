@@ -312,7 +312,11 @@ export default function Home() {
       </section>
 
       <section class='relative isolate overflow-x-clip'>
-        <div class='tile-edges -z-10 bg-muted' data-tile-edges data-morph-preserve='style'>
+        <div
+          class='card-landscape tile-edges -z-10 bg-muted'
+          data-tile-edges
+          data-morph-preserve='style'
+        >
           <div class='technical-grid absolute inset-0 opacity-40' />
         </div>
         <div class='mx-auto w-full max-w-7xl px-5 py-16 sm:px-8 sm:py-20 lg:px-10'>
@@ -325,11 +329,11 @@ export default function Home() {
           {zedStats.length > 0 && (
             <div
               {...revealStagger}
-              class={`mb-10 grid gap-px border border-border bg-border ${zedStatColumns}`}
+              class={`mb-10 grid gap-3 ${zedStatColumns}`}
             >
               {zedStats.map((stat) => (
                 <div>
-                  <div class='group h-full bg-card p-4 transition-colors duration-300 hover:bg-muted sm:p-6'>
+                  <div class='glass-card group h-full border border-border p-4 sm:p-6'>
                     <p class='font-mono text-[0.625rem] uppercase tracking-[0.12em] text-muted-foreground'>
                       {stat.label}
                     </p>
@@ -439,7 +443,7 @@ export default function Home() {
         </div>
       </section>
 
-      <section class='py-20 sm:py-28'>
+      <section class='card-landscape py-20 sm:py-28'>
         <div class='mx-auto w-full max-w-7xl px-5 sm:px-8 lg:px-10'>
           <SectionHeader
             eyebrow={`03 / ${copy.projects}`}

@@ -50,7 +50,7 @@ let reducedMotion = false;
 let observer: IntersectionObserver | undefined;
 
 const SELECTOR = 'canvas[data-dot-matrix]';
-// Retain the develop-on-load effect for later, but keep the portrait calm on arrival.
+// Retain the load transition and hover lens for later; keep both off together.
 const IMAGE_INTRO_ENABLED = false;
 
 export function initDotMatrix(): void {
@@ -488,7 +488,9 @@ function draw(engine: Engine, now: number): boolean {
           : engine.revealed
           ? 1 - smoothstep(-0.12, 0.12, scan - seed * 0.15)
           : 1;
-        const lens = 1 - smoothstep(lensRadius * 0.55, lensRadius, distance);
+        const lens = IMAGE_INTRO_ENABLED
+          ? 1 - smoothstep(lensRadius * 0.55, lensRadius, distance)
+          : 0;
         const dissolve = smoothstep(seed * 0.7, seed * 0.7 + 0.3, exit * 1.6);
         cover = Math.max(intro, lens, dissolve);
         if (cover <= 0.001) continue;

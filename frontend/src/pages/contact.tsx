@@ -137,14 +137,14 @@ export default function Contact() {
   return (
     <section
       id='contact'
-      class='hero-surface relative isolate -mt-16 flex min-h-svh flex-1 items-center overflow-hidden pt-26 pb-10 sm:pt-28 sm:pb-12'
+      class='hero-surface relative isolate -mt-16 flex min-h-svh flex-1 items-center overflow-hidden px-5 pt-26 pb-10 sm:px-8 sm:pt-28 sm:pb-12 lg:px-10'
       aria-labelledby='contact-title'
     >
       <div class='contact-landscape pointer-events-none absolute inset-0 -z-10' aria-hidden='true'>
         <DotMatrix mode='field' spacing={16} lens={170} fade={0} />
       </div>
 
-      <div class='mx-auto grid w-full max-w-6xl items-start gap-10 px-5 sm:px-8 lg:grid-cols-[0.85fr_1.15fr] lg:gap-16 lg:px-10'>
+      <div class='glass-card mx-auto grid w-full max-w-6xl items-start gap-10 border border-border p-6 sm:p-9 lg:grid-cols-[0.85fr_1.15fr] lg:gap-16'>
         <div class='lg:pt-7'>
           <p class='mb-5 font-mono text-[0.6875rem] uppercase tracking-[0.16em] text-primary'>
             03 / {loc.nav.contact}
@@ -172,9 +172,9 @@ export default function Contact() {
           </p>
         </div>
 
-        <div class='contact-panel relative border border-border bg-card/95 px-6 py-7 sm:px-9 sm:py-9'>
+        <div class='contact-panel relative border border-border bg-card/95 p-6 sm:p-9'>
           <div aria-hidden='true' class='mb-6 h-1 w-8 bg-primary' />
-          <h1 id='contact-title' class='mb-3 text-4xl font-bold tracking-[-0.045em]'>
+          <h1 id='contact-title' class='mb-4 text-4xl font-bold leading-tight tracking-[-0.045em]'>
             {copy.write}
           </h1>
 

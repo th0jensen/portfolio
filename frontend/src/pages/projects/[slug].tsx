@@ -44,7 +44,7 @@ export default function ProjectDetails({ project }: { project: Project }) {
   const otherProjects = projects.filter((p) => p.slug !== project.slug);
 
   return (
-    <section class='flex-1'>
+    <section class='card-landscape flex-1'>
       <header class='relative isolate overflow-hidden border-b border-border py-16 sm:py-20'>
         <DotMatrix mode='field' spacing={14} />
         <div class='pointer-events-none absolute inset-0 bg-[linear-gradient(to_right,hsl(var(--background))_0%,hsl(var(--background)/0.94)_38%,hsl(var(--background)/0.55)_72%,hsl(var(--background)/0.2)_100%)]' />
@@ -83,7 +83,7 @@ export default function ProjectDetails({ project }: { project: Project }) {
         <div class='grid grid-cols-1 gap-10 lg:grid-cols-[minmax(0,0.85fr)_minmax(0,1.15fr)] lg:gap-14'>
           <div
             data-spotlight
-            class='spotlight relative isolate flex items-center justify-center overflow-clip border border-border bg-project-surface p-10 [overflow-clip-margin:1px] lg:p-12'
+            class='glass-card spotlight relative isolate flex items-center justify-center overflow-clip border border-border p-10 [overflow-clip-margin:1px] lg:p-12'
           >
             <DotMatrix mode='field' spacing={10} fade={0} lens={130} class='z-0 opacity-45' />
             <div class='absolute inset-5 z-[1] border border-foreground/5' />

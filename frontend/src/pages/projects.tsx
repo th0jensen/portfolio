@@ -21,7 +21,7 @@ export default function Projects() {
   );
 
   return (
-    <section id='work' class='flex-1'>
+    <section id='work' class='card-landscape flex-1'>
       <PageHeader
         marker='01'
         eyebrow={loc.work.subtitle}

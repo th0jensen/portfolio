@@ -44,7 +44,7 @@ export default function Experience() {
   const personalItems = experience.filter((item) => !item.featured);
 
   return (
-    <section id='experience' class='flex-1'>
+    <section id='experience' class='card-landscape flex-1'>
       <PageHeader
         marker='02'
         eyebrow={loc.experience.subtitle}
