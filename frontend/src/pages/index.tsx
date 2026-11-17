@@ -271,10 +271,14 @@ export default function Home() {
             <div {...reveal} class='relative mx-auto w-full max-w-xl lg:max-w-sm'>
               <div class='absolute -top-3 -right-3 h-16 w-16 border-t border-r border-primary lg:-top-5 lg:-right-4 lg:h-24 lg:w-24' />
               <div class='absolute -bottom-3 -left-3 h-16 w-16 border-b border-l border-primary lg:-bottom-4 lg:-left-4 lg:h-24 lg:w-24' />
-              <div class='group/photo relative aspect-4/3 overflow-hidden border border-border bg-muted sm:aspect-16/10 lg:aspect-3/4'>
+              <div
+                data-protected-asset
+                class='protected-asset group/photo relative aspect-4/3 overflow-hidden border border-border bg-muted sm:aspect-16/10 lg:aspect-3/4'
+              >
                 <img
                   src='/static/headshot.webp'
                   alt={`Portrait of ${name}`}
+                  draggable='false'
                   width='360'
                   height='540'
                   class='h-full w-full object-cover object-center saturate-[0.88] transition-[filter] duration-500 dark:brightness-[0.82] dark:saturate-[0.72]'

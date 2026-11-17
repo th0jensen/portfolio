@@ -21,7 +21,7 @@ export default function Layout({ children }: { children: View }) {
       <Header path={path} />
       <div class='site-page-content'>
         <div class='site-page-main'>{children}</div>
-        <Footer />
+        {path !== '/contact' && <Footer />}
       </div>
     </main>
   );

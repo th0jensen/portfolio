@@ -99,8 +99,12 @@ html.dark {
     text-size-adjust: none;
   }
 
-  /* Desktop prose stays selectable. Touchscreens suppress accidental word
-     selection; editable fields keep native selection on every device. */
+  /* Avoid accidental text highlights; editable fields opt back in below. */
+  body {
+    -webkit-user-select: none;
+    user-select: none;
+  }
+
   nav,
   button,
   summary,
@@ -113,6 +117,7 @@ html.dark {
   input,
   textarea,
   [contenteditable="true"] {
+    -webkit-user-select: text;
     user-select: text;
   }
 
@@ -165,6 +170,15 @@ html.dark {
 .site-layout {
   min-height: 100vh;
   min-height: 100dvh;
+}
+
+/* Discourage casual saving without disabling context menus site-wide. */
+.protected-asset {
+  -webkit-touch-callout: none;
+}
+
+.protected-asset img {
+  -webkit-user-drag: none;
 }
 
 .edge-tint {
@@ -264,18 +278,40 @@ body:has(.automaton-page) footer {
   box-shadow: inset 0 1px hsl(var(--foreground) / 0.025);
 }
 
-.contact-panel input,
-.contact-panel textarea {
-  border-radius: 0.25rem;
-  border-color: hsl(var(--border));
-  background: hsl(var(--background) / 0.65);
-  box-shadow: none;
+.contact-landscape {
+  /* A soft rectangular clearing, rather than the home hero's left-hand fade. */
+  opacity: 0.65;
+  mask-image:
+    linear-gradient(to right, #000, transparent 12%, transparent 88%, #000),
+    linear-gradient(to bottom, #000, transparent 20%, transparent 80%, #000);
 }
 
-.contact-panel input:focus,
-.contact-panel textarea:focus {
-  border-color: hsl(var(--ring));
-  box-shadow: 0 0 0 3px hsl(var(--ring) / 0.13);
+.contact-panel {
+  box-shadow: 0 20px 70px -40px hsl(var(--shadow) / 0.6);
+}
+
+.contact-panel::after {
+  content: '';
+  position: absolute;
+  inset: 0.5rem;
+  border: 1px dotted hsl(var(--border) / 0.65);
+  pointer-events: none;
+}
+
+.contact-panel textarea {
+  background: repeating-linear-gradient(
+    to bottom,
+    transparent 0,
+    transparent calc(2rem - 1px),
+    hsl(var(--border) / 0.65) calc(2rem - 1px),
+    hsl(var(--border) / 0.65) 2rem
+  );
+}
+
+.contact-panel input:focus-visible,
+.contact-panel textarea:focus-visible {
+  outline: 2px solid hsl(var(--ring) / 0.5);
+  outline-offset: 4px;
 }
 
 @media (max-width: 767px) {

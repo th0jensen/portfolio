@@ -50,6 +50,8 @@ let reducedMotion = false;
 let observer: IntersectionObserver | undefined;
 
 const SELECTOR = 'canvas[data-dot-matrix]';
+// Retain the develop-on-load effect for later, but keep the portrait calm on arrival.
+const IMAGE_INTRO_ENABLED = false;
 
 export function initDotMatrix(): void {
   reducedMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -411,7 +413,10 @@ function draw(engine: Engine, now: number): boolean {
 
   const introAge = engine.revealed ? (now - engine.revealed) / 1000 : 0;
   // Keep the loop alive through the delay before the first scanline moves.
-  if (engine.mode === 'image' && engine.revealed && introAge < 1.5 && !reducedMotion) {
+  if (
+    IMAGE_INTRO_ENABLED && engine.mode === 'image' && engine.revealed && introAge < 1.5 &&
+    !reducedMotion
+  ) {
     busy = true;
   }
 
@@ -478,7 +483,11 @@ function draw(engine: Engine, now: number): boolean {
         const tone = engine.masks[0]?.[i] ?? 0;
         // Develop: dots cover the photo, then a scanline uncovers it top-down.
         const scan = reducedMotion ? 2 : (introAge - 0.5) * 1.4 - row / rows;
-        const intro = engine.revealed ? 1 - smoothstep(-0.12, 0.12, scan - seed * 0.15) : 1;
+        const intro = !IMAGE_INTRO_ENABLED
+          ? 0
+          : engine.revealed
+          ? 1 - smoothstep(-0.12, 0.12, scan - seed * 0.15)
+          : 1;
         const lens = 1 - smoothstep(lensRadius * 0.55, lensRadius, distance);
         const dissolve = smoothstep(seed * 0.7, seed * 0.7 + 0.3, exit * 1.6);
         cover = Math.max(intro, lens, dissolve);

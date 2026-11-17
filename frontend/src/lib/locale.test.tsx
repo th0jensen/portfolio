@@ -70,6 +70,13 @@ Deno.test('language selection updates page content and footer without a reload',
     GlobalRegistrator.register();
     try {
       document.body.innerHTML = html;
+      if (component === '/') {
+        assert.equal(
+          document.querySelector('img[src="/static/headshot.webp"]')!.getAttribute('draggable'),
+          'false',
+          'the server-rendered portrait must not be draggable',
+        );
+      }
       localStorage.setItem('locale', 'en');
       initLocale();
       for (const el of document.querySelectorAll<HTMLElement>('[data-island]')) {
@@ -100,11 +107,24 @@ Deno.test('language selection updates page content and footer without a reload',
           !page().includes(hidden),
           `${component}: stale content after switching to ${code}`,
         );
-        assert.ok(document.querySelector('footer')!.textContent!.includes(
-          code === 'no' ? 'Porteføljestack' : 'Portfolio stack',
-        ));
+        if (component === '/contact') {
+          assert.equal(document.querySelector('footer'), null);
+          assert.equal(document.querySelector('#contact header'), null);
+          assert.equal(document.querySelector('h1')?.textContent, expected);
+        } else {
+          assert.ok(document.querySelector('footer')!.textContent!.includes(
+            code === 'no' ? 'Porteføljestack' : 'Portfolio stack',
+          ));
+        }
         assert.equal(localStorage.getItem('locale'), code);
         assert.equal(document.documentElement.lang, code === 'no' ? 'nb' : 'en');
+        if (component === '/') {
+          assert.equal(
+            document.querySelector('img[src="/static/headshot.webp"]')!.getAttribute('draggable'),
+            'false',
+            'the portrait must stay non-draggable after switching languages',
+          );
+        }
         if (input) {
           assert.equal(
             document.querySelector<HTMLInputElement>('#contact-name')!.value,

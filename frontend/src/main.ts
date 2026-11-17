@@ -8,6 +8,15 @@ import { initDotMatrix } from './lib/dot-matrix.ts';
 import { initLocale } from './lib/locale.ts';
 import { initMotion } from './lib/motion.ts';
 
+// These are casual-save deterrents, not protection against downloading an asset.
+for (const eventName of ['contextmenu', 'dragstart']) {
+  document.addEventListener(eventName, (event) => {
+    if (event.target instanceof Element && event.target.closest('[data-protected-asset]')) {
+      event.preventDefault();
+    }
+  });
+}
+
 initLocale();
 initMotion();
 initDotMatrix();
