@@ -172,6 +172,54 @@ html.dark {
   min-height: 100dvh;
 }
 
+/* The root canvas paints the area revealed by native pull-down overscroll. */
+html:has(.hero-surface) {
+  background-image:
+    radial-gradient(ellipse at 85% 0%, hsl(var(--primary) / 0.12), transparent 65%),
+    radial-gradient(circle, hsl(var(--foreground) / 0.15) 1px, transparent 1px);
+  background-size: 100% 100lvh, 16px 16px;
+  background-attachment: fixed;
+}
+
+/* A sibling of the blurred header, so the rim samples the page, not its fill. */
+.header-glass-edge {
+  position: absolute;
+  inset: 0 0 auto;
+  z-index: 1;
+  height: 4rem;
+  pointer-events: none;
+}
+
+.header-glass-edge::before,
+.header-glass-edge::after {
+  content: '';
+  position: absolute;
+  inset-inline: 0;
+  bottom: 0;
+}
+
+.header-glass-edge::before {
+  /* Sample across the boundary, but paint only its innermost three pixels. */
+  height: 16px;
+  bottom: -8px;
+  clip-path: inset(5px 0 8px);
+  backdrop-filter: blur(0.5px) saturate(1.3);
+}
+
+@supports (backdrop-filter: url('#header-edge-refraction')) {
+  .header-glass-edge::before {
+    backdrop-filter: url('#header-edge-refraction') blur(0.35px) saturate(1.3);
+  }
+}
+
+.header-glass-edge::after {
+  height: 14px;
+  bottom: -6px;
+  clip-path: inset(7px 0 6px);
+  background: hsl(var(--foreground) / 0.06);
+  backdrop-filter: blur(2px) saturate(1.4) brightness(1.1);
+}
+
 /* Discourage casual saving without disabling context menus site-wide. */
 .protected-asset {
   -webkit-touch-callout: none;
@@ -306,12 +354,6 @@ body:has(.automaton-page) footer {
     hsl(var(--border) / 0.65) calc(2rem - 1px),
     hsl(var(--border) / 0.65) 2rem
   );
-}
-
-.contact-panel input:focus-visible,
-.contact-panel textarea:focus-visible {
-  outline: 2px solid hsl(var(--ring) / 0.5);
-  outline-offset: 4px;
 }
 
 @media (max-width: 767px) {

@@ -1,4 +1,4 @@
-import { atom } from 'ilha';
+import { atom, h } from 'ilha';
 import { ChevronDown, Menu, Moon, Sun, X } from 'lucide';
 import { cn } from '../lib/cn.ts';
 import Icon from '../lib/icon.tsx';
@@ -160,13 +160,30 @@ export default function Header({ path }: { path: string }) {
 
   return (
     <div ref={mountHeader} class='fixed inset-x-0 top-0 z-50 select-none'>
+      <svg aria-hidden='true' class='absolute h-0 w-0 overflow-hidden'>
+        <defs>
+          {/* Filter primitives render normally but aren't in Ilha's JSX tag list. */}
+          {h(
+            'filter',
+            {
+              id: 'header-edge-refraction',
+              'color-interpolation-filters': 'sRGB',
+            },
+            h('feOffset', {
+              in: 'SourceGraphic',
+              dy: '-3',
+            }),
+          )}
+        </defs>
+      </svg>
+      <div aria-hidden='true' class='header-glass-edge' />
       <header
         data-site-header
         class={cn(
-          'relative h-16 border-b border-border transition-[background-color,box-shadow] duration-200',
+          'relative h-16 border-b border-transparent transition-[background-color,box-shadow] duration-200',
           scrolled()
-            ? 'bg-background/92 shadow-[0_10px_30px_-24px_hsl(var(--shadow)/0.55)] backdrop-blur-xl'
-            : 'bg-background/88 backdrop-blur-md',
+            ? 'bg-background/80 shadow-[0_10px_30px_-24px_hsl(var(--shadow)/0.55)] backdrop-blur-md'
+            : 'bg-background/65 backdrop-blur-[2px]',
         )}
       >
         <div class='mx-auto flex h-full w-full max-w-7xl items-stretch justify-between px-5 sm:px-8 lg:px-10'>

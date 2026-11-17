@@ -189,7 +189,7 @@ export default function Home() {
 
   return (
     <>
-      <section class='relative isolate overflow-hidden'>
+      <section class='hero-surface relative isolate -mt-16 overflow-hidden pt-16'>
         <div class='absolute inset-0 -z-20'>
           <DotMatrix mode='field' spacing={16} lens={170} />
         </div>

@@ -137,7 +137,7 @@ export default function Contact() {
   return (
     <section
       id='contact'
-      class='relative isolate flex min-h-[calc(100svh-4rem)] flex-1 items-center overflow-hidden py-10 sm:py-12'
+      class='hero-surface relative isolate -mt-16 flex min-h-svh flex-1 items-center overflow-hidden pt-26 pb-10 sm:pt-28 sm:pb-12'
       aria-labelledby='contact-title'
     >
       <div class='contact-landscape pointer-events-none absolute inset-0 -z-10' aria-hidden='true'>
