@@ -47,7 +47,7 @@ Deno.test('language selection updates page content and footer without a reload',
   const data = portfolioData as unknown as Data;
   setServerData({ data, experience: data.experience_items });
   const cases = [
-    ['/', 'Looking for my next team.', 'Ser etter ny arbeidsgiver.'],
+    ['/', 'Open for work', 'Åpen for arbeid'],
     [
       '/projects',
       'Rust, native software, and shipped products.',

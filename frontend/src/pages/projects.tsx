@@ -1,7 +1,14 @@
 import PageHeader from '../components/page-header.tsx';
 import ProjectCard from '../components/project-card.tsx';
 import { useLocale } from '../lib/locale.ts';
+import { reveal, revealStagger } from '../lib/motion.ts';
 import { useServerData } from '../lib/server-data.ts';
+
+const technologies = [
+  ['Rust', 'Systems'],
+  ['GPUI', 'Native UI'],
+  ['Swift', 'Apple platforms'],
+] as const;
 
 export default function Projects() {
   const { data } = useServerData((value) => value);
@@ -26,38 +33,56 @@ export default function Projects() {
 
       <div class='mx-auto w-full max-w-7xl px-5 py-16 sm:px-8 sm:py-20 lg:px-10'>
         <div class='grid grid-cols-1 gap-5'>
-          <ProjectCard
-            project={featuredProject}
-            index={0}
-            featured
-            headingLevel={2}
-            copy={loc.work}
-          />
-          <div class='grid grid-cols-1 gap-5 md:grid-cols-2 lg:grid-cols-3'>
+          <div {...reveal}>
+            <ProjectCard
+              project={featuredProject}
+              index={0}
+              featured
+              headingLevel={2}
+              copy={loc.work}
+            />
+          </div>
+          <div
+            class='grid grid-cols-1 gap-5 md:grid-cols-2 lg:grid-cols-3'
+            {...revealStagger}
+          >
             {secondaryProjects.map((project, index) => (
-              <ProjectCard
-                project={project}
-                index={index + 1}
-                headingLevel={2}
-                copy={loc.work}
-              />
+              <div class='h-full'>
+                <ProjectCard
+                  project={project}
+                  index={index + 1}
+                  headingLevel={2}
+                  copy={loc.work}
+                />
+              </div>
             ))}
           </div>
         </div>
 
-        <div class='mt-16 grid border-y border-border sm:grid-cols-3 sm:divide-x sm:divide-border'>
-          {[
-            ['Rust', 'Systems'],
-            ['GPUI', 'Native UI'],
-            ['Swift', 'Apple platforms'],
-          ].map(([technology, context]) => (
-            <div class='flex items-center justify-between gap-4 py-5 sm:px-6 first:sm:pl-0 last:sm:pr-0'>
-              <span class='text-base font-bold'>{technology}</span>
-              <span class='font-mono text-[0.625rem] uppercase tracking-[0.12em] text-muted-foreground'>
-                {context}
-              </span>
+        <div class='mt-16 border-y border-border'>
+          <div class='marquee overflow-hidden'>
+            <div class='marquee-track'>
+              {[false, true].map((duplicate) => (
+                <ul
+                  class='flex shrink-0 items-center'
+                  aria-hidden={duplicate ? 'true' : undefined}
+                >
+                  {/* Each copy repeats the set so one copy spans the band. */}
+                  {[...technologies, ...technologies].map(([technology, context], index) => (
+                    <li
+                      class='flex items-center gap-3 whitespace-nowrap border-r border-border px-8 py-5 font-mono text-[0.6875rem] uppercase tracking-[0.16em]'
+                      aria-hidden={!duplicate && index >= technologies.length ? 'true' : undefined}
+                    >
+                      <span class='h-1.5 w-1.5 bg-primary' />
+                      <span class='font-bold text-foreground'>{technology}</span>
+                      <span class='text-muted-foreground/50'>/</span>
+                      <span class='text-muted-foreground'>{context}</span>
+                    </li>
+                  ))}
+                </ul>
+              ))}
             </div>
-          ))}
+          </div>
         </div>
       </div>
     </section>

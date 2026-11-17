@@ -1,3 +1,5 @@
+import { reveal } from '../lib/motion.ts';
+
 type Props = {
   eyebrow: string;
   title: string;
@@ -6,9 +8,16 @@ type Props = {
 
 export default function SectionHeader(props: Props) {
   return (
-    <div class='mb-12 grid gap-6 border-b border-border pb-8 md:grid-cols-[0.8fr_1.2fr] md:items-end'>
+    <div
+      {...reveal}
+      class='mb-12 grid gap-6 border-b border-border pb-8 md:grid-cols-[0.8fr_1.2fr] md:items-end'
+      data-scramble-group
+    >
       <div>
-        <p class='font-mono text-[0.6875rem] uppercase tracking-[0.16em] text-primary'>
+        <p
+          class='font-mono text-[0.6875rem] uppercase tracking-[0.16em] text-primary'
+          data-scramble
+        >
           {props.eyebrow}
         </p>
         <h2 class='mt-3 text-4xl font-bold tracking-[-0.045em] sm:text-5xl'>

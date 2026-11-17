@@ -34,12 +34,14 @@
 }
 
 :root {
-  --background: 42 27% 97%;
+  /* Neutral ladders from a Material scheme seeded with the primary
+     (#A3401A light, #E8703F dark) over the paper and ink backgrounds. */
+  --background: 43 50% 97%;
   --foreground: 222 22% 13%;
-  --muted: 38 18% 92%;
+  --muted: 43 18% 93%;
   --muted-foreground: 218 12% 34%;
-  --border: 35 14% 82%;
-  --card: 42 33% 99%;
+  --border: 45 9% 84%;
+  --card: 0 0% 100%;
   --card-foreground: 222 22% 13%;
   --primary: 16 72% 37%;
   --primary-foreground: 42 33% 98%;
@@ -50,8 +52,9 @@
   --diff-addition: 142 72% 28%;
   --diff-deletion: 2 72% 42%;
   --ring: 16 67% 45%;
-  --project-surface: 38 20% 93%;
+  --project-surface: 43 18% 93%;
   --shadow: 222 24% 12%;
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
   --radius: 0.5rem;
   /* Tuned per theme so the grid holds ~5 dL* against the background at the
      hero's layer opacity, rather than sitting at the threshold of vision. */
@@ -60,23 +63,23 @@
 }
 
 html.dark {
-  --background: 222 18% 9%;
+  --background: 220 29% 6%;
   --foreground: 40 18% 92%;
-  --muted: 220 14% 14%;
+  --muted: 220 16% 11%;
   --muted-foreground: 218 10% 72%;
-  --border: 220 12% 21%;
-  --card: 222 17% 11%;
+  --border: 222 11% 18%;
+  --card: 220 22% 8%;
   --card-foreground: 40 18% 92%;
-  --primary: 18 76% 58%;
-  --primary-foreground: 222 20% 9%;
-  --secondary: 220 14% 15%;
+  --primary: 17 79% 58%;
+  --primary-foreground: 220 29% 6%;
+  --secondary: 220 13% 13%;
   --secondary-foreground: 40 18% 92%;
-  --accent: 18 24% 17%;
-  --accent-foreground: 18 72% 68%;
+  --accent: 18 30% 14%;
+  --accent-foreground: 17 100% 68%;
   --diff-addition: 142 76% 58%;
   --diff-deletion: 2 76% 62%;
-  --ring: 18 76% 58%;
-  --project-surface: 220 15% 13%;
+  --ring: 17 79% 58%;
+  --project-surface: 220 16% 11%;
   --shadow: 222 40% 2%;
   --grid-major: 0.85;
   --grid-minor: 0.6;
@@ -155,6 +158,18 @@ html.dark {
 .site-layout {
   min-height: 100vh;
   min-height: 100dvh;
+}
+
+.edge-tint {
+  position: fixed;
+  inset-inline: 0;
+  z-index: 60;
+  /* Over 10px, so Safari reads the declared colour instead of sampling. */
+  height: 12px;
+  background-color: hsl(var(--background));
+  -webkit-background-clip: text;
+  background-clip: text;
+  pointer-events: none;
 }
 
 .site-page-content {
@@ -278,5 +293,315 @@ body:has(.automaton-page) footer {
     animation-duration: 0.01ms !important;
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
+  }
+}
+
+/* ── Motion ──────────────────────────────────────────────────────────────
+   `motion-ready` is set by the head script, so hidden-until-revealed content
+   never paints first. If the module never runs, the fallback animation shows
+   everything after 2.5s. See lib/motion.ts. */
+
+@keyframes reveal-fallback {
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+[data-reveal],
+[data-reveal='stagger'] > * {
+  transition:
+    opacity 0.9s var(--ease-out),
+    transform 0.9s var(--ease-out),
+    clip-path 1s var(--ease-out);
+}
+
+html.motion-ready [data-reveal]:not([data-reveal='stagger'], [data-reveal='lines'], [data-revealed]),
+html.motion-ready [data-reveal='stagger']:not([data-revealed]) > * {
+  opacity: 0;
+  transform: translate3d(0, 1.25rem, 0);
+  animation: reveal-fallback 0s 2.5s forwards;
+}
+
+[data-reveal='stagger'] > :nth-child(2) {
+  transition-delay: 70ms;
+}
+[data-reveal='stagger'] > :nth-child(3) {
+  transition-delay: 140ms;
+}
+[data-reveal='stagger'] > :nth-child(4) {
+  transition-delay: 210ms;
+}
+[data-reveal='stagger'] > :nth-child(5) {
+  transition-delay: 280ms;
+}
+[data-reveal='stagger'] > :nth-child(6) {
+  transition-delay: 350ms;
+}
+[data-reveal='stagger'] > :nth-child(n + 7) {
+  transition-delay: 420ms;
+}
+
+/* Headline lines rise out of a mask. */
+[data-reveal='lines'] .reveal-line {
+  display: block;
+  overflow: hidden;
+  padding-bottom: 0.08em;
+  margin-bottom: -0.08em;
+}
+
+[data-reveal='lines'] .reveal-line > span {
+  display: inline-block;
+  transition: transform 1.1s var(--ease-out);
+}
+
+[data-reveal='lines'] .reveal-line:nth-child(2) > span {
+  transition-delay: 90ms;
+}
+
+html.motion-ready [data-reveal='lines']:not([data-revealed]) .reveal-line > span {
+  transform: translate3d(0, 105%, 0);
+  animation: reveal-fallback 0s 2.5s forwards;
+}
+
+[data-revealed='instant'],
+[data-revealed='instant'] > *,
+[data-revealed='instant'] .reveal-line > span {
+  transition: none !important;
+}
+
+/* Pointer-following border light and inner glow, for [data-spotlight]. */
+.spotlight {
+  position: relative;
+  isolation: isolate;
+}
+
+.spotlight::before,
+.spotlight::after {
+  content: '';
+  position: absolute;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.35s ease;
+}
+
+.spotlight::before {
+  inset: -1px;
+  z-index: 2;
+  padding: 1px;
+  background: radial-gradient(
+    18rem circle at var(--mx, -100rem) var(--my, -100rem),
+    hsl(var(--primary) / 0.85),
+    transparent 70%
+  );
+  mask:
+    linear-gradient(#000 0 0) content-box,
+    linear-gradient(#000 0 0);
+  mask-composite: exclude;
+}
+
+.spotlight::after {
+  inset: 0;
+  z-index: -1;
+  background: radial-gradient(
+    28rem circle at var(--mx, -100rem) var(--my, -100rem),
+    hsl(var(--primary) / 0.07),
+    transparent 60%
+  );
+}
+
+.spotlight:hover::before,
+.spotlight:hover::after,
+.spotlight:focus-within::before {
+  opacity: 1;
+}
+
+.tilt {
+  transform: perspective(56rem) rotateX(var(--tilt-x, 0deg)) rotateY(var(--tilt-y, 0deg));
+  transition: transform 0.5s var(--ease-out);
+  will-change: transform;
+}
+
+.dot-canvas {
+  position: absolute;
+  inset: 0;
+  display: block;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+
+.scroll-progress {
+  transform: scaleX(var(--scroll, 0));
+  transform-origin: left;
+}
+
+.nav-link::after {
+  content: '';
+  position: absolute;
+  inset-inline: 0.75rem;
+  bottom: 0;
+  height: 2px;
+  background: hsl(var(--primary));
+  transform: scaleX(0);
+  transform-origin: right;
+  transition: transform 0.35s var(--ease-out);
+}
+
+.nav-link:hover::after,
+.nav-link[aria-current='page']::after {
+  transform: scaleX(1);
+  transform-origin: left;
+}
+
+@keyframes caret-blink {
+  50% {
+    opacity: 0;
+  }
+}
+
+.caret::after {
+  content: '';
+  display: inline-block;
+  width: 0.5em;
+  height: 1.05em;
+  margin-left: 0.3em;
+  vertical-align: -0.15em;
+  background: hsl(var(--primary));
+  animation: caret-blink 1.1s steps(1) infinite;
+}
+
+@keyframes marquee {
+  to {
+    transform: translate3d(-50%, 0, 0);
+  }
+}
+
+.marquee {
+  mask: linear-gradient(to right, transparent, #000 12%, #000 88%, transparent);
+}
+
+.marquee-track {
+  display: flex;
+  width: max-content;
+  animation: marquee 38s linear infinite;
+}
+
+.marquee:hover .marquee-track {
+  animation-play-state: paused;
+}
+
+/* A section background whose top and bottom edges are tiled; lib/motion.ts
+   sets the clip path. It reaches up over the section above by --tile-edge,
+   so the texture behind shows through clear tiles. Before the script runs,
+   it shows the state below the header: top band clear, bottom band solid. */
+:root {
+  --tile-edge: 3rem;
+}
+
+@media (min-width: 640px) {
+  :root {
+    --tile-edge: 8rem;
+  }
+}
+
+.tile-edges {
+  position: absolute;
+  inset-inline: 0;
+  top: calc(var(--tile-edge) * -1);
+  bottom: 0;
+  pointer-events: none;
+  clip-path: inset(var(--tile-edge) 0 0 0);
+}
+
+/* Scroll-pinned dot-matrix scene; lib/motion.ts sets data-step. */
+.scroll-scene {
+  position: relative;
+  height: 320vh;
+}
+
+.scroll-scene-sticky {
+  position: sticky;
+  top: 4rem;
+  height: calc(100vh - 4rem);
+  /* svh, not dvh: the mobile address bar must not resize the pinned panel. */
+  height: calc(100svh - 4rem);
+  overflow: hidden;
+}
+
+[data-step-item] {
+  transition:
+    opacity 0.5s var(--ease-out),
+    transform 0.5s var(--ease-out),
+    color 0.3s ease;
+}
+
+[data-scroll-scene]:not([data-step='0']) [data-step-item='0'],
+[data-scroll-scene]:not([data-step='1']) [data-step-item='1'],
+[data-scroll-scene]:not([data-step='2']) [data-step-item='2'] {
+  opacity: 0.8;
+}
+
+[data-scroll-scene]:not([data-step='0']) [data-step-panel='0'],
+[data-scroll-scene]:not([data-step='1']) [data-step-panel='1'],
+[data-scroll-scene]:not([data-step='2']) [data-step-panel='2'] {
+  opacity: 0;
+  transform: translate3d(0, 0.75rem, 0);
+  pointer-events: none;
+}
+
+.scene-meter {
+  transform: scaleY(var(--progress, 0));
+  transform-origin: top;
+}
+
+@media (max-width: 767px) {
+  .scroll-scene {
+    height: 280vh;
+  }
+}
+
+/* Keep the copy and illustration accessible without a pinned viewport on
+   short screens, and without scroll choreography for reduced motion. */
+@media (max-height: 700px), (prefers-reduced-motion: reduce) {
+  .scroll-scene {
+    height: auto;
+  }
+
+  .scroll-scene-sticky {
+    position: relative;
+    top: 0;
+    height: auto;
+    overflow: visible;
+  }
+
+  .scroll-scene-sticky > div {
+    height: auto;
+  }
+
+  .craft-visual {
+    min-height: 18rem;
+  }
+
+  [data-scroll-scene][data-step] [data-step-item] {
+    opacity: 1;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html.motion-ready [data-reveal]:not([data-revealed]),
+  html.motion-ready [data-reveal] > *,
+  html.motion-ready [data-reveal] .reveal-line > span {
+    opacity: 1 !important;
+    transform: none !important;
+  }
+
+  .marquee-track,
+  .caret::after {
+    animation: none;
+  }
+
+  .tilt {
+    transform: none !important;
   }
 }

@@ -1,3 +1,4 @@
+import DotMatrix from './dot-matrix.tsx';
 import { Link } from './link.tsx';
 import { ArrowRight, ArrowUpRight } from 'lucide';
 import type { Project } from '../bindings/index.ts';
@@ -29,8 +30,9 @@ export default function ProjectCard(
 
   return (
     <article
+      data-spotlight
       class={cn(
-        'project-card group grid overflow-hidden border border-border bg-card transition-[border-color,box-shadow,transform] duration-300 hover:-translate-y-0.5 hover:border-foreground/25 hover:shadow-[0_24px_60px_-36px_hsl(var(--shadow)/0.5)]',
+        'project-card spotlight group grid overflow-clip border [overflow-clip-margin:1px] border-border bg-card transition-[border-color,box-shadow,transform] duration-300 hover:-translate-y-0.5 hover:border-foreground/25 hover:shadow-[0_24px_60px_-36px_hsl(var(--shadow)/0.5)]',
         featured
           ? 'lg:grid-cols-[minmax(17rem,0.85fr)_minmax(0,1.15fr)]'
           : 'h-full grid-rows-[15rem_1fr]',
@@ -39,15 +41,23 @@ export default function ProjectCard(
       <Link
         href={detailHref}
         aria-label={`${project.name} — ${detailLabel}`}
+        data-tilt
         class={cn(
-          'relative isolate flex min-h-0 items-center justify-center overflow-hidden border-border bg-project-surface p-8 no-underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-ring',
+          'tilt relative isolate flex min-h-0 items-center justify-center overflow-hidden border-border bg-project-surface p-8 no-underline [transform:perspective(90rem)_rotateX(calc(var(--tilt-x,0deg)*0.4))_rotateY(calc(var(--tilt-y,0deg)*0.4))]! focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-ring',
           featured ? 'border-b lg:border-r lg:border-b-0 lg:p-12' : 'border-b',
         )}
       >
-        <span class='absolute top-5 left-5 font-mono text-[0.6875rem] tracking-[0.16em] text-muted-foreground'>
+        <DotMatrix
+          mode='field'
+          spacing={10}
+          fade={0}
+          lens={110}
+          class='z-0 opacity-35 transition-opacity duration-500 group-hover:opacity-60'
+        />
+        <span class='absolute top-5 left-5 z-10 font-mono text-[0.6875rem] tracking-[0.16em] text-muted-foreground transition-colors duration-300 group-hover:text-primary'>
           /0{index + 1}
         </span>
-        <div class='absolute inset-5 border border-foreground/5' />
+        <div class='absolute inset-5 z-[1] border border-foreground/5' />
         <img
           src={project.image_url}
           alt={`${project.name} project mark`}
@@ -100,7 +110,7 @@ export default function ProjectCard(
           {project.description}
         </p>
 
-        <div class='mt-7 flex flex-wrap gap-x-4 gap-y-2 border-t border-border pt-5'>
+        <div class='mt-7 flex flex-wrap gap-x-4 gap-y-2 border-t border-border pt-5 transition-transform duration-500 ease-(--ease-out) group-hover:translate-x-1'>
           {Object.keys(project.technologies).map((technology) => (
             <span class='font-mono text-[0.6875rem] uppercase tracking-widest text-muted-foreground'>
               {technology}

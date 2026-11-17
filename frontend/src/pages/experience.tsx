@@ -6,6 +6,7 @@ import ZedContribution from '../components/zed-contribution.tsx';
 import { formatCompact } from '../lib/format.ts';
 import Icon from '../lib/icon.tsx';
 import { useLocale } from '../lib/locale.ts';
+import { reveal, revealStagger } from '../lib/motion.ts';
 import { useServerData } from '../lib/server-data.ts';
 
 const pageCopy = {
@@ -52,10 +53,17 @@ export default function Experience() {
       />
 
       <div class='mx-auto w-full max-w-7xl px-5 py-16 sm:px-8 sm:py-20 lg:px-10'>
-        <div class='mb-10 flex items-center justify-between gap-4 border-b border-border pb-4 font-mono text-[0.625rem] uppercase tracking-[0.14em] text-muted-foreground'>
-          <span>{copy.selected}</span>
+        <div
+          {...reveal}
+          data-scramble-group
+          class='mb-10 flex items-center justify-between gap-4 border-b border-border pb-4 font-mono text-[0.625rem] uppercase tracking-[0.14em] text-muted-foreground'
+        >
+          <span data-scramble>{copy.selected}</span>
           <span>
-            {experience.length.toString().padStart(2, '0')} {copy.entries}
+            <span data-count>
+              {experience.length.toString().padStart(2, '0')}
+            </span>{' '}
+            {copy.entries}
           </span>
         </div>
 
@@ -70,9 +78,9 @@ export default function Experience() {
               </h2>
             </div>
 
-            <div class='flex flex-col gap-5'>
+            <div {...revealStagger} class='flex flex-col gap-5'>
               {zedItems.map((item, index) => (
-                <ZedContribution key={item.name} item={item} index={index} />
+                <ZedContribution key={item.url} item={item} index={index} />
               ))}
             </div>
           </div>
@@ -89,10 +97,17 @@ export default function Experience() {
               </h2>
             </div>
 
-            <div class='divide-y divide-border border-b border-border'>
+            <div
+              {...revealStagger}
+              class='divide-y divide-border border-b border-border'
+            >
               {personalItems.map((item, index) => (
-                <article class='group grid gap-5 py-9 sm:grid-cols-[3.5rem_minmax(0,1fr)] lg:grid-cols-[3.5rem_minmax(0,1fr)_15rem] lg:gap-8 lg:py-11'>
-                  <div class='font-mono text-[0.6875rem] text-muted-foreground'>
+                <article class='group relative grid gap-5 py-9 transition-colors duration-300 hover:bg-muted/40 px-4 sm:grid-cols-[3.5rem_minmax(0,1fr)] lg:grid-cols-[3.5rem_minmax(0,1fr)_15rem] lg:gap-8 lg:py-11'>
+                  <span
+                    aria-hidden='true'
+                    class='absolute inset-y-0 left-0 w-0.5 origin-top scale-y-0 bg-primary transition-transform duration-500 ease-(--ease-out) group-hover:scale-y-100'
+                  />
+                  <div class='font-mono text-[0.6875rem] text-muted-foreground transition-colors duration-300 group-hover:text-primary'>
                     /{String(index + zedItems.length + 1).padStart(2, '0')}
                   </div>
 
@@ -136,7 +151,7 @@ export default function Experience() {
                           </dt>
                           <dd class='mt-1 inline-flex items-center gap-1.5 text-sm font-bold'>
                             <Icon node={Star} size={13} />
-                            {formatCompact(item.stars)}
+                            <span data-count>{formatCompact(item.stars)}</span>
                           </dd>
                         </div>
                       )}
@@ -147,7 +162,7 @@ export default function Experience() {
                           </dt>
                           <dd class='mt-1 inline-flex items-center gap-1.5 text-sm font-bold'>
                             <Icon node={GitFork} size={13} />
-                            {formatCompact(item.forks)}
+                            <span data-count>{formatCompact(item.forks)}</span>
                           </dd>
                         </div>
                       )}

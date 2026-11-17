@@ -1,10 +1,12 @@
 import type { Project } from '../../bindings/index.ts';
 import { Link, LinkButton } from '../../components/link.tsx';
 import { ArrowLeft, ArrowRight, ArrowUpRight } from 'lucide';
+import DotMatrix from '../../components/dot-matrix.tsx';
 import ProjectCard from '../../components/project-card.tsx';
 import SectionHeader from '../../components/section-header.tsx';
 import Icon from '../../lib/icon.tsx';
 import { useLocale } from '../../lib/locale.ts';
+import { reveal, revealStagger } from '../../lib/motion.ts';
 import { useServerData } from '../../lib/server-data.ts';
 
 const copy = {
@@ -43,9 +45,9 @@ export default function ProjectDetails({ project }: { project: Project }) {
 
   return (
     <section class='flex-1'>
-      <header class='relative overflow-hidden border-b border-border py-16 sm:py-20'>
-        <div class='technical-grid absolute inset-0 opacity-35' />
-        <div class='absolute inset-0 bg-[linear-gradient(to_right,hsl(var(--background)/0.98),hsl(var(--background)/0.78))]' />
+      <header class='relative isolate overflow-hidden border-b border-border py-16 sm:py-20'>
+        <DotMatrix mode='field' spacing={14} />
+        <div class='pointer-events-none absolute inset-0 bg-[linear-gradient(to_right,hsl(var(--background))_0%,hsl(var(--background)/0.94)_38%,hsl(var(--background)/0.55)_72%,hsl(var(--background)/0.2)_100%)]' />
         <div class='relative mx-auto w-full max-w-7xl px-5 sm:px-8 lg:px-10'>
           <Link
             href='/projects'
@@ -55,13 +57,23 @@ export default function ProjectDetails({ project }: { project: Project }) {
             {text.back}
           </Link>
 
-          <p class='mt-8 font-mono text-[0.6875rem] uppercase tracking-[0.16em] text-primary'>
-            /0{projectIndex + 1} / {sourceLabel}
+          <p
+            class='mt-8 font-mono text-[0.6875rem] uppercase tracking-[0.16em] text-primary'
+            data-scramble
+            {...reveal}
+          >
+            {`/0${projectIndex + 1} / ${sourceLabel}`}
           </p>
-          <h1 class='mt-4 max-w-4xl text-[clamp(2.5rem,6vw,4.25rem)] font-bold leading-[0.98] tracking-[-0.045em] text-foreground'>
-            {project.name}
+          <h1
+            class='mt-4 max-w-4xl text-[clamp(2.5rem,6vw,4.25rem)] font-bold leading-[0.98] tracking-[-0.045em] text-foreground'
+            data-reveal='lines'
+            data-morph-preserve='data-revealed'
+          >
+            <span class='reveal-line'>
+              <span>{project.name}</span>
+            </span>
           </h1>
-          <p class='mt-6 max-w-2xl text-lg leading-8 text-muted-foreground'>
+          <p class='mt-6 max-w-2xl text-lg leading-8 text-muted-foreground' {...reveal}>
             {project.description}
           </p>
         </div>
@@ -69,8 +81,12 @@ export default function ProjectDetails({ project }: { project: Project }) {
 
       <div class='mx-auto w-full max-w-7xl px-5 py-16 sm:px-8 sm:py-20 lg:px-10'>
         <div class='grid grid-cols-1 gap-10 lg:grid-cols-[minmax(0,0.85fr)_minmax(0,1.15fr)] lg:gap-14'>
-          <div class='relative isolate flex items-center justify-center overflow-hidden border border-border bg-project-surface p-10 lg:p-12'>
-            <div class='absolute inset-5 border border-foreground/5' />
+          <div
+            data-spotlight
+            class='spotlight relative isolate flex items-center justify-center overflow-clip border border-border bg-project-surface p-10 [overflow-clip-margin:1px] lg:p-12'
+          >
+            <DotMatrix mode='field' spacing={10} fade={0} lens={130} class='z-0 opacity-45' />
+            <div class='absolute inset-5 z-[1] border border-foreground/5' />
             <img
               src={project.image_url}
               alt={`${project.name} project mark`}
@@ -94,7 +110,7 @@ export default function ProjectDetails({ project }: { project: Project }) {
                 <h2 class='font-mono text-[0.6875rem] uppercase tracking-[0.16em] text-primary'>
                   {text.highlights}
                 </h2>
-                <ul class='mt-4 space-y-3'>
+                <ul class='mt-4 space-y-3' {...revealStagger}>
                   {project.highlights.map((highlight) => (
                     <li class='flex items-start gap-3 text-[0.9375rem] leading-7 text-muted-foreground'>
                       <span class='mt-2.5 h-1.5 w-1.5 shrink-0 bg-primary' />
@@ -109,10 +125,10 @@ export default function ProjectDetails({ project }: { project: Project }) {
               <h2 class='font-mono text-[0.6875rem] uppercase tracking-[0.16em] text-primary'>
                 {text.stack}
               </h2>
-              <div class='mt-4 flex flex-wrap gap-x-5 gap-y-2'>
+              <div class='mt-4 flex flex-wrap gap-2'>
                 {Object.entries(project.technologies).map(
                   ([technology, color]) => (
-                    <span class='inline-flex items-center gap-2 font-mono text-[0.6875rem] uppercase tracking-widest text-muted-foreground'>
+                    <span class='inline-flex items-center gap-2 border border-border bg-card px-2.5 py-1.5 font-mono text-[0.6875rem] uppercase leading-none tracking-widest text-muted-foreground transition-colors hover:border-foreground/25 hover:text-foreground'>
                       <span
                         class='h-2 w-2 shrink-0'
                         style={`background-color:${color}`}
@@ -149,9 +165,14 @@ export default function ProjectDetails({ project }: { project: Project }) {
               title={text.more}
               description={text.moreDescription}
             />
-            <div class='grid grid-cols-1 gap-5 md:grid-cols-2 lg:grid-cols-3'>
+            <div
+              class='grid grid-cols-1 gap-5 md:grid-cols-2 lg:grid-cols-3'
+              {...revealStagger}
+            >
               {otherProjects.map((p, index) => (
-                <ProjectCard project={p} index={index} copy={loc.work} />
+                <div class='h-full'>
+                  <ProjectCard project={p} index={index} copy={loc.work} />
+                </div>
               ))}
             </div>
           </div>

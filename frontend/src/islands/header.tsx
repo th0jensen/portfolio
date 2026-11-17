@@ -123,7 +123,6 @@ export default function Header({ path }: { path: string }) {
   const loc = data[localeCode];
   const isDark = theme() === 'dark';
   const themeLabel = isDark ? loc.theme.light : loc.theme.dark;
-  const themeIcon = isDark ? Sun : Moon;
   const isMobileOpen = mobileOpen();
   const activeLocale = data.locales.find((item) => item.code === localeCode);
   const navLinks = [
@@ -132,21 +131,39 @@ export default function Header({ path }: { path: string }) {
     { href: '/contact', label: loc.nav.contact },
   ];
 
-  const navLinkClass = (href: string, mobile = false) =>
+  const navLinkClass = (href: string) =>
     cn(
-      'group no-underline transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-4 focus-visible:ring-offset-background',
-      mobile
-        ? 'flex items-center justify-between border-b border-border py-5 text-2xl font-bold text-foreground'
-        : `relative flex h-16 items-center px-3 text-sm font-bold hover:text-foreground ${
-          path === href ? 'text-foreground' : 'text-muted-foreground'
-        }`,
+      'nav-link relative flex h-16 items-center px-3 text-sm font-bold no-underline transition-colors hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-4 focus-visible:ring-offset-background',
+      path === href ? 'text-foreground' : 'text-muted-foreground',
     );
+  const mobileLinkClass =
+    'group flex items-baseline gap-4 border-b border-border py-5 text-3xl font-bold tracking-tight text-foreground no-underline transition-[opacity,translate,color] duration-500 ease-(--ease-out) hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring motion-safe:starting:translate-y-4 motion-safe:starting:opacity-0';
+  const mobileIndex = (index: number) => (
+    <span class='w-6 shrink-0 font-mono text-[0.6875rem] font-normal tracking-[0.08em] text-muted-foreground transition-colors group-hover:text-primary'>
+      {String(index + 1).padStart(2, '0')}
+    </span>
+  );
+  const themeGlyph = () => (
+    <span class='relative block h-4 w-4 shrink-0 [&_svg]:absolute [&_svg]:inset-0 [&_svg]:transition-[rotate,scale,opacity] [&_svg]:duration-300 [&_svg]:ease-(--ease-out)'>
+      <Icon
+        node={Sun}
+        size={16}
+        class={isDark ? 'rotate-0 scale-100 opacity-100' : '-rotate-90 scale-50 opacity-0'}
+      />
+      <Icon
+        node={Moon}
+        size={16}
+        class={isDark ? 'rotate-90 scale-50 opacity-0' : 'rotate-0 scale-100 opacity-100'}
+      />
+    </span>
+  );
 
   return (
     <div ref={mountHeader} class='fixed inset-x-0 top-0 z-50 select-none'>
       <header
+        data-site-header
         class={cn(
-          'h-16 border-b border-border transition-[background-color,box-shadow] duration-200',
+          'relative h-16 border-b border-border transition-[background-color,box-shadow] duration-200',
           scrolled()
             ? 'bg-background/92 shadow-[0_10px_30px_-24px_hsl(var(--shadow)/0.55)] backdrop-blur-xl'
             : 'bg-background/88 backdrop-blur-md',
@@ -166,6 +183,12 @@ export default function Header({ path }: { path: string }) {
             <span class='hidden text-base font-bold tracking-tight min-[380px]:inline'>
               Thomas Jensen
             </span>
+            <span
+              class='hidden border-l border-border pl-3 font-mono text-[0.625rem] tracking-[0.04em] text-muted-foreground lg:inline'
+              aria-hidden='true'
+            >
+              ~{path === '/' ? '' : path}
+            </span>
           </a>
 
           <nav
@@ -173,16 +196,18 @@ export default function Header({ path }: { path: string }) {
             aria-label='Main navigation'
           >
             {navLinks.map((link) => (
-              <a href={link.href} class={navLinkClass(link.href)}>
+              <a
+                href={link.href}
+                class={navLinkClass(link.href)}
+                aria-current={path === link.href ? 'page' : undefined}
+              >
                 {link.label}
-                {path === link.href &&
-                  <span class='absolute inset-x-3 bottom-0 h-0.5 bg-primary' />}
               </a>
             ))}
 
             <a
               href='/static/resume.pdf'
-              class='flex h-16 items-center px-3 text-sm font-bold text-muted-foreground no-underline transition-colors hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring'
+              class={navLinkClass('/static/resume.pdf')}
               target='_blank'
               rel='noopener noreferrer'
             >
@@ -228,7 +253,7 @@ export default function Header({ path }: { path: string }) {
               aria-label={themeLabel}
               title={themeLabel}
             >
-              <Icon node={themeIcon} size={16} />
+              {themeGlyph()}
             </button>
           </nav>
 
@@ -244,6 +269,10 @@ export default function Header({ path }: { path: string }) {
             {isMobileOpen ? <Icon node={X} size={18} /> : <Icon node={Menu} size={18} />}
           </button>
         </div>
+        <span
+          class='scroll-progress pointer-events-none absolute inset-x-0 -bottom-px h-px bg-primary'
+          aria-hidden='true'
+        />
       </header>
 
       {isMobileOpen && (
@@ -252,29 +281,37 @@ export default function Header({ path }: { path: string }) {
           class='h-[calc(100dvh-4rem)] overflow-y-auto border-b border-border bg-background px-5 py-5 sm:px-8 md:hidden'
           aria-label='Mobile navigation'
         >
-          {navLinks.map((link) => (
+          {navLinks.map((link, index) => (
             <a
               href={link.href}
-              class={navLinkClass(link.href, true)}
+              class={mobileLinkClass}
+              style={`transition-delay:${index * 60}ms,${index * 60}ms,0ms`}
               data-menu-close
               onclick={closeMobile}
+              aria-current={path === link.href ? 'page' : undefined}
             >
-              <span>{link.label}</span>
+              {mobileIndex(index)}
+              <span class={path === link.href ? 'text-primary' : undefined}>{link.label}</span>
             </a>
           ))}
           <a
             href='/static/resume.pdf'
-            class='flex items-center justify-between border-b border-border py-5 text-2xl font-bold text-foreground no-underline'
+            class={mobileLinkClass}
+            style={`transition-delay:${navLinks.length * 60}ms,${navLinks.length * 60}ms,0ms`}
             target='_blank'
             rel='noopener noreferrer'
           >
+            {mobileIndex(navLinks.length)}
             {loc.buttons.resume}
-            <span class='font-mono text-[0.6875rem] font-normal text-muted-foreground'>
+            <span class='ml-auto font-mono text-[0.6875rem] font-normal text-muted-foreground'>
               PDF
             </span>
           </a>
 
-          <div class='grid grid-cols-2 gap-3 py-6'>
+          <div
+            class='grid grid-cols-2 gap-3 py-6 transition-[opacity,translate] duration-500 ease-(--ease-out) motion-safe:starting:translate-y-4 motion-safe:starting:opacity-0'
+            style={`transition-delay:${(navLinks.length + 1) * 60}ms`}
+          >
             {data.locales.map((item) => (
               <button
                 type='button'
@@ -297,7 +334,7 @@ export default function Header({ path }: { path: string }) {
               data-theme-toggle
               onclick={toggleTheme}
             >
-              <Icon node={themeIcon} size={16} />
+              {themeGlyph()}
               {themeLabel}
             </button>
           </div>

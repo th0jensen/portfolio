@@ -23,10 +23,32 @@ export default function ZedContribution({ item, index }: Props) {
     ? { stars: 'Stjerner', downloads: 'Nedlastinger' }
     : { stars: 'Stars', downloads: 'Downloads' };
 
+  const total = additions + deletions;
+  const addShare = total > 0 ? (additions / total) * 100 : 0;
+  const repo = item.type === 'pr'
+    ? 'zed-industries/zed'
+    : /github\.com\/([^/]+\/[^/?#]+)/.exec(item.github_url ?? item.url)?.[1] ??
+      item.name;
+
   return (
-    <article class='group flex flex-col border border-border bg-card p-6 transition-[border-color,box-shadow] duration-300 hover:border-foreground/25 hover:shadow-[0_24px_60px_-36px_hsl(var(--shadow)/0.5)] sm:p-8'>
-      <div class='flex-1'>
-        <div class='mb-4 flex flex-wrap items-center justify-between gap-3 font-mono text-[0.625rem] uppercase tracking-[0.12em] text-muted-foreground'>
+    <article
+      class='spotlight group flex flex-col border border-border bg-card transition-[border-color,box-shadow] duration-300 hover:border-foreground/25 hover:shadow-[0_24px_60px_-36px_hsl(var(--shadow)/0.5)]'
+      data-spotlight
+    >
+      <div class='flex items-center gap-3 border-b border-border px-4 py-2.5 font-mono text-[0.625rem] text-muted-foreground sm:px-5'>
+        <span aria-hidden='true' class='flex gap-1'>
+          <span class='size-1.5 bg-border transition-colors duration-300 group-hover:bg-primary' />
+          <span class='size-1.5 bg-border' />
+          <span class='size-1.5 bg-border' />
+        </span>
+        <span class='min-w-0 truncate border-x border-border px-2.5 text-foreground/80'>
+          {repo}
+        </span>
+        <span class='ml-auto uppercase tracking-[0.12em]'>/0{index + 1}</span>
+      </div>
+
+      <div class='flex-1 p-6 sm:p-8'>
+        <div class='mb-4 flex flex-wrap items-center gap-3 font-mono text-[0.625rem] uppercase tracking-[0.12em] text-muted-foreground'>
           <span class='inline-flex flex-wrap items-center gap-2'>
             <span class='text-primary'>Zed</span>
             <span aria-hidden='true'>/</span>
@@ -46,7 +68,6 @@ export default function ZedContribution({ item, index }: Props) {
               </>
             )}
           </span>
-          <span>/0{index + 1}</span>
         </div>
 
         <Link
@@ -98,32 +119,49 @@ export default function ZedContribution({ item, index }: Props) {
       </div>
 
       {hasStats && (
-        <div class='mt-6 flex flex-wrap gap-x-5 gap-y-2 border-t border-border pt-4 font-mono text-[0.6875rem] text-muted-foreground'>
+        <div class='mx-6 mb-6 flex flex-wrap items-center gap-x-5 gap-y-2 border-t border-border pt-4 font-mono text-[0.6875rem] text-muted-foreground sm:mx-8 sm:mb-8'>
           {hasDiff && (
-            <span>
-              {additions > 0 && (
-                <span class='text-diff-addition'>
-                  +{String(item.additions)}
-                </span>
-              )}
-              {additions > 0 && deletions > 0 && ' / '}
-              {deletions > 0 && (
-                <span class='text-diff-deletion'>
-                  −{String(item.deletions)}
-                </span>
-              )} diff
+            <span class='inline-flex items-center gap-3'>
+              <span
+                aria-hidden='true'
+                class='flex h-1.5 w-20 overflow-hidden bg-muted sm:w-28'
+              >
+                <span
+                  class='h-full bg-diff-addition'
+                  style={`width:${addShare.toFixed(1)}%`}
+                />
+                <span
+                  class='h-full bg-diff-deletion'
+                  style={`width:${(total > 0 ? 100 - addShare : 0).toFixed(1)}%`}
+                />
+              </span>
+              <span>
+                {additions > 0 && (
+                  <span class='text-diff-addition'>
+                    +<span data-count>{String(item.additions)}</span>
+                  </span>
+                )}
+                {additions > 0 && deletions > 0 && ' / '}
+                {deletions > 0 && (
+                  <span class='text-diff-deletion'>
+                    −<span data-count>{String(item.deletions)}</span>
+                  </span>
+                )} diff
+              </span>
             </span>
           )}
           {stars > 0 && (
             <span class='inline-flex items-center gap-1.5'>
               <Icon node={Star} size={13} />
-              <span class='sr-only'>{labels.stars}:</span> {formatCompact(item.stars)}
+              <span class='sr-only'>{labels.stars}:</span>{' '}
+              <span data-count>{formatCompact(item.stars)}</span>
             </span>
           )}
           {isExtension && downloads > 0 && (
             <span class='inline-flex items-center gap-1.5'>
               <Icon node={Download} size={13} />
-              <span class='sr-only'>{labels.downloads}:</span> {formatCompact(downloads)}
+              <span class='sr-only'>{labels.downloads}:</span>{' '}
+              <span data-count>{formatCompact(downloads)}</span>
             </span>
           )}
         </div>

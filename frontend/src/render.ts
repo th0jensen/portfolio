@@ -103,6 +103,9 @@ function pageHead({ assets, head }: RenderInput, data: Data): HeadDescriptor {
           } catch (_) {}
           root.classList.toggle('dark', theme === 'dark');
           root.style.colorScheme = theme;
+          if (!matchMedia('(prefers-reduced-motion: reduce)').matches) {
+            root.classList.add('motion-ready');
+          }
         })();`,
       },
     ],

@@ -244,9 +244,10 @@ export class AutomatonEngine {
     return this.pendingStep ?? Promise.resolve(this.grid);
   }
 
-  async resize(size: number): Promise<GridView> {
+  async resize(width: number, height = width): Promise<GridView> {
     await this.pendingStep;
-    const dimension = normalizeGridSize(size);
+    const normalizedWidth = normalizeGridSize(width);
+    const normalizedHeight = normalizeGridSize(height);
     const previous = this.descriptor;
     const previousGrid = this.grid;
     const previousCells = previousGrid?.cells.slice();
@@ -254,13 +255,8 @@ export class AutomatonEngine {
     const previousHeight = previousGrid?.height ?? 0;
 
     try {
-      const next = await this.exports.createGrid(dimension, dimension);
+      const next = await this.exports.createGrid(normalizedWidth, normalizedHeight);
       this.setDescriptor(next);
-      // The descriptor returned by the module is authoritative, but the UI
-      // deliberately requests square grids.
-      if (next.width !== next.height) {
-        throw new Error('The WASM module returned a non-square grid.');
-      }
       const grid = this.grid;
       if (!grid) {
         throw new Error('The WASM module returned an empty grid.');
@@ -309,32 +305,8 @@ export class AutomatonEngine {
         );
       }
 
-      let grid = loadedGrid;
-      if (loadedGrid.width !== loadedGrid.height) {
-        const cells = loadedGrid.cells.slice();
-        const dimension = Math.max(loadedGrid.width, loadedGrid.height);
-        const square = await this.exports.createGrid(
-          dimension,
-          dimension,
-        );
-        this.setDescriptor(square);
-        const squareGrid = this.grid;
-        if (!squareGrid) {
-          throw new Error(
-            'The WASM module returned an empty square grid.',
-          );
-        }
-        grid = squareGrid;
-        this.copyCentered(
-          cells,
-          loadedGrid.width,
-          loadedGrid.height,
-          grid,
-        );
-      }
-
       return {
-        grid,
+        grid: loadedGrid,
         automatonId: loaded.automatonId as AutomatonId,
       };
     } catch (error) {

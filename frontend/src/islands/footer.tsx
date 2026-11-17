@@ -1,6 +1,7 @@
 import { ArrowUpRight } from 'lucide';
 import Icon from '../lib/icon.tsx';
 import { useLocale } from '../lib/locale.ts';
+import { reveal } from '../lib/motion.ts';
 
 export default function Footer() {
   const year = String(new Date().getFullYear());
@@ -13,7 +14,10 @@ export default function Footer() {
 
   return (
     <footer class='border-t border-border bg-card'>
-      <div class='mx-auto grid w-full max-w-7xl gap-10 px-5 py-12 sm:px-8 md:grid-cols-[1fr_auto] md:items-end lg:px-10'>
+      <div
+        {...reveal}
+        class='mx-auto grid w-full max-w-7xl gap-10 px-5 py-12 sm:px-8 md:grid-cols-[1fr_auto] md:items-end lg:px-10'
+      >
         <div>
           <a
             href='/'
@@ -35,17 +39,28 @@ export default function Footer() {
           </div>
         </div>
 
-        <div class='flex flex-wrap gap-x-6 gap-y-3 md:justify-end'>
-          {channels.map(([href, label]) => (
-            <a
-              href={href}
-              class='inline-flex items-center gap-1.5 text-sm font-bold text-foreground no-underline hover:text-primary'
-              target='_blank'
-              rel='noopener noreferrer'
-            >
-              {label} <Icon node={ArrowUpRight} size={13} />
-            </a>
-          ))}
+        <div class='grid gap-4 md:justify-items-end'>
+          <p class='caret font-mono text-[0.6875rem] text-muted-foreground'>
+            <span class='text-primary'>$</span>{' '}
+            {isNorwegian ? 'åpen --for-roller' : 'open --to-roles'}
+          </p>
+          <div class='flex flex-wrap gap-x-6 gap-y-3 md:justify-end'>
+            {channels.map(([href, label]) => (
+              <a
+                href={href}
+                class='group inline-flex items-center gap-1.5 text-sm font-bold text-foreground no-underline transition-colors hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring'
+                target='_blank'
+                rel='noopener noreferrer'
+              >
+                {label}{' '}
+                <Icon
+                  node={ArrowUpRight}
+                  size={13}
+                  class='transition-transform duration-300 ease-(--ease-out) group-hover:translate-x-0.5 group-hover:-translate-y-0.5 group-focus-visible:translate-x-0.5 group-focus-visible:-translate-y-0.5'
+                />
+              </a>
+            ))}
+          </div>
         </div>
       </div>
 

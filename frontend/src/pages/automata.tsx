@@ -1,6 +1,9 @@
 import Automaton from '../islands/automaton_island.tsx';
+import { useLocale } from '../lib/locale.ts';
 
 export default function Automata() {
+  const isNorwegian = useLocale()() === 'no';
+
   return (
     <section
       id='automaton'
@@ -15,7 +18,7 @@ export default function Automata() {
               04 / Haskell → WASM
             </p>
             <h1 class='mt-1 text-[clamp(1.65rem,4vw,2.75rem)] font-bold leading-none tracking-tighter'>
-              Cellular Automata
+              {isNorwegian ? 'Cellulære automater' : 'Cellular Automata'}
             </h1>
           </div>
         </div>
