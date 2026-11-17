@@ -127,6 +127,7 @@ impl StubRpcServer {
     async fn shutdown(self) {
         let _ = self.handle.stop();
         self.task.abort();
+        let _ = self.task.await;
     }
 }
 
