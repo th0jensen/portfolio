@@ -9,7 +9,7 @@ export default function Automata() {
       id='automaton'
       class='automaton-page touch-manipulation overscroll-none'
     >
-      <header class='relative shrink-0 overflow-hidden border-b border-border'>
+      <header class='relative shrink-0 overflow-hidden border-b border-border pt-16'>
         <div class='technical-grid absolute inset-0 opacity-35' />
         <div class='absolute inset-0 bg-[linear-gradient(to_right,hsl(var(--background)/0.98),hsl(var(--background)/0.78))]' />
         <div class='relative mx-auto flex h-full w-full max-w-7xl items-center justify-between gap-5 px-7 py-6 sm:px-9 sm:py-6 lg:px-10 lg:py-4'>

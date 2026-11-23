@@ -53,6 +53,14 @@ const SELECTOR = 'canvas[data-dot-matrix]';
 // Retain the load transition and hover lens for later; keep both off together.
 const IMAGE_INTRO_ENABLED = false;
 
+/** The on-screen pitch, including any CSS stretch since the canvas was drawn. */
+export function fieldGrid(canvas: HTMLCanvasElement) {
+  const engine = engines.get(canvas);
+  if (engine?.mode !== 'field' || !engine.cols || !engine.rows) return;
+  const rect = canvas.getBoundingClientRect();
+  return { rect, pitchX: rect.width / engine.cols, pitchY: rect.height / engine.rows };
+}
+
 export function initDotMatrix(): void {
   reducedMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
   observer = new IntersectionObserver((entries) => {

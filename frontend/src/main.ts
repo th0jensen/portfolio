@@ -5,6 +5,7 @@ import type { JsonRecord } from '@ilha/void';
 import { initIslands } from 'void/pages-client';
 import { islandPages } from './islands/pages.ts';
 import { initDotMatrix } from './lib/dot-matrix.ts';
+import { initGlass } from './lib/glass.ts';
 import { initLocale } from './lib/locale.ts';
 import { initMotion } from './lib/motion.ts';
 
@@ -20,6 +21,7 @@ for (const eventName of ['contextmenu', 'dragstart']) {
 initLocale();
 initMotion();
 initDotMatrix();
+initGlass();
 initIslands({
   header: () => import('./islands/header.tsx'),
   footer: () => import('./islands/footer.tsx'),

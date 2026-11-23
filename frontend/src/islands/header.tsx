@@ -1,4 +1,4 @@
-import { atom, h } from 'ilha';
+import { atom } from 'ilha';
 import { ChevronDown, Menu, Moon, Sun, X } from 'lucide';
 import { cn } from '../lib/cn.ts';
 import Icon from '../lib/icon.tsx';
@@ -160,29 +160,18 @@ export default function Header({ path }: { path: string }) {
 
   return (
     <div ref={mountHeader} class='fixed inset-x-0 top-0 z-50 select-none'>
-      <svg aria-hidden='true' class='absolute h-0 w-0 overflow-hidden'>
-        <defs>
-          {/* Filter primitives render normally but aren't in Ilha's JSX tag list. */}
-          {h(
-            'filter',
-            {
-              id: 'header-edge-refraction',
-              'color-interpolation-filters': 'sRGB',
-            },
-            h('feOffset', {
-              in: 'SourceGraphic',
-              dy: '-3',
-            }),
-          )}
-        </defs>
-      </svg>
-      <div aria-hidden='true' class='header-glass-edge' />
+      <div
+        aria-hidden='true'
+        data-glass-lens='header'
+        data-morph-preserve='style data-glass-active'
+        data-scrolled={scrolled() ? '' : undefined}
+        class='glass-lens header-lens'
+      />
       <header
         data-site-header
         class={cn(
-          'glass-surface relative h-16 border-b border-transparent transition-[background-color,box-shadow] duration-200',
-          scrolled() &&
-            'bg-background/80 shadow-[0_10px_30px_-24px_hsl(var(--shadow)/0.55)] backdrop-blur-md',
+          'relative h-16 pb-px transition-shadow duration-200',
+          scrolled() && 'shadow-[0_10px_30px_-24px_hsl(var(--shadow)/0.55)]',
         )}
       >
         <div class='mx-auto flex h-full w-full max-w-7xl items-stretch justify-between px-5 sm:px-8 lg:px-10'>
@@ -286,7 +275,7 @@ export default function Header({ path }: { path: string }) {
           </button>
         </div>
         <span
-          class='scroll-progress pointer-events-none absolute inset-x-0 -bottom-px h-px bg-primary'
+          class='scroll-progress pointer-events-none absolute inset-x-0 bottom-0 h-px bg-primary'
           aria-hidden='true'
         />
       </header>

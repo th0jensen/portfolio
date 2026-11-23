@@ -312,11 +312,7 @@ export default function Home() {
       </section>
 
       <section class='relative isolate overflow-x-clip'>
-        <div
-          class='card-landscape tile-edges -z-10 bg-muted'
-          data-tile-edges
-          data-morph-preserve='style'
-        >
+        <div class='tile-edges -z-10 bg-muted' data-tile-edges data-morph-preserve='style'>
           <div class='technical-grid absolute inset-0 opacity-40' />
         </div>
         <div class='mx-auto w-full max-w-7xl px-5 py-16 sm:px-8 sm:py-20 lg:px-10'>
@@ -333,7 +329,12 @@ export default function Home() {
             >
               {zedStats.map((stat) => (
                 <div>
-                  <div class='glass-card group h-full border border-border p-4 sm:p-6'>
+                  <div class='glass-card group h-full p-4 sm:p-6'>
+                    <div
+                      aria-hidden='true'
+                      class='glass-lens'
+                      data-morph-preserve='style data-glass-active'
+                    />
                     <p class='font-mono text-[0.625rem] uppercase tracking-[0.12em] text-muted-foreground'>
                       {stat.label}
                     </p>

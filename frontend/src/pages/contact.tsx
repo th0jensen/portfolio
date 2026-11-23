@@ -144,7 +144,8 @@ export default function Contact() {
         <DotMatrix mode='field' spacing={16} lens={170} fade={0} />
       </div>
 
-      <div class='glass-card mx-auto grid w-full max-w-6xl items-start gap-10 border border-border p-6 sm:p-9 lg:grid-cols-[0.85fr_1.15fr] lg:gap-16'>
+      <div class='glass-card mx-auto grid w-full max-w-6xl items-start gap-10 p-6 sm:p-9 lg:grid-cols-[0.85fr_1.15fr] lg:gap-16'>
+        <div aria-hidden='true' class='glass-lens' data-morph-preserve='style data-glass-active' />
         <div class='lg:pt-7'>
           <p class='mb-5 font-mono text-[0.6875rem] uppercase tracking-[0.16em] text-primary'>
             03 / {loc.nav.contact}

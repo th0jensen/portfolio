@@ -32,12 +32,13 @@ export default function ProjectCard(
     <article
       data-spotlight
       class={cn(
-        'project-card glass-card spotlight group grid overflow-clip border [overflow-clip-margin:1px] border-border transition-[border-color,box-shadow,transform] duration-300 hover:-translate-y-0.5 hover:border-foreground/25 hover:shadow-[0_24px_60px_-36px_hsl(var(--shadow)/0.5)]',
+        'glass-card spotlight group grid transition-[box-shadow,transform] duration-300 hover:-translate-y-0.5 hover:shadow-[0_24px_60px_-36px_hsl(var(--shadow)/0.5)]',
         featured
           ? 'lg:grid-cols-[minmax(17rem,0.85fr)_minmax(0,1.15fr)]'
           : 'h-full grid-rows-[15rem_1fr]',
       )}
     >
+      <div aria-hidden='true' class='glass-lens' data-morph-preserve='style data-glass-active' />
       <Link
         href={detailHref}
         aria-label={`${project.name} — ${detailLabel}`}

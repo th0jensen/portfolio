@@ -174,63 +174,60 @@ html.dark {
 
 /* The root canvas paints the area revealed by native pull-down overscroll. */
 html:has(.hero-surface) {
-  background-image:
-    radial-gradient(ellipse at 85% 0%, hsl(var(--primary) / 0.12), transparent 65%),
-    radial-gradient(circle, hsl(var(--foreground) / 0.15) 1px, transparent 1px);
-  background-size: 100% 100lvh, 16px 16px;
+  background-image: radial-gradient(ellipse at 85% 0%, hsl(var(--primary) / 0.12), transparent 65%);
   background-attachment: fixed;
 }
 
 @layer components {
-  .glass-surface {
-    background: hsl(var(--background) / 0.65);
-    backdrop-filter: blur(2px);
-  }
-
   .glass-card {
     position: relative;
-    background: hsl(var(--background) / 0.4);
-    backdrop-filter: blur(2px);
+    isolation: isolate;
   }
 }
 
-/* A sibling of the blurred header, so the rim samples the page, not its fill. */
-.header-glass-edge {
+/* The lens stays behind the content so it never distorts text or controls. */
+.glass-lens {
   position: absolute;
-  inset: 0 0 auto;
-  z-index: 1;
-  height: 4rem;
+  inset: calc(-1 * var(--glass-outset, 0px));
+  z-index: -1;
   pointer-events: none;
+  background: hsl(var(--background) / var(--glass-tint, 0.4));
+  backdrop-filter: var(--glass-filter, blur(0.8px));
 }
 
-.header-glass-edge::before,
-.header-glass-edge::after {
-  content: '';
-  position: absolute;
-  inset-inline: 0;
-  bottom: 0;
+.glass-lens[data-glass-active] {
+  background: transparent;
 }
 
-.header-glass-edge::before {
-  /* Sample across the boundary, but paint only its innermost three pixels. */
-  height: 16px;
-  bottom: -8px;
-  clip-path: inset(5px 0 8px);
-  backdrop-filter: blur(0.5px) saturate(1.3);
+.header-lens {
+  inset: 0 0 auto;
+  z-index: auto;
+  height: calc(4rem + var(--glass-outset, 0px));
+  --glass-tint: 0.65;
 }
 
-@supports (backdrop-filter: url('#header-edge-refraction')) {
-  .header-glass-edge::before {
-    backdrop-filter: url('#header-edge-refraction') blur(0.35px) saturate(1.3);
-  }
+/* The SVG lives outside the lens, but tracks the same theme and scroll state. */
+.glass-tint {
+  flood-color: hsl(var(--background));
+  flood-opacity: 0.4;
 }
 
-.header-glass-edge::after {
-  height: 14px;
-  bottom: -6px;
-  clip-path: inset(7px 0 6px);
-  background: hsl(var(--foreground) / 0.06);
-  backdrop-filter: blur(2px) saturate(1.4) brightness(1.1);
+/* The rim band covers the refracted content beneath it; the rim light adds over it. */
+.glass-rim {
+  flood-color: hsl(var(--background));
+  flood-opacity: 0.8;
+}
+
+.header-lens[data-scrolled] {
+  --glass-tint: 0.8;
+}
+
+#glass-lens-header .glass-tint {
+  flood-opacity: 0.65;
+}
+
+:root:has(.header-lens[data-scrolled]) #glass-lens-header .glass-tint {
+  flood-opacity: 0.8;
 }
 
 /* Discourage casual saving without disabling context menus site-wide. */
@@ -295,13 +292,17 @@ body:has(.automaton-page) .site-page-content {
   overflow: hidden;
 }
 
+.site-page-content:has(.automaton-page) {
+  padding-top: 0;
+}
+
 body:has(.automaton-page) footer {
   display: none;
 }
 
 .automaton-page {
   display: flex;
-  height: calc(100dvh - 4rem);
+  height: 100dvh;
   min-height: 0;
   flex: 1;
   flex-direction: column;
@@ -335,15 +336,8 @@ body:has(.automaton-page) footer {
   );
 }
 
-.project-card {
-  box-shadow: inset 0 1px hsl(var(--foreground) / 0.025);
-}
-
 .card-landscape {
-  background-image:
-    radial-gradient(ellipse at 18% 42%, hsl(var(--primary) / 0.14), transparent 70%),
-    radial-gradient(circle, hsl(var(--foreground) / 0.2) 1.5px, transparent 1.5px);
-  background-size: 100% 100%, 16px 16px;
+  background: radial-gradient(ellipse at 18% 42%, hsl(var(--primary) / 0.14), transparent 70%);
 }
 
 .contact-landscape {
@@ -480,37 +474,18 @@ html.motion-ready [data-reveal='lines']:not([data-revealed]) .reveal-line > span
   transition: none !important;
 }
 
-/* Pointer-following border light and inner glow, for [data-spotlight]. */
+/* Pointer-following inner glow, for [data-spotlight]. The glass lens owns the rim. */
 .spotlight {
   position: relative;
   isolation: isolate;
 }
 
-.spotlight::before,
 .spotlight::after {
   content: '';
   position: absolute;
   pointer-events: none;
   opacity: 0;
   transition: opacity 0.35s ease;
-}
-
-.spotlight::before {
-  inset: -1px;
-  z-index: 2;
-  padding: 1px;
-  background: radial-gradient(
-    18rem circle at var(--mx, -100rem) var(--my, -100rem),
-    hsl(var(--primary) / 0.85),
-    transparent 70%
-  );
-  mask:
-    linear-gradient(#000 0 0) content-box,
-    linear-gradient(#000 0 0);
-  mask-composite: exclude;
-}
-
-.spotlight::after {
   inset: 0;
   z-index: -1;
   background: radial-gradient(
@@ -520,41 +495,8 @@ html.motion-ready [data-reveal='lines']:not([data-revealed]) .reveal-line > span
   );
 }
 
-.spotlight:hover::before,
-.spotlight:hover::after,
-.spotlight:focus-within::before {
+.spotlight:hover::after {
   opacity: 1;
-}
-
-/* Share the contact glass rim without losing the pointer-following border light. */
-.glass-card::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  z-index: 2;
-  padding: 3px;
-  background:
-    radial-gradient(
-    18rem circle at var(--mx, -100rem) var(--my, -100rem),
-    hsl(var(--primary) / 0.85),
-    transparent 70%
-  ),
-    hsl(var(--foreground) / 0.04);
-  backdrop-filter: blur(0.5px) saturate(1.3);
-  mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
-  mask-composite: exclude;
-  opacity: 1;
-  pointer-events: none;
-}
-
-.glass-card:not(:hover):not(:focus-within)::before {
-  background: hsl(var(--foreground) / 0.04);
-}
-
-@supports (backdrop-filter: url('#header-edge-refraction')) {
-  .glass-card::before {
-    backdrop-filter: url('#header-edge-refraction') blur(0.35px) saturate(1.3);
-  }
 }
 
 .tilt {
